@@ -70,26 +70,24 @@
         </div>
     </section>
 
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="box-search">
-                        <h1>Filtro e Pesquisa</h1>
-                        <p><b>Pesquisar</b></p>
+    <section class="content-search">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box-search">
+                    <h1>Filtro e Pesquisa</h1>
+                    <p><b>Pesquisar</b></p>
 
-                        <div class="filter-group">
-                            <input type="text" placeholder="Pesquisar por nome ou e-mail" class="search-input" />
-                            <div class="box-todo">
-                                <select>
-                                    <option value="Todos">Todos</option>
-                                    <option value="Ativos">Ativos</option>
-                                    <option value="Inativos">Inativos</option>
-                                </select>
-                            </div>
+                    <div class="filter-group">
+                        <input type="text" style="background:#FBFBFB" placeholder="Pesquisar por nome ou e-mail" class="search-input" />
+                        <div class="box-todo">
+                            <select>
+                                <option value="Todos">Todos</option>
+                                <option value="Ativos">Ativos</option>
+                                <option value="Inativos">Inativos</option>
+                            </select>
                         </div>
-
                     </div>
+
                 </div>
             </div>
         </div>
@@ -104,61 +102,63 @@
                     <div class="box-body">
                         @if (Model != null && Model.Count() > 0)
                         {
-                            <table class="table custom-table modulo-usuario-listar">
-                                <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>E-mail</th>
-                                        <th>Data de Cadastro</th>
-                                        <th>Status</th>
-                                        <th>Observações</th>
-                                        <th class="text-center">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
+                            <div class="table-responsive">
+                                <table class="table custom-table modulo-usuario-listar">
+                                    <thead>
                                         <tr>
-                                            <td>@item.Nome</td>
-                                            <td>@item.Login</td>
-                                            <td>@item.Email</td>
-                                            <td>
-                                                @(item.Permissao.Tipo)
-                                            </td>
-
-                                            <td>
-                                                @if (item.Ativo == true)
-                                                {
-                                                    <span>Ativo</span>
-                                                }
-                                                else
-                                                {
-                                                    <span>Inativo</span>
-                                                }
-                                            </td>
-
-                                            <td class="acoes">
-                                                <a id="btnNovoUsuario" class="btn-icon">
-                                                    <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
-                                                </a>
-
-
-                                                <div class="dropdown">
-                                                    <button class="btn-icon dropdown-toggle" type="button" data-toggle="dropdown" data-boundary="viewport">
-                                                        <img src="~/img/imgsite/ri_more-fill.png" class="icon-nav" alt="Mais" />
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-right">
-                                                        <li><a href="#"><img src="~/img/imgsite/ic_outline-email.png" class="icon-nav" alt="Mais" /> Enviar E-mail</a></li>
-                                                        <li><a href="#"><img src="~/img/imgsite/ic_baseline-refresh.png" class="icon-nav" alt="Mais" /> Resetar Senha</a></li>
-                                                        <li><a href="#"><img src="~/img/imgsite/ic_baseline-chat-bubble-outline.png" class="icon-nav" alt="Mais" /> Adicionar Observação</a></li>
-                                                        <li><a href="#"><img src="~/img/imgsite/bx_user-x.png" class="icon-nav" alt="Mais" /> Suspender Conta</a></li>
-                                                    </ul>
-                                                </div>
-                                            </td>
+                                            <th>Nome</th>
+                                            <th>E-mail</th>
+                                            <th>Data de Cadastro</th>
+                                            <th>Status</th>
+                                            <th>Observações</th>
+                                            <th class="text-center">Ações</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.Nome</td>
+                                                <td>@item.Login</td>
+                                                <td>@item.Email</td>
+                                                <td>
+                                                    @(item.Permissao.Tipo)
+                                                </td>
+
+                                                <td>
+                                                    @if (item.Ativo == true)
+                                                    {
+                                                        <span>Ativo</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Inativo</span>
+                                                    }
+                                                </td>
+
+                                                <td class="acoes">
+                                                    <a id="btnNovoUsuario" class="btn-icon">
+                                                        <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
+                                                    </a>
+
+
+                                                    <div class="dropdown">
+                                                        <button class="btn-icon dropdown-toggle" type="button" data-toggle="dropdown" data-boundary="viewport">
+                                                            <img src="~/img/imgsite/ri_more-fill.png" class="icon-nav" alt="Mais" />
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-right">
+                                                            <li><a href="#"><img src="~/img/imgsite/ic_outline-email.png" class="icon-nav" alt="Mais" /> Enviar E-mail</a></li>
+                                                            <li><a href="#"><img src="~/img/imgsite/ic_baseline-refresh.png" class="icon-nav" alt="Mais" /> Resetar Senha</a></li>
+                                                            <li><a href="#"><img src="~/img/imgsite/ic_baseline-chat-bubble-outline.png" class="icon-nav" alt="Mais" /> Adicionar Observação</a></li>
+                                                            <li><a href="#"><img src="~/img/imgsite/bx_user-x.png" class="icon-nav" alt="Mais" /> Suspender Conta</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
                         else
                         {

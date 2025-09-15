@@ -24,31 +24,40 @@
 
 <aside class="main-sidebar">
     <section class="sidebar">
-
         <img src="~/img/imgsite/logo.png" class="img-logo" />
         <img src="~/img/avatar5.png" class="img-navbar" />
 
-    <p class="title-name">Teste</p>
-    <p class="title-cargo">Cargo Teste</p>
+        <p class="title-name">Teste</p>
+        <p class="title-cargo">Cargo Teste</p>
 
         <ul class="sidebar-menu" id="menu">
             <li class="header text-center">Painéis</li>
 
-
             <li class="treeview hidden modulo-usuario">
                 <a href="@Href("~/usuario")">
-                    <img src="~/img/imgsite/tabler_users.png" class="icon-nav"/><span>Gerenciador de Usuárias</span>
+                    <img src="~/img/imgsite/tabler_users.png" class="icon-nav" />
+                    <span>Gerenciador de Usuárias</span>
                 </a>
             </li>
 
+            <li class="line-navbar"></li>
 
             <li class="treeview hidden modulo-perfis">
                 <a href="@Href("~/perfis")">
-                    <img src="~/img/imgsite/solar_settings-outline.png" class="icon-nav" /> <span>Permissões</span>
+                    <img src="~/img/imgsite/solar_settings-outline.png" class="icon-nav" />
+                    <span>Permissões</span>
                 </a>
             </li>
 
+            <li class="line-navbar"></li>
         </ul>
 
+        <div class="logout-fixed">
+            <a href="@Href("~/home/logout")">
+                <img src="~/img/imgsite/logout.png" class="icon-nav" />
+                <span>Sair</span>
+            </a>
+        </div>
     </section>
 </aside>
+
