@@ -1,0 +1,216 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Login | @ViewBag.TitlePage</title>
+
+    @* @if (!HttpContext.Current.IsDebuggingEnabled)
+    {
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    } *@
+
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
+    <link rel="stylesheet" href="~/css/style.min.css" />
+    <link rel="stylesheet" href="~/css/blue.css" />
+</head>
+<body class="hold-transition login-page" style="background-image: linear-gradient(to right, #50aef3, #005ac4);">
+
+    <style>
+        .login-box-body {
+            max-width: 500px;
+            margin: auto;
+            display: block;
+        }
+
+        .row-bg {
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /*LOADING*/
+        .btnEnviar {
+            position: relative;
+        }
+
+            .btnEnviar * {
+                transition: opacity 0.3s ease-in;
+            }
+
+            .btnEnviar .loader {
+                position: absolute;
+                display: block;
+                fill: transparent;
+                top: calc(50% - 0.75rem);
+                left: calc(50% - 0.75rem);
+                width: 1.5rem;
+                height: 1.5rem;
+                animation: rotating 1.5s linear infinite;
+                display: none;
+                opacity: 0;
+            }
+
+            .btnEnviar.loading span {
+                color: transparent;
+                opacity: 0;
+            }
+
+            .btnEnviar.loading .loader {
+                fill: transparent;
+                display: block;
+                opacity: 1;
+            }
+            @@-webkit-keyframes rotating {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(1turn);
+                }
+            }
+
+            @@keyframes rotating {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(1turn);
+                }
+            }
+    </style>
+
+    <div class="row row-bg">
+        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            <img src="https://yourcode.com.br/_images/externas/pagina-login.jpg" alt="" class="img-responsive center-block">
+        </div>
+        <div class="col-lg-3 col-sm-12">
+            <div class="login-box-body">
+                <center>
+                    <img src="~/img/logo-yourcode.png" class="img-responsive" style="margin-bottom:20px; text-align:center" /><br />
+                </center>
+                <p class="login-box-msg">Faça login para iniciar a sua sessão</p>
+                @if (ViewData["mensagem"] != null && ViewData["mensagem"] != "")
+                {
+                    <div class="alert alert-danger">
+                        <a class="close" data-dismiss="alert" href="#">&times;</a>
+                        @Html.Raw(ViewData["mensagem"])
+                    </div>
+                }
+                @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "bootstrap-admin-login-form", @id = "formContato" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+                    <div class="form-group has-feedback">
+                        @Html.TextBox("Email", ViewData["txtEmail"], new { @class = "form-control", @type = "email", @placeholder = "E-mail", @required = "required", @autofocus = "true", @autocomplete = "off" })
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.TextBox("Senha", ViewData["txtSenha"], new { @class = "form-control", @type = "password", @placeholder = "Senha", @required = "required", @onkeypress = "capLock(event)" })
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                        <div id="divMayus" style="visibility:hidden">CAPS LOCK está ativado!</div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-7 col-sm-6 col-xs-12" style="padding-top: 5px;">
+                            <a asp-controller="EsqueciSenha" asp-action="Index"
+                               class="btn btn-primary btn-block btn-flat"
+                               style="background-color:@ViewBag.CorAdmin; border-color:@ViewBag.CorAdmin">
+                                Esqueci minha senha
+                            </a>
+
+                        </div>
+                        <div class="col-md-5 col-sm-6 col-xs-12" style="padding-top: 5px;">
+                            <button style="background-color:@ViewBag.CorAdmin; border-color:@ViewBag.CorAdmin" class="btn btn-primary btn-block btn-flat g-recaptcha btnEnviar" id="btnEnviar" data-sitekey="@ViewBag.ReCaptchaPublicKeyInvisible" data-callback="onSubmit">
+                                <span>Entrar</span>
+                                <svg aria-hidden="true" focusable="false" class="loader loading" viewBox="0 0 38 38">
+                                    <g transform="translate(2 2)" stroke="currentColor" stroke-width="4" fill-rule="evenodd">
+                                        <circle class="st0" stroke-opacity=".5" cx="17" cy="17" r="16.5"></circle>
+                                        <path class="st1" d="M33.5 17C33.5 7.9 26.1.5 17 .5" transform="rotate(249.767 17 17)">
+                                            <animateTransform accumulate="none" additive="replace" attributeName="transform" calcMode="linear" dur="1s" from="0 17 17" repeatCount="indefinite" restart="always" to="360 17 17" type="rotate"></animateTransform>
+                                        </path>
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+
+    </div>
+
+
+    <script src="~/js/jQuery-2.1.4.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/icheck.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            grecaptcha.execute();
+        });
+
+        function capLock(e) {
+            kc = e.keyCode ? e.keyCode : e.which;
+            sk = e.shiftKey ? e.shiftKey : ((kc == 16) ? true : false);
+            if (((kc >= 65 && kc <= 90) && !sk) || ((kc >= 97 && kc <= 122) && sk))
+                document.getElementById('divMayus').style.visibility = 'visible';
+            else
+                document.getElementById('divMayus').style.visibility = 'hidden';
+        }
+
+
+        function somenteNumeros(e) {
+            var charCode = e.charCode ? e.charCode : e.keyCode;
+            if (charCode != 8 && charCode != 9) {
+                if (charCode < 48 || charCode > 57) {
+                    return false;
+                }
+            }
+        }
+
+        function onSubmit() {
+
+            if ($('#txtNome').val() == '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Preencha o campo Nome.',
+                    timer: 10000
+                });
+
+                $('#txtNome').focus();
+                grecaptcha.reset();
+                return false;
+            }
+
+            var element = document.getElementById("formContato");
+            const button = element.querySelector("#btnEnviar");
+            button.classList.add("loading");
+            button.disabled = true;
+            element.submit();
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Usuario>
+
+@{
+    ViewBag.Title = "Usuários | " + ViewBag.TitlePage;
+    ViewBag.Description = ViewBag.DescriptionPage;
+    ViewBag.FacebookImage = ViewBag.DomainSite + "content/upload/config/" + ViewBag.ShareImg;
+    ViewBag.Url = ViewBag.DomainSite;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>
+                    <img src="~/img/imgsite/tabler_users_orange.png" style="width:28px !important; width: 30px !important;height: 28px;" class="icon-nav" />
+                    <b>Gerenciador Usuárias</b>
+                </h1>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
+                <div class="box-filter">
+                    <img src="~/img/imgsite/download.png" class="icon-download" />
+                </div>
+                <div class="box-date">
+                    <select>
+                        <option value="1">01/04/2025 - 28/07/2025</option>
+                        <option value="2">01/01/2025 - 31/03/2025</option>
+                        <option value="3">01/10/2024 - 31/12/2024</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <h1 style="margin-top: 30px; margin-bottom: 10px;">
+            Usuárias
+        </h1>
+    </section>
+
+    <section>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="box-number">
+                        <p>Total de Usuárias</p>
+                        <h2><b>44.520</b></h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="box-number">
+                        <p>Usuárias Ativas</p>
+                        <h2><b>27.856</b></h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="box-number">
+                        <p>Usuárias Inativas</p>
+                        <h2><b>2.567</b></h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="box-number">
+                        <p>Usuárias Suspensas</p>
+                        <h2><b>200</b></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-search">
+                        <h1>Filtro e Pesquisa</h1>
+                        <p><b>Pesquisar</b></p>
+
+                        <div class="filter-group">
+                            <input type="text" placeholder="Pesquisar por nome ou e-mail" class="search-input" />
+                            <div class="box-todo">
+                                <select>
+                                    <option value="Todos">Todos</option>
+                                    <option value="Ativos">Ativos</option>
+                                    <option value="Inativos">Inativos</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box-number">
+                    <h1>Lista de Usuárias</h1>
+                    <div class="box-body">
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            <table class="table custom-table modulo-usuario-listar">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>E-mail</th>
+                                        <th>Data de Cadastro</th>
+                                        <th>Status</th>
+                                        <th>Observações</th>
+                                        <th class="text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Nome</td>
+                                            <td>@item.Login</td>
+                                            <td>@item.Email</td>
+                                            <td>
+                                                @(item.Permissao.Tipo)
+                                            </td>
+
+                                            <td>
+                                                @if (item.Ativo == true)
+                                                {
+                                                    <span>Ativo</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>Inativo</span>
+                                                }
+                                            </td>
+
+                                            <td class="acoes">
+                                                <a id="btnNovoUsuario" class="btn-icon">
+                                                    <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
+                                                </a>
+
+
+                                                <div class="dropdown">
+                                                    <button class="btn-icon dropdown-toggle" type="button" data-toggle="dropdown" data-boundary="viewport">
+                                                        <img src="~/img/imgsite/ri_more-fill.png" class="icon-nav" alt="Mais" />
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-right">
+                                                        <li><a href="#"><img src="~/img/imgsite/ic_outline-email.png" class="icon-nav" alt="Mais" /> Enviar E-mail</a></li>
+                                                        <li><a href="#"><img src="~/img/imgsite/ic_baseline-refresh.png" class="icon-nav" alt="Mais" /> Resetar Senha</a></li>
+                                                        <li><a href="#"><img src="~/img/imgsite/ic_baseline-chat-bubble-outline.png" class="icon-nav" alt="Mais" /> Adicionar Observação</a></li>
+                                                        <li><a href="#"><img src="~/img/imgsite/bx_user-x.png" class="icon-nav" alt="Mais" /> Suspender Conta</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <span>Nenhum usuário cadastrado.</span>
+                        }
+
+                        @if (ViewBag.PageCount > 1)
+                        {
+                            <div class="col-md-12 text-center">
+                                <div id="Paging">
+                                    @Html.PagedListPager(Model, page => Url.Action("Index", "usuario", new { page }))
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="modal fade" id="usuarioModal" tabindex="-1" role="dialog" aria-labelledby="usuarioModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2 id="usuarioModalLabel"><b>Editar Usuária</b></h2>
+            </div>
+
+            <div class="modal-body" id="modalBody">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        if ('@ViewData["Mensagem"]' == "true") {
+            $.growl.notice({ title: "Sucesso!", message: "Alterações Salvas!" });
+        }
+        if ('@ViewData["Mensagem"]' == "false") {
+            //alert(bool)
+            $.growl.error({ title: "Erro!", message: "Algo deu errado!" });
+        }
+    });
+
+        $('.dropdown').on('show.bs.dropdown', function () {
+        var $dropdown = $(this);
+        var $menu = $dropdown.find('.dropdown-menu');
+        var $toggle = $dropdown.find('.dropdown-toggle');
+
+        var windowHeight = $(window).height();
+        var buttonOffset = $toggle.offset().top - $(window).scrollTop();
+        var spaceBelow = windowHeight - (buttonOffset + $toggle.outerHeight());
+        var menuHeight = $menu.outerHeight();
+
+        if (spaceBelow < menuHeight) {
+            $dropdown.addClass('dropup');
+        } else {
+            $dropdown.removeClass('dropup');
+        }
+    });
+
+    $(document).ready(function () {
+
+        $("#btnNovoUsuario").click(function () {
+            $.get("/Usuario/Edit", function (data) {
+                $("#modalBody").html(data);
+
+                $("#usuarioModal").modal('show');
+            });
+        });
+
+        $(document).on("submit", "#formCreateUsuario", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: "/Usuario/Create",
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+
+                        $("#usuarioModal").modal('hide');
+                    } else {
+                        $("#modalBody").html(response);
+                    }
+                }
+            });
+        });
+    });
+
+</script>

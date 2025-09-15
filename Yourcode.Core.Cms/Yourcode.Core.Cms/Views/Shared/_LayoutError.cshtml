@@ -1,0 +1,342 @@
+﻿@using System.Security.Claims
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>@ViewBag.Title</title>
+
+
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="~/css/ionicons.min.css" />
+    <link rel="stylesheet" href="~/css/style.min.css">
+    <link rel="stylesheet" href="~/css/_all-skins.min.css">
+    <link rel="stylesheet" href="~/css/blue.css">
+    <link rel="stylesheet" href="~/css/morris.css">
+    <link rel="stylesheet" href="~/css/jquery-jvectormap-1.2.2.css">
+    <link rel="stylesheet" href="~/css/datepicker3.css">
+    <link rel="stylesheet" href="~/css/daterangepicker-bs3.css">
+    <link rel="stylesheet" href="~/css/bootstrap3-wysihtml5.min.css">
+    <link rel="stylesheet" href="~/css/jquery.growl.css" />
+    <link rel="stylesheet" href="~/css/dataTables.bootstrap.css" />
+    <link rel="stylesheet" href="~/css/select2.min.css" />
+    <link rel="stylesheet" href="~/css/all.css" />
+    <link rel="stylesheet" href="~/css/jquery.growl.css" />
+    <link rel="stylesheet" href="~/plugins/sweet-alert/sweet-alert.css" />
+    <link rel="stylesheet" href="~/css/loading.css" />
+    <link rel="stylesheet" href="~/css/font-awesome.css" />
+    <link rel="stylesheet" href="~/node_modules/select2/dist/css/select2.min.css" />
+
+    <link rel="shortcut icon" href="~/favico.ico" />
+    <link rel="shortcut icon" href="~/favicon.ico" type="image/x-icon" />
+
+    <script src="~/js/jQuery-2.1.4.min.js"></script>
+    <script src="~/js/jquery.maskMoney.min.js"></script>
+    <script src="~/node_modules/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/node_modules/select2/dist/js/select2.min.js"></script>
+    <script src="~/node_modules/select2/dist/js/select2.full.js"></script>
+    <script src="~/node_modules/select2/dist/js/select2.js"></script>
+    <style>
+        #Filter button {
+            border: 0 !important;
+            background: #008bf7;
+            color: #fff !important;
+            border: 1px solid #008bf7;
+        }
+
+        #Filter svg {
+            color: #fff !important;
+        }
+
+        #Filter {
+            display: inline-flex;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 20px;
+        }
+
+            #Filter input {
+                box-shadow: none !important;
+                outline: none !important;
+                border: 1px solid #008bf7;
+                border-radius: 0 !important;
+                font-size: 13px;
+                color: #000;
+            }
+
+        /*.pagination {
+                            margin-left: auto;
+                            margin-right: auto;
+                            display: inherit;
+                            text-align: center;
+                            margin-top: 20px;
+                        }
+
+                            .pagination li {
+                                display: inline !important;
+                            }
+
+                                .pagination li a {
+                                    color: #000 !important;
+                                    padding: 5px;
+                                }
+
+                                    .pagination li a:hover {
+                                        color: #96280f !important;
+                                    }
+
+                                .pagination li.active a {
+                                    color: #96280f !important;
+                                }*/
+
+    </style>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var pagina = $(location).prop('pathname').split('/')[2];
+            //pagina = pagina.toLowerCase();
+
+            switch (pagina) {
+                case "usuario":
+                    $("#menusistema").addClass('active');
+                    $("#usuariomenu").addClass('active');
+                    break;
+                case "perfis":
+                    $("#menusistema").addClass('active');
+                    $("#perfilmenu").addClass('active');
+                    break;
+                default:
+                    var paginacompleta = "/admin/" + pagina;
+                    $('a[href="' + paginacompleta + '"]').parent().addClass('active');
+                    break;
+            }
+
+            if ('@ViewData["SUCESSO"]' != '') {
+                $.growl.notice({ title: 'Sucesso!', message: '@ViewData["SUCESSO"]' });
+            }
+            else if ('@ViewData["ATENCAO"]' != '') {
+                $.growl.warning({ title: 'Ops!', message: '@ViewData["ATENCAO"]' });
+            }
+            else if ('@ViewData["ERRO"]' != '') {
+                $.growl.error({ title: 'Ops!', message: '@ViewData["ERRO"]' });
+            }
+
+            $('form').submit(function (ev) {
+                $('#btnSalvar').addClass("m-progress");
+            });
+
+            $("#txtPorcentagem").maskMoney({ thousands: '', decimal: ',' });
+        });
+
+        // function goBack() {
+        //     window.history.back();
+        // }
+        // $(function () {
+        //     var fiveMinutes = 60 * 'Session.Timeout',
+        //         display = $('#timerSession');
+        //     startTimer(fiveMinutes, display);
+        // });
+
+
+        // //contador regressivo da sessão
+        // function startTimer(duration, display) {
+        //     var timer = duration, minutes, seconds;
+        //     var interval = setInterval(function () {
+        //         hours = parseInt(timer / 3600, 10)
+        //         minutes = parseInt((timer % 3600) / 60, 10)
+        //         seconds = parseInt(timer % 60, 10);
+
+        //         hours = hours < 10 ? "0" + hours : hours;
+        //         minutes = minutes < 10 ? "0" + minutes : minutes;
+        //         seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        //         display.text("Sessão expira em: " + hours + ":" + minutes + ":" + seconds);
+
+        //         if (--timer < 0) {
+        //             clearInterval(interval);
+        //             swal({ title: "Ops!", text: "Sua sessão expirou.", type: "warning", showCancelButton: false, confirmButtonColor: "#DD6B55", confirmButtonText: "OK!", closeOnConfirm: false, closeOnCancel: false }, function (isConfirm) { if (isConfirm) { window.location.href = '@Url.Action("logout", "home")'; } });
+        //         }
+
+        //     }, 1000);
+        // }
+
+        function SomenteNumero(e) {
+            var tecla = (window.event) ? event.keyCode : e.which;
+            if ((tecla > 47 && tecla < 58)) return true;
+            else {
+                if (tecla == 8 || tecla == 0) return true;
+                else return false;
+            }
+        }
+    </script>
+
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    @{
+        var idUser = "";
+        var nome = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            idUser = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            nome = User.FindFirst(ClaimTypes.Name)?.Value;
+        }
+        else
+        {
+            <script>
+                window.location.href = '@Url.Action("Index", "Home")';
+            </script>
+        }
+    }
+
+    <style>
+        .skin-blue .main-header .logo {
+            background-color: @ViewBag.CorAdmin;
+        }
+
+        .skin-blue .main-header .navbar {
+            background-color: @ViewBag.CorAdmin;
+        }
+
+        .skin-blue .main-header .logo:hover {
+            background-color: @ViewBag.CorAdmin;
+            opacity: 0.9;
+        }
+
+        .skin-blue .main-header .navbar .sidebar-toggle:hover {
+            background-color: @ViewBag.CorAdmin;
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background-color: @ViewBag.CorAdmin;
+            border: none !important;
+        }
+
+        footer strong a {
+            color: @ViewBag.CorAdmin !important;
+        }
+
+            footer strong a:hover {
+                color: @ViewBag.CorAdmin !important;
+                opacity: 0.9;
+            }
+
+        #btnSalvar:hover {
+            background-color: @ViewBag.CorAdmin;
+            opacity: 0.8;
+        }
+
+        .skin-blue .sidebar-menu > li:hover > a, .skin-blue .sidebar-menu > li.active > a {
+            border-left-color: @ViewBag.CorAdmin;
+        }
+
+        #btnCadastrar:hover {
+            background-color: @ViewBag.CorAdmin;
+            opacity: 0.8;
+        }
+
+        .box.box-primary {
+            border-top-color: @ViewBag.CorAdmin;
+        }
+
+        .box {
+            border-top: 3px solid @ViewBag.CorAdmin;
+        }
+
+        @@media (max-width:575px) {
+            .skin-blue .main-header .navbar .dropdown-menu li a:hover {
+                background-color: @ViewBag.CorAdmin;
+                color: #fff !important;
+            }
+        }
+
+    </style>
+
+    <div class="wrapper">
+        <header class="main-header">
+            <a href="@Href("~/dashboard")" class="logo">
+                <span class="logo-mini"><i class="ion ion-home"></i></span>
+                <span class="logo-lg" style="font-size:13px"><b>@ViewBag.TitlePage </b></span>
+            </a>
+
+            <nav class="navbar navbar-static-top" role="navigation">
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="display-none-mobile"><a href="@ViewBag.DomainSite" class="btn btn-primary btn-flat" target="_blank"><i class="glyphicon glyphicon-open"></i> Visualizar site</a></li>
+                        <li class="display-none-mobile"><a href="#" id="timerSession"></a></li>
+                        <li class="dropdown user user-menu" style="margin-right: 10px;">
+                            <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <i class="glyphicon glyphicon-user"></i> @nome <i class="caret"></i></a>
+                            <ul class="dropdown-menu" style="width: 100px;">
+                                <li style="margin: 10px 0;" class="text-center"><a href="@Href("~/sistema/editarperfil")"><i class="fa fa-pencil"></i> Editar Perfil</a></li>
+                                <li role="presentation" class="divider"></li>
+                                <li style="margin: 10px 0;" class="text-center"><a href="@Href("~/home/logout")"><i class="fa fa-sign-out"></i> Sair</a></li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        @Html.Partial("_Navbar")
+
+        @RenderBody()
+
+
+        <footer class="main-footer">
+            <div class="pull-right text-center">
+                <strong>&copy; @DateTime.Now.Year <a href="https://yourcode.com.br" target="_blank">YOURCODE Tecnologia da Informação</a>.</strong> Todos os direitos reservados.
+            </div>
+            <br />
+        </footer>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/jquery-ui.min.js"></script>
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/raphael-min.js"></script>
+    <script src="~/js/morris.min.js"></script>
+    <script src="~/js/jquery.sparkline.min.js"></script>
+    <script src="~/js/jquery-jvectormap-1.2.2.min.js"></script>
+    <script src="~/js/jquery-jvectormap-world-mill-en.js"></script>
+    <script src="~/js/jquery.knob.js"></script>
+    <script src="~/js/moment.min.js"></script>
+    <script src="~/js/daterangepicker.js"></script>
+    <script src="~/js/bootstrap-datepicker.js"></script>
+    <script src="~/js/bootstrap3-wysihtml5.all.min.js"></script>
+    <script src="~/js/jquery.slimscroll.min.js"></script>
+    <script src="~/js/fastclick.min.js"></script>
+    <script src="~/js/app.min.js"></script>
+    <script src="~/js/jquery.growl.js"></script>
+    <script src="~/plugins/sweet-alert/sweet-alert.min.js"></script>
+    <script src="~/js/select2.full.min.js"></script>
+    <script src="~/js/icheck.min.js"></script>
+    <script src="~/js/jquery.inputmask.js"></script>
+    <script src="~/js/bootstrap-timepicker.min.js"></script>
+    <script src="~/js/jquery.dataTables.min.js"></script>
+    <script src="~/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/js/jquery.slimscroll.min.js"></script>
+    <script src="~/js/demo.js"></script>
+    <script src="~/js/jquery.PrintArea.js"></script>
+    <script src="~/js/dashboard.js"></script>
+    <script src="~/js/demo.js"></script>
+    <script src="~/js/jquery.growl.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+﻿
+@using PagedList.Mvc;
+@using Yourcode.CMS.Models;
+@*@model PagedList.IPagedList<BANNER>*@
+
+@{
+    ViewBag.Title = "Robots | " + ViewBag.TitlePage;
+    ViewBag.Description = ViewBag.DescriptionPage;
+    ViewBag.FacebookImage = ViewBag.DomainSite + "content/upload/config/" + ViewBag.ShareImg;
+    ViewBag.Url = ViewBag.DomainSite;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>Index</h2>
+
+<% Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="_Default" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <asp:TextBox runat="server" ID="txtRobots" TextMode="MultiLine" />
+        </div>
+        <div>
+            <asp:Button ID="btnSave" Text="Salvar" OnClick="btnSave_Click" runat="server" />
+        </div>
+    </form>
+</body>
+</html>
+

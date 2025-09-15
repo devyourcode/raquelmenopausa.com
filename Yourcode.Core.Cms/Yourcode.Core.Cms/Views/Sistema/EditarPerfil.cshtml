@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "Editar Perfil | " + ViewBag.TitlePage;
+    ViewBag.Description = ViewBag.DescriptionPage;
+    ViewBag.FacebookImage = ViewBag.DomainSite + "content/upload/config/" + ViewBag.ShareImg;
+    ViewBag.Url = ViewBag.DomainSite;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            Sistema
+            <small>Editar Perfil</small>
+        </h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="wizard box box-primary">
+                    <div class="wizard-inner">
+                        <div class="connecting-line"></div>
+                        <ul class="nav nav-tabs" role="tablist">
+
+                            <li role="presentation" class="active">
+                                <a href="#step1" data-toggle="tab" aria-controls="step1" role="tab" title="Perfil">
+                                    <span class="round-tab">
+                                        <i class="fa fa-user"></i> &nbsp;&nbsp; Editar Usuário
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li role="presentation">
+                                <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Senha">
+                                    <span class="round-tab">
+                                        <i class="fa fa-key"></i> &nbsp;&nbsp; Editar Senha
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" role="tabpanel" id="step1">
+                            <div class="box box-primary" style="border-top-color: #FFFFFF;">
+                                @using (Html.BeginForm("editarusuario", "sistema", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="box-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="col-lg-3 col-md-6 col-xs-12">
+                                                    <label>Nome <span style="color: #ff0000;"><b>*</b></span></label>
+                                                    <input type="text" id="txtNome" name="txtNome" value="@ViewData["txtNome"]" class="form-control" required>
+                                                </div>
+                                                <div class="col-lg-9 col-md-6 col-xs-12"></div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-lg-3 col-md-6 col-xs-12">
+                                                    <label>E-mail <span style="color: #ff0000;"><b>*</b></span></label>
+                                                    <input type="text" id="txtEmail" name="txtEmail" value="@ViewData["txtEmail"]" class="form-control" required>
+                                                </div>
+                                                <div class="col-lg-9 col-md-6 col-xs-12"></div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-lg-3 col-md-6 col-xs-12">
+                                                    <label>Login <span style="color: #ff0000;"><b>*</b></span></label>
+                                                    <input type="text" id="txtLogin" name="txtLogin" value="@ViewData["txtLogin"]" class="form-control" required>
+                                                </div>
+                                                <div class="col-lg-9 col-md-6 col-xs-12"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button type="submit" id="btnSalvar" class="btn btn-flat btn-primary next-step">Salvar</button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="tab-pane" role="tabpanel" id="step2">
+                            <div class="box box-primary" style="border-top-color: #FFFFFF;">
+                                @using (Html.BeginForm("editarsenha", "sistema", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="box-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="col-lg-3 col-md-6 col-xs-12">
+                                                    <label>Senha Atual <span style="color: #ff0000;"><b>*</b></span></label>
+                                                        <input type="password" id="txtSenhaAtual" name="txtSenhaAtual" class="form-control" required>
+                                                </div>
+                                                <div class="col-lg-9 col-md-6 col-xs-12"></div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-lg-3 col-md-6 col-xs-12">
+                                                    <label>Senha Nova </label>
+                                                    <input type="password" id="txtSenhaNova" name="txtSenhaNova" class="form-control" required>
+                                                </div>
+                                                <div class="col-lg-9 col-md-6 col-xs-12"></div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-lg-3 col-md-6 col-xs-12">
+                                                    <label>Confirmar Senha </label>
+                                                    <input type="password" id="txtConfirmarSenha" name="txtConfirmarSenha" class="form-control" required>
+                                                </div>
+                                                <div class="col-lg-9 col-md-6 col-xs-12"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button type="submit" id="btnSalvar" class="btn btn-flat btn-primary">Salvar</button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="@Href("~/Content/js/passStrength.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#txtSenhaAtual').passStrength({
+            submitButton: '#submitForm',
+            toggleButton: '#togglePass',
+            strengthBar: '#bar',
+            secondaryInput: '#matchPass'
+        });
+
+        $('form').submit(function (event) {
+            var senha1 = $('#txtSenhaNova');
+            var senha2 = $('#txtConfirmarSenha');
+
+            if (senha1.val() != senha2.val()) {
+                senha1.css('background-color', '#F9BABA');
+                senha2.css('background-color', '#F9BABA');
+                //alert('As senhas não coincidem!');
+                $.growl.error({ title: "Ops!", message: "As senhas não coincidem!" });
+                return false;
+            }
+            else {
+                senha1.attr('background-color', '#FFF');
+                senha2.attr('background-color', '#FFF');
+            }
+        })
+    });
+</script>

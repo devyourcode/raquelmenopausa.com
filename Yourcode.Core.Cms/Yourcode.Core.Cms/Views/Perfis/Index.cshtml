@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "Permissões | " + ViewBag.TitlePage;
+    ViewBag.Description = ViewBag.DescriptionPage;
+    ViewBag.FacebookImage = ViewBag.DomainSite + "content/upload/config/" + ViewBag.ShareImg;
+    ViewBag.Url = ViewBag.DomainSite;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+
+    <section class="content-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>
+                    <img src="~/img/imgsite/paper.png" style="width:28px !important; width: 30px !important;height: 28px;" class="icon-nav" />
+                    <b>Permissões</b>
+                </h1>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
+                <a id="btnNovoUsuario" class="btn-newuser">
+                    + Novo Usuário
+                </a>
+                <div class="box-filter">
+                    <img src="~/img/imgsite/download.png" class="icon-download" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="box-number">
+                        <p>Total de Usuários</p>
+                        <h2><b>5</b></h2>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="box-search" style="padding:22px; width:100%">
+                        <p><b>Pesquisar</b></p>
+                        <div class="filter-group">
+                            <input type="text" placeholder="Nome, e-mail ou cargo" class="campo-input" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box-number">
+                    <h1>Lista de Usuárias</h1>
+                    <div class="box-body">
+                        <table class="table custom-table modulo-perfis-listar">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Cargo</th>
+                                    <th>Permissões</th>
+                                    <th>Último Acesso</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewData["ListaPerfis"] != null && ((List<Yourcode.Core.Cms.Models.Dto.PerfisDto>)ViewData["ListaPerfis"]).Count() > 0)
+                                {
+                                    var contador = 1;
+                                    foreach (var item in (List<Yourcode.Core.Cms.Models.Dto.PerfisDto>)ViewData["ListaPerfis"])
+                                    {
+                                        <tr>
+                                            <td>Rosana Caetano</td>
+                                            <td>rosanacaetano@gmail.com</td>
+                                            <td>CEO</td>
+                                            <td>
+                                                <span class="permissao"><b>Dashboard Dados </b><img src="~/img/imgsite/view.png" class="icon-nav" alt="visualizar" /></span><br />
+                                                <span class="permissao">
+                                                    <b>Dashboard Patrocinadores</b> <img src="~/img/imgsite/edit.png" class="icon-nav" alt="Editar" />
+                                                    <img src="~/img/imgsite/view.png" class="icon-nav" alt="visualizar" />
+                                                </span>
+                                            </td>
+                                            <td>24-17-2025</td>
+
+                                            <td class="acoes">
+                                                <a id="btnNovoUsuario" class="btn-icon">
+                                                    <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
+                                                </a>
+                                                <a class="btn-icon">
+                                                    <img src="~/img/imgsite/shield.png" class="icon-nav" alt="Segurança" />
+                                                </a>
+                                                <a class="btn-icon">
+                                                    <img src="~/img/imgsite/tabler_trash.png" class="icon-nav" alt="Deletar" />
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        contador++;
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="modal fade" id="usuarioModal" tabindex="-1" role="dialog" aria-labelledby="usuarioModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2 id="usuarioModalLabel"><b>Adicionar Novo Usuário</b></h2>
+            </div>
+
+            <div class="modal-body" id="modalBody">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#btnNovoUsuario").click(function () {
+            $.get("/Usuario/Create", function (data) {
+                $("#modalBody").html(data);
+
+                $("#usuarioModal").modal('show');
+            });
+        });
+
+        $(document).on("submit", "#formCreateUsuario", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: "/Usuario/Create",
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+
+                        $("#usuarioModal").modal('hide');
+                    } else {
+                        $("#modalBody").html(response);
+                    }
+                }
+            });
+        });
+    });
+</script>

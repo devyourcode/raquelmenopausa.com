@@ -1,0 +1,54 @@
+﻿@using System.Security.Claims
+
+@{
+    var modulos = ViewBag.ModulosPermitidos as List<Yourcode.Core.Cms.Models.Dto.PermissaoModuloDto> ?? new List<Yourcode.Core.Cms.Models.Dto.PermissaoModuloDto>();
+}
+
+<script>
+    var modulosLiberados = [];
+
+    @foreach (var item in modulos)
+    {
+            if (item.Liberado)
+            {
+                    <text>modulosLiberados.push("@item.ModuloId"); </text>
+            }
+    }
+
+    $(document).ready(function () {
+        modulosLiberados.forEach(function (modulo) {
+            $("." + modulo).removeClass("hidden");
+        });
+    });
+</script>
+
+<aside class="main-sidebar">
+    <section class="sidebar">
+
+        <img src="~/img/imgsite/logo.png" class="img-logo" />
+        <img src="~/img/avatar5.png" class="img-navbar" />
+
+    <p class="title-name">Teste</p>
+    <p class="title-cargo">Cargo Teste</p>
+
+        <ul class="sidebar-menu" id="menu">
+            <li class="header text-center">Painéis</li>
+
+
+            <li class="treeview hidden modulo-usuario">
+                <a href="@Href("~/usuario")">
+                    <img src="~/img/imgsite/tabler_users.png" class="icon-nav"/><span>Gerenciador de Usuárias</span>
+                </a>
+            </li>
+
+
+            <li class="treeview hidden modulo-perfis">
+                <a href="@Href("~/perfis")">
+                    <img src="~/img/imgsite/solar_settings-outline.png" class="icon-nav" /> <span>Permissões</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </section>
+</aside>
