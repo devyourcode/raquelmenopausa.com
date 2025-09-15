@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Reflection;
 using X.PagedList.Extensions;
-using Yourcode.Core.Cms.Helpers;
-using Yourcode.Core.Cms.Models;
-using Yourcode.Core.Cms.Models.Dto;
+using RaquelMenopausa.Cms.Helpers;
+using RaquelMenopausa.Cms.Models;
+using RaquelMenopausa.Cms.Models.Dto;
 
-namespace Yourcode.Core.Cms.Controllers
+namespace RaquelMenopausa.Cms.Controllers
 {
     [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis")]
     public class PerfisController : CustomController

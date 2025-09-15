@@ -30,10 +30,10 @@
                                 </div>
                                 <div class="col-md-6 col-xs-12">
                                     <label>Modulos que terá Acesso</label>
-                                    @if (ViewData["listaModulo"] != null && ((List<Yourcode.Core.Cms.Models.Modulo>)ViewData["listaModulo"]).Count > 0)
+                                    @if (ViewData["listaModulo"] != null && ((List<RaquelMenopausa.Cms.Models.Modulo>)ViewData["listaModulo"]).Count > 0)
                                     {
                                         <ul class="products-list product-list-in-box">
-                                            @foreach (var item in (List<Yourcode.Core.Cms.Models.Modulo>)ViewData["listaModulo"])
+                                            @foreach (var item in (List<RaquelMenopausa.Cms.Models.Modulo>)ViewData["listaModulo"])
                                             {
                                                 <li class="item" style="padding: 1px;">
                                                     <input type="checkbox" name="txtModulo" value="@item.Id" id="modulo_@item.Id">

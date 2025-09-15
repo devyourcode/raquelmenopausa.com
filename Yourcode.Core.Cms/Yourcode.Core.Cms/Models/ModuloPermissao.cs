@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 
-namespace Yourcode.Core.Cms.Models
+namespace RaquelMenopausa.Cms.Models
 {
     [Table("MODULO_PERMISSAO")]
     public class ModuloPermissao

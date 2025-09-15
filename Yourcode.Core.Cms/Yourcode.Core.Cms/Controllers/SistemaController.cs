@@ -8,12 +8,12 @@ using NuGet.Common;
 using System.Diagnostics;
 using System.Security.Claims;
 using X.PagedList.Extensions;
-using Yourcode.Core.Cms.Helpers;
-using Yourcode.Core.Cms.Models;
+using RaquelMenopausa.Cms.Helpers;
+using RaquelMenopausa.Cms.Models;
 using Yourcode.Core.Utilities;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Yourcode.Core.Cms.Controllers
+namespace RaquelMenopausa.Cms.Controllers
 {
     [AuthorizeUser(LoginPage = "~/home", Module = "modulo-sistema")]
     public class SistemaController : CustomController

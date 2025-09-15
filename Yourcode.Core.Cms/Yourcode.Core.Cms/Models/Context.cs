@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace Yourcode.Core.Cms.Models
+namespace RaquelMenopausa.Cms.Models
 {
     public class Context : DbContext
     {

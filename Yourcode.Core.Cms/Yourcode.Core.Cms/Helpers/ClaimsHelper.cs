@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
-using Yourcode.Core.Cms.Models.Dto;
+using RaquelMenopausa.Cms.Models.Dto;
 
-namespace Yourcode.Core.Cms.Helpers
+namespace RaquelMenopausa.Cms.Helpers
 {
     public static class ClaimsHelper
     {

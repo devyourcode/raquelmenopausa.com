@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList.Extensions;
-using Yourcode.Core.Cms.Helpers;
-using Yourcode.Core.Cms.Models;
+using RaquelMenopausa.Cms.Helpers;
+using RaquelMenopausa.Cms.Models;
 using Yourcode.Core.Utilities;
-using Yourcode.Core.Cms.Models.Dto;
+using RaquelMenopausa.Cms.Models.Dto;
 
-namespace Yourcode.Core.Cms.Controllers
+namespace RaquelMenopausa.Cms.Controllers
 {
     [AuthorizeUser(LoginPage = "~/home", Module = "modulo-contato")]
     public class RecuperarSenhaController : CustomController

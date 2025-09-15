@@ -1,6 +1,6 @@
 ﻿using Serilog;
 
-namespace Yourcode.Core.Cms.Helpers
+namespace RaquelMenopausa.Cms.Helpers
 {
     public static class LogAuditoria
     {

@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Yourcode.Core.Cms.Helpers;
-using Yourcode.Core.Cms.Models;
+using RaquelMenopausa.Cms.Helpers;
+using RaquelMenopausa.Cms.Models;
 
-namespace Yourcode.Core.Cms.Controllers
+namespace RaquelMenopausa.Cms.Controllers
 {
     public class CustomController : Controller
     {
@@ -40,7 +40,7 @@ namespace Yourcode.Core.Cms.Controllers
             }
             else
             {
-                ViewBag.ModulosPermitidos = new List<Yourcode.Core.Cms.Models.Dto.PermissaoModuloDto>();
+                ViewBag.ModulosPermitidos = new List<RaquelMenopausa.Cms.Models.Dto.PermissaoModuloDto>();
             }
         }
     }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Yourcode.Core.Cms.Models;
+using RaquelMenopausa.Cms.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

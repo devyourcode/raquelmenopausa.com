@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Yourcode.Core.Cms.Models.Dto
+namespace RaquelMenopausa.Cms.Models.Dto
 {
     public class LoginDto
     {

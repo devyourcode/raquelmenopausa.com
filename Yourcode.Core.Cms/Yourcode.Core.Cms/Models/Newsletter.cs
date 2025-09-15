@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Yourcode.Core.Cms.Models
+namespace RaquelMenopausa.Cms.Models
 {
     [Table("NEWSLETTER")]
     public class Newsletter

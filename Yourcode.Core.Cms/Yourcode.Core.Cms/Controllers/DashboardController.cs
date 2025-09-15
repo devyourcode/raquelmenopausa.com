@@ -5,10 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using Yourcode.Core.Cms.Helpers;
-using Yourcode.Core.Cms.Models;
+using RaquelMenopausa.Cms.Helpers;
+using RaquelMenopausa.Cms.Models;
 
-namespace Yourcode.Core.Cms.Controllers
+namespace RaquelMenopausa.Cms.Controllers
 {
     //[AuditoriaAtribute]
     [AuthorizeUser(LoginPage = "~/home", Module = "modulo-dashboard")]

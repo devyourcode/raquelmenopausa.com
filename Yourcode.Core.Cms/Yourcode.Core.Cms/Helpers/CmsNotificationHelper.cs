@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace Yourcode.Core.Cms.Helpers
+namespace RaquelMenopausa.Cms.Helpers
 {
     public static class CmsNotificationHelper
     {

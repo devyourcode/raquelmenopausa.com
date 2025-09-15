@@ -1,4 +1,4 @@
-﻿namespace Yourcode.Core.Cms.Models.Dto
+﻿namespace RaquelMenopausa.Cms.Models.Dto
 {
     public class PerfisDto
     {

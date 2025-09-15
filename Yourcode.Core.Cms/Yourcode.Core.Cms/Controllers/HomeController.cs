@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Security.Claims;
-using Yourcode.Core.Cms.Helpers;
-using Yourcode.Core.Cms.Models;
-using Yourcode.Core.Cms.Models.Dto;
+using RaquelMenopausa.Cms.Helpers;
+using RaquelMenopausa.Cms.Models;
+using RaquelMenopausa.Cms.Models.Dto;
 using Yourcode.Core.Utilities;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace Yourcode.Core.Cms.Controllers
+namespace RaquelMenopausa.Cms.Controllers
 {
     //[AuditoriaAtribute]
     public class HomeController : CustomController

@@ -1,4 +1,4 @@
-namespace Yourcode.Core.Cms.Models
+namespace RaquelMenopausa.Cms.Models
 {
     public class ErrorViewModel
     {

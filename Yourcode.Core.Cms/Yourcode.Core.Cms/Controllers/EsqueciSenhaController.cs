@@ -5,10 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Web;
-using Yourcode.Core.Cms.Controllers;
-using Yourcode.Core.Cms.Helpers;
-using Yourcode.Core.Cms.Models;
-using Yourcode.Core.Cms.Models.Dto;
+using RaquelMenopausa.Cms.Controllers;
+using RaquelMenopausa.Cms.Helpers;
+using RaquelMenopausa.Cms.Models;
+using RaquelMenopausa.Cms.Models.Dto;
 using Yourcode.Core.Utilities;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 

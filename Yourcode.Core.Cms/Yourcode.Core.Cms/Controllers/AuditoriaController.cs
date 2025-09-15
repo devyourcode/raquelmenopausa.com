@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
-using Yourcode.Core.Cms.Models;
+using RaquelMenopausa.Cms.Models;
 
 public class AuditoriaAttribute : ActionFilterAttribute
 {

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using Yourcode.Core.Cms.Helpers;
-using Yourcode.Core.Cms.Models;
+using RaquelMenopausa.Cms.Helpers;
+using RaquelMenopausa.Cms.Models;
 
 public class AuthorizeUserAttribute : Attribute, IAuthorizationFilter
 {

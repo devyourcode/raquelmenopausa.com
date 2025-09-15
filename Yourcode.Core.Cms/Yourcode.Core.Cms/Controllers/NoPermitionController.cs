@@ -5,9 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using Yourcode.Core.Cms.Models;
+using RaquelMenopausa.Cms.Models;
 
-namespace Yourcode.Core.Cms.Controllers
+namespace RaquelMenopausa.Cms.Controllers
 {
     //[AuditoriaAtribute]
     //[AuthorizeUser(Module = "~/home")]

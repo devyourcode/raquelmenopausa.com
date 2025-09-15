@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace Yourcode.Core.Cms.Helpers
+namespace RaquelMenopausa.Cms.Helpers
 {
     public static class CmsGeneralHelper
     {
