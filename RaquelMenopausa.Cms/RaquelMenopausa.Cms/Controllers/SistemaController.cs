@@ -51,7 +51,7 @@ namespace RaquelMenopausa.Cms.Controllers
                     ViewData["txtId"] = query.Id;
                     ViewData["txtNome"] = query.Nome;
                     ViewData["txtEmail"] = query.Email;
-                    ViewData["txtLogin"] = query.Login;
+                    ViewData["txtLogin"] = query.Cargo;
                 }
 
                 return View();
@@ -78,7 +78,7 @@ namespace RaquelMenopausa.Cms.Controllers
                     if (query != null)
                     {
                         query.Nome = form["txtNome"].ToString();
-                        query.Login = form["txtLogin"].ToString();
+                        query.Cargo = form["txtCargo"].ToString();
                         query.Email = form["txtEmail"].ToString();
                         query.DataInc = DateTime.Now;
 

@@ -13,6 +13,7 @@ namespace RaquelMenopausa.Cms.Models
         public Context()
         {
         }
+        public DbSet<UsuarioModuloPermissao> UsuarioModuloPermissoes { get; set; }
         public DbSet<Newsletter> Newsletters { get; set; }
         public DbSet<Curriculo> Curriculos { get; set; }
         public DbSet<FAQ> Faqs { get; set; }

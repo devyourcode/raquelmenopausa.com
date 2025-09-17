@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Reflection;
-using X.PagedList.Extensions;
 using RaquelMenopausa.Cms.Helpers;
 using RaquelMenopausa.Cms.Models;
 using RaquelMenopausa.Cms.Models.Dto;
+using System.Linq;
+using System.Reflection;
+using X.PagedList.Extensions;
+using Yourcode.Core.Utilities;
 
 namespace RaquelMenopausa.Cms.Controllers
 {
@@ -35,33 +36,148 @@ namespace RaquelMenopausa.Cms.Controllers
             else if (TempData["ERRO"] != null)
                 ViewData["ERRO"] = TempData["ERRO"];
 
-            var query = _db.Permissoes.OrderBy(o => o.Tipo).OrderBy(o => o.Tipo).ToList();
-            List<PerfisDto> listPerfis = new List<PerfisDto>();
-            foreach (var item in query)
-            {
-                var perfis = new PerfisDto
-                {
-                    Id = item.Id,
-                    Tipo = item.Tipo,
-                    Delete = !_db.Usuarios.Any(u => u.PermissaoId == item.Id)
-                };
+            int usuarioLogadoId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
-                listPerfis.Add(perfis);
+            var usuarioLogado = _db.Usuarios
+                .Include(u => u.Permissao)
+                .FirstOrDefault(u => u.Id == usuarioLogadoId);
+
+            bool usuarioLogadoEhMaster = usuarioLogado.Email.EndsWith("@yourcode.com.br");
+
+            IQueryable<Usuario> query = _db.Usuarios
+                .Where(o => o.Situacao)
+                .Include(o => o.Permissao)
+                .Include(o => o.UsuarioModuloPermissoes) // Relação do usuário com módulos
+                .ThenInclude(ump => ump.Modulo);
+
+            if (!usuarioLogadoEhMaster)
+            {
+                query = query.Where(o => !o.Email.EndsWith("@yourcode.com.br"));
             }
 
-            ViewData["ListaPerfis"] = listPerfis;
+            var model = query
+                .OrderBy(o => o.Nome)
+                .ToList();
 
-            ViewData["Mensagem"] = TempData["Mensagem"];
-
-            var model = _db.Usuarios.Include(o => o.Permissao).Where(o => o.Situacao).OrderByDescending(o => o.Id).ToList();
-
-            int pageSize = 10;
+            int pageSize = 12;
             int pageIndex = page ?? 1;
 
             var emp = model.ToPagedList(pageIndex, pageSize);
             ViewBag.PageCount = emp.PageCount;
 
             return View(emp);
+        }
+
+        [HttpGet]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-criar")]
+        public IActionResult CreateUsuario()
+        {
+
+            var queryModulo = _db.Modulos.ToList();
+            ViewData["listaModulo"] = queryModulo;
+
+            return PartialView("CreateUsuario");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateUsuario(IFormCollection form)
+        {
+            Usuario usuario = new Usuario();
+
+            try
+            {
+
+                if (ModelState.IsValid)
+                {
+                    var senha_sem_criptografia = form["txtSenha"];
+
+                    usuario.Nome = form["txtNome"].ToString();
+                    usuario.Email = form["txtEmail"].ToString();
+                    usuario.Cargo = form["txtCargo"].ToString();
+                    usuario.PermissaoId = 3;
+                    usuario.Senha = CryptoHelper.HashMd5(form["txtSenha"].ToString());
+                    usuario.Ativo = true;
+                    usuario.DataInc = DateTime.Now;
+                    usuario.Situacao = true;
+                    _db.Usuarios.Add(usuario);
+                    await _db.SaveChangesAsync();
+
+                    var modulosSelecionados = form["ModulosSelecionados"];
+
+                    if (modulosSelecionados.Count > 0)
+                    {
+                        foreach (var moduloId in modulosSelecionados)
+                        {
+                            var permissao = new UsuarioModuloPermissao
+                            {
+                                UsuarioId = usuario.Id,
+                                ModuloId = int.Parse(moduloId),
+                                Permitir = true
+                            };
+                            _db.UsuarioModuloPermissoes.Add(permissao);
+                        }
+                        await _db.SaveChangesAsync();
+                    }
+
+
+                        var nome_site = _db.Configs.Where(o => o.Chave == "nome-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                        var admin_site = _db.Configs.Where(o => o.Chave == "admin-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+                        var mensagemHTML = "";
+                        mensagemHTML = "Seu usuário foi cadastrado no administrador do site " + nome_site + ".<br />Segue abaixo os dados para acesso:" +
+                           "<br><br>Link: <a target='_blank' href='" + admin_site + "'>" + admin_site + "</a>" +
+                           "<br>Login: " + usuario.Email +
+                           "<br>Senha: " + senha_sem_criptografia +
+                           "<br><br>Atenciosamente,<br><b>Suporte Técnico - " + nome_site + "</b>";
+
+
+                        bool enviado = await CmsNotificationHelper.SendEmail(
+                            clienteId: 1149,
+                            projetoId: 354,
+                            nome: nome_site,
+                            remetente: "noreply@raquelmenopausa.com.br",
+                            destinatario: usuario.Email,
+                            assunto: "Cadastro de Usuário",
+                            mensagem: mensagemHTML
+                        );
+                    
+
+                    TempData["SUCESSO"] = "Usuário criado com sucesso!";
+
+                    #region LOG
+                    var userName = User.Identity?.Name ?? "Usuário desconhecido";
+                    var userId = User.FindFirst("sub")?.Value ?? "0";
+
+                    LogAuditoria.Action(userName, Convert.ToInt32(userId), "adicionou", "usuario", usuario.Id, usuario.Nome);
+                    #endregion LOG
+
+
+                    return RedirectToAction(nameof(Index));
+
+                }
+                var listAtivo = new List<SelectListItem>();
+                listAtivo.Add(new SelectListItem() { Value = "true", Text = "Ativo" });
+                listAtivo.Add(new SelectListItem() { Value = "false", Text = "Inativo" });
+                ViewBag.ListaAtivo = new SelectList(listAtivo, "Value", "Text", usuario.Ativo);
+                return View(usuario);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao criar popup");
+
+                TempData["ERRO"] = $"Ocorreu um erro: {ex.Message}";
+
+                #region LOG
+                var userName = User.Identity?.Name ?? "Usuário desconhecido";
+                var userId = User.FindFirst("sub")?.Value ?? "0";
+
+                LogAuditoria.Action(userName, Convert.ToInt32(userId), "Erro ao adicionar", "usuario", usuario.Id, usuario.Nome);
+                #endregion LOG
+
+                return View(usuario);
+
+            }
         }
 
         [HttpGet]
@@ -89,7 +205,6 @@ namespace RaquelMenopausa.Cms.Controllers
                     _db.Permissoes.Add(permissao);
                     await _db.SaveChangesAsync();
 
-                    // Cria todos os módulos como "Permitir = false"
                     var queryModulos = await _db.Modulos.OrderBy(m => m.Nome).ToListAsync();
                     var listaModulos = new List<ModuloPermissao>();
 
@@ -143,6 +258,116 @@ namespace RaquelMenopausa.Cms.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        [HttpGet]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-editar")]
+        public async Task<IActionResult> EditUsuario(int id)
+        {
+
+            var usuario = await _db.Usuarios.FirstOrDefaultAsync(o => o.Id == id);
+            if (usuario == null)
+                return NotFound();
+
+            ViewData["txtNome"] = usuario.Nome;
+            ViewData["txtEmail"] = usuario.Email;
+            ViewData["txtCargo"] = usuario.Cargo;
+
+            var todosModulos = await _db.Modulos
+                .Where(x => x.Situacao)
+                .OrderBy(x => x.Nome)
+                .ToListAsync();
+
+            var permissoesUsuario = await _db.UsuarioModuloPermissoes
+                .Where(x => x.UsuarioId == usuario.Id && x.Permitir)
+                .Select(x => x.ModuloId)
+                .ToListAsync();
+
+            ViewData["listaModulo"] = todosModulos
+                .Select(m => new SelectListItem
+                {
+                    Value = m.Id.ToString(),
+                    Text = m.Nome,
+                    Selected = permissoesUsuario.Contains(m.Id)
+                })
+                .ToList();
+
+            return PartialView("EditUsuario", usuario);
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUsuario(int id, IFormCollection form)
+        {
+            try
+            {
+                var usuario = await _db.Usuarios.FirstOrDefaultAsync(o => o.Id == id);
+                if (usuario == null)
+                    return NotFound();
+
+                usuario.Nome = form["txtNome"].ToString();
+                usuario.Email = form["txtEmail"].ToString();
+                usuario.Cargo = form["txtCargo"].ToString();
+                usuario.DataAlt = DateTime.Now;
+                usuario.UserAlt = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+                if (!string.IsNullOrWhiteSpace(form["txtSenha"]))
+                {
+                    usuario.Senha = CryptoHelper.HashMd5(form["txtSenha"]);
+                }
+
+                if (!string.IsNullOrEmpty(form["txtAtivo"]))
+                {
+                    usuario.Ativo = Convert.ToBoolean(Convert.ToInt32(form["txtAtivo"]));
+                }
+
+                await _db.SaveChangesAsync();
+
+                
+                var permissoesAntigas = _db.UsuarioModuloPermissoes.Where(x => x.UsuarioId == usuario.Id);
+                _db.UsuarioModuloPermissoes.RemoveRange(permissoesAntigas);
+                await _db.SaveChangesAsync();
+
+                var modulosSelecionados = form["modulosSelecionados"];
+                foreach (var moduloId in modulosSelecionados)
+                {
+                    _db.UsuarioModuloPermissoes.Add(new UsuarioModuloPermissao
+                    {
+                        UsuarioId = usuario.Id,
+                        ModuloId = int.Parse(moduloId),
+                        Permitir = true
+                    });
+                }
+
+                await _db.SaveChangesAsync();
+
+                TempData["SUCESSO"] = "Usuário atualizado com sucesso!";
+
+                #region LOG
+                var userName = User.Identity?.Name ?? "Usuário desconhecido";
+                var userId = User.FindFirst("sub")?.Value ?? "0";
+                LogAuditoria.Action(userName, Convert.ToInt32(userId), "editou", "usuario", usuario.Id, usuario.Nome);
+                #endregion LOG
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao editar usuário");
+
+                TempData["ERRO"] = $"Ocorreu um erro: {ex.Message}";
+
+                #region LOG
+                var userName = User.Identity?.Name ?? "Usuário desconhecido";
+                var userId = User.FindFirst("sub")?.Value ?? "0";
+                LogAuditoria.Action(userName, Convert.ToInt32(userId), "Erro ao editar", "usuario", id, form["txtNome"]);
+                #endregion LOG
+
+                return View();
+            }
+        }
+
 
 
         [HttpGet]
@@ -252,44 +477,35 @@ namespace RaquelMenopausa.Cms.Controllers
 
 
 
-        //[HttpGet]
-        //[ValidateAntiForgeryToken]
-        //[AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-deletar")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    try
-        //    {
-        //        var query = await _db.Permissoes
-        //            .Include(p => p.Usuarios)
-        //            .FirstOrDefaultAsync(o => o.Id == id);
+        [HttpGet]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-deletar")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var usuario = await _db.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
 
-        //        if (query != null)
-        //        {
-        //            var delete = query.Usuarios.FirstOrDefault(o => o.PermissaoId == id);
+                if (usuario == null)
+                {
+                    TempData["ERRO"] = "Usuário não encontrado.";
+                    return RedirectToAction("Index");
+                }
 
-        //            if (delete == null)
-        //            {
-        //                var queryModulo = await _db.UsuarioModulos
-        //                    .Where(o => o.PermissaoId == query.Id)
-        //                    .ToListAsync();
+                usuario.Situacao = false;
+                usuario.Ativo = false;
 
-        //                _db.UsuarioModulos.RemoveRange(queryModulo);
+                _db.Usuarios.Update(usuario);
+                await _db.SaveChangesAsync();
 
-        //                _db.Permissoes.Remove(query);
-
-        //                await _db.SaveChangesAsync();
-        //            }
-        //        }
-
-        //        TempData["SUCESSO"] = "Permissão deletada com sucesso!";
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        TempData["ERRO"] = "Erro ao deletar.";
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //}
+                TempData["SUCESSO"] = "Usuário desativado com sucesso!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["ERRO"] = "Erro ao desativar o usuário.";
+                return RedirectToAction("Index");
+            }
+        }
 
 
         private bool VerificaModuloSelecionado(string[] arraySelecionados, int p)

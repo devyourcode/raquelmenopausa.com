@@ -93,7 +93,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
                     usuario.Nome = form["txtNome"].ToString();
                     usuario.Email = form["txtEmail"].ToString();
-                    usuario.Login = form["txtLogin"].ToString();
+                    usuario.Cargo = form["txtCargo"].ToString();
                     usuario.PermissaoId = int.Parse(form["txtPermissao"].ToString());
                     usuario.Senha = CryptoHelper.HashMd5(form["txtSenha"].ToString());
                     usuario.Ativo = true;
@@ -196,7 +196,7 @@ namespace RaquelMenopausa.Cms.Controllers
                     {
                         query.Nome = form["txtNome"].ToString();
                         query.Email = form["txtEmail"].ToString();
-                        query.Login = form["txtLogin"].ToString();
+                        query.Cargo = form["txtCargo"].ToString();
 
                         query.DataAlt = DateTime.Now;
                         query.UserAlt = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);

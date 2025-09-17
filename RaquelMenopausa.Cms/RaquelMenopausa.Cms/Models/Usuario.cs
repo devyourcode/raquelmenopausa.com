@@ -16,9 +16,9 @@ namespace RaquelMenopausa.Cms.Models
         public string Nome { get; set; }
 
         [Required]
-        [Column("LOGIN")]
-        [MaxLength(100)]
-        public string Login { get; set; }
+        [Column("CARGO")]
+        [MaxLength(150)]
+        public string Cargo { get; set; }
 
         [Required]
         [Column("SENHA")]
@@ -62,5 +62,7 @@ namespace RaquelMenopausa.Cms.Models
 
         [ForeignKey("UserAlt")]
         public virtual Usuario UsuarioAlteracao { get; set; }
+        public virtual ICollection<UsuarioModuloPermissao> UsuarioModuloPermissoes { get; set; }
+
     }
 }

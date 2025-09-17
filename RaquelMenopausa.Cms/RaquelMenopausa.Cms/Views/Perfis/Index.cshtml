@@ -1,4 +1,8 @@
-﻿@{
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Usuario>
+
+@{
     ViewBag.Title = "Permissões | " + ViewBag.TitlePage;
     ViewBag.Description = ViewBag.DescriptionPage;
     ViewBag.FacebookImage = ViewBag.DomainSite + "content/upload/config/" + ViewBag.ShareImg;
@@ -54,55 +58,123 @@
                 <div class="box-number">
                     <h1>Lista de Usuárias</h1>
                     <div class="box-body">
-                        <div class="table-responsive">
-                        <table class="table custom-table modulo-perfis-listar">
-                            <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>E-mail</th>
-                                    <th>Cargo</th>
-                                    <th>Permissões</th>
-                                    <th>Último Acesso</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (ViewData["ListaPerfis"] != null && ((List<RaquelMenopausa.Cms.Models.Dto.PerfisDto>)ViewData["ListaPerfis"]).Count() > 0)
-                                {
-                                    var contador = 1;
-                                    foreach (var item in (List<RaquelMenopausa.Cms.Models.Dto.PerfisDto>)ViewData["ListaPerfis"])
-                                    {
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table custom-table modulo-perfis-listar">
+                                    <thead>
                                         <tr>
-                                            <td>Rosana Caetano</td>
-                                            <td>rosanacaetano@gmail.com</td>
-                                            <td>CEO</td>
-                                            <td>
-                                                <span class="permissao"><b>Dashboard Dados </b><img src="~/img/imgsite/view.png" class="icon-nav" alt="visualizar" /></span><br />
-                                                <span class="permissao">
-                                                    <b>Dashboard Patrocinadores</b> <img src="~/img/imgsite/edit.png" class="icon-nav" alt="Editar" />
-                                                    <img src="~/img/imgsite/view.png" class="icon-nav" alt="visualizar" />
-                                                </span>
-                                            </td>
-                                            <td>24-17-2025</td>
-
-                                            <td class="acoes">
-                                                <a id="btnNovoUsuario" class="btn-icon">
-                                                    <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
-                                                </a>
-                                                <a class="btn-icon">
-                                                    <img src="~/img/imgsite/shield.png" class="icon-nav" alt="Segurança" />
-                                                </a>
-                                                <a class="btn-icon">
-                                                    <img src="~/img/imgsite/tabler_trash.png" class="icon-nav" alt="Deletar" />
-                                                </a>
-                                            </td>
+                                            <th>Nome</th>
+                                            <th>E-mail</th>
+                                            <th>Cargo</th>
+                                            <th>Permissões</th>
+                                            <th>Último Acesso</th>
+                                            <th>Ações</th>
                                         </tr>
-                                        contador++;
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.Nome</td>
+                                                <td>@item.Email</td>
+                                                <td>@item.Cargo</td>
+                                                <td>
+                                                    <a class="ver_mensagem_contato" data-toggle="modal" data-target="#VerResposta_@item.Id">
+                                                        + Ver Resposta
+                                                    </a>
+
+                                                    <div class="modal fade" id="VerResposta_@item.Id" tabindex="-1" role="dialog" aria-labelledby="VerResposta" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h2 class="modal-title" style="color:#000">Permissões do Usuário</h2>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        @if (item.UsuarioModuloPermissoes != null && item.UsuarioModuloPermissoes.Any())
+                                                                        {
+                                                                            foreach (var permissao in item.UsuarioModuloPermissoes)
+                                                                            {
+                                                                                <div class="col-md-12">
+                                                                                    <span class="permissao">
+                                                                                        <b>@permissao.Modulo.Nome</b>
+
+                                                                                        @if (permissao.Modulo.Nome.Contains("Listar"))
+                                                                                        {
+                                                                                            <img src="~/img/imgsite/view.png" class="icon-nav" alt="Visualizar" title="Visualizar" />
+                                                                                        }
+
+                                                                                        @if (permissao.Modulo.Nome.Contains("Editar"))
+                                                                                        {
+                                                                                            <img src="~/img/imgsite/edit.png" class="icon-nav" alt="Editar" title="Editar" />
+                                                                                        }
+
+                                                                                        @if (permissao.Modulo.Nome.Contains("Criar"))
+                                                                                        {
+                                                                                            
+                                                                                        }
+
+                                                                                        @if (permissao.Modulo.Nome.Contains("Deletar"))
+                                                                                        {
+                                                                                           
+                                                                                        }
+                                                                                    </span>
+                                                                                    <br />
+                                                                                </div>
+
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <div class="col-md-12 text-center">
+                                                                                <span>Este usuário não possui permissões cadastradas.</span>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <td>24-17-2025</td>
+
+                                                <td class="acoes">
+                                                    <a class="btn-icon btnEditUsuario" data-id="@item.Id">
+                                                        <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
+                                                    </a>
+
+                                                    <a class="btn-icon">
+                                                        <img src="~/img/imgsite/shield.png" class="icon-nav" alt="Segurança" />
+                                                    </a>
+                                                    <a href="@Href("~/perfis/delete/" + item.Id)" onclick="return confirm('Deseja realmente excluir?');" class="btn-icon hidden modulo-perfis-deletar">
+                                                        <img src="~/img/imgsite/tabler_trash.png" class="icon-nav" alt="Deletar" />
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>Nenhum usuário cadastrado.</span>
+                        }
+
+                        @if (ViewBag.PageCount > 1)
+                        {
+                            <div class="col-md-12 text-center">
+                                <div id="Paging">
+                                    @Html.PagedListPager(Model, page => Url.Action("Index", "Perfis", new { page }))
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -127,23 +199,51 @@
     </div>
 </div>
 
+<div class="modal fade" id="usuarioeditModal" tabindex="-1" role="dialog" aria-labelledby="usuarioEditModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2 id="usuarioEditModalLabel"><b>Editar Usuário</b></h2>
+            </div>
+
+            <div class="modal-body" id="modalBodyEdit">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
 
         $("#btnNovoUsuario").click(function () {
-            $.get("/Usuario/Create", function (data) {
+            $.get("/Perfis/CreateUsuario", function (data) {
                 $("#modalBody").html(data);
 
                 $("#usuarioModal").modal('show');
             });
         });
 
+                $(document).on("click", ".btnEditUsuario", function () {
+        let usuarioId = $(this).data("id");
+
+        $.get("/Perfis/EditUsuario", { id: usuarioId }, function (data) {
+            $("#modalBodyEdit").html(data);
+            $("#usuarioeditModal").modal('show');
+        });
+    });
+
+
+
         $(document).on("submit", "#formCreateUsuario", function (e) {
             e.preventDefault();
 
             $.ajax({
                 type: "POST",
-                url: "/Usuario/Create",
+                url: "/Perfis/CreateUsuario",
                 data: $(this).serialize(),
                 success: function (response) {
                     if (response.success) {
@@ -152,6 +252,24 @@
                         $("#usuarioModal").modal('hide');
                     } else {
                         $("#modalBody").html(response);
+                    }
+                }
+            });
+        });
+
+        $(document).on("submit", "#formEditUsuario", function (e) {
+
+            $.ajax({
+                type: "POST",
+                url: "/Perfis/EditUsuario",
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+
+                        $("#usuarioeditModal").modal('hide');
+                    } else {
+                        $("#modalBodyEdit").html(response);
                     }
                 }
             });

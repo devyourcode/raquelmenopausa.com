@@ -129,16 +129,28 @@ namespace RaquelMenopausa.Cms.Controllers
                         };
 
                         //atualiza a session de módulos
+                        //var queryMod = (from m in _context.Modulos
+                        //                join um in _context.ModuloPermissoes on m.Id equals um.ModuloId
+                        //                where m.Situacao && um.PermissaoId == query.PermissaoId
+                        //                select new UsuarioModuloDto
+                        //                {
+                        //                    Id = m.Id,
+                        //                    Modulo = m.Nome,
+                        //                    ModuloId = m.Valor,
+                        //                    Permitir = (bool)um.Permitir
+                        //                }).ToList();
+
                         var queryMod = (from m in _context.Modulos
-                                        join um in _context.ModuloPermissoes on m.Id equals um.ModuloId
-                                        where m.Situacao && um.PermissaoId == query.PermissaoId
+                                        join um in _context.UsuarioModuloPermissoes on m.Id equals um.ModuloId
+                                        where m.Situacao && um.UsuarioId == query.Id && um.Permitir
                                         select new UsuarioModuloDto
                                         {
                                             Id = m.Id,
                                             Modulo = m.Nome,
                                             ModuloId = m.Valor,
-                                            Permitir = (bool)um.Permitir
+                                            Permitir = um.Permitir
                                         }).ToList();
+
 
                         foreach (var modulo in queryMod)
                         {
