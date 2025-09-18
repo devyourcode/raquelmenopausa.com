@@ -14,17 +14,7 @@ namespace RaquelMenopausa.Cms.Models
         {
         }
         public DbSet<UsuarioModuloPermissao> UsuarioModuloPermissoes { get; set; }
-        public DbSet<Newsletter> Newsletters { get; set; }
-        public DbSet<Curriculo> Curriculos { get; set; }
-        public DbSet<FAQ> Faqs { get; set; }
-        public DbSet<Depoimento> Depoimentos { get; set; }
-        public DbSet<Blog> Blogs { get; set; }
-        public DbSet<BlogCategoria> BlogCategorias { get; set; }
-        public DbSet<BlogImagem> BlogImagens { get; set; }
         public DbSet<Auditoria> Auditorias { get; set; }
-        public DbSet<Popup> Popups { get; set; }
-        public DbSet<Banner> Banners { get; set; }
-        public DbSet<Contato> Contatos { get; set; }
         public DbSet<Logs> Logs { get; set; }
         public DbSet<Log> Log { get; set; }
         public DbSet<Config> Configs { get; set; }

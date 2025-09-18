@@ -1,4 +1,5 @@
-﻿@using X.PagedList
+﻿@using Org.BouncyCastle.Asn1.Ocsp
+@using X.PagedList
 @using X.PagedList.Mvc.Core
 @model IPagedList<Usuario>
 
@@ -25,7 +26,7 @@
                     + Novo Usuário
                 </a>
                 <div class="box-filter">
-                    <img src="~/img/imgsite/download.png" class="icon-download" />
+                    <img src="~/img/imgsite/download.png" class="icon-download" id="btnExportar" style="cursor:pointer;" />
                 </div>
             </div>
         </div>
@@ -37,14 +38,18 @@
                 <div class="col-md-3">
                     <div class="box-number">
                         <p>Total de Usuários</p>
-                        <h2><b>5</b></h2>
+                        <h2><b>@ViewBag.TotalUsuarios</b></h2>
                     </div>
                 </div>
                 <div class="col-md-9">
                     <div class="box-search" style="padding:22px; width:100%">
                         <p><b>Pesquisar</b></p>
                         <div class="filter-group">
-                            <input type="text" placeholder="Nome, e-mail ou cargo" class="campo-input" />
+                            <input type="text"
+                                   placeholder="Nome, e-mail ou cargo"
+                                   class="campo-input"
+                                   id="campoPesquisa"
+                                   value="@ViewBag.Search" />
                         </div>
                     </div>
                 </div>
@@ -68,7 +73,7 @@
                                             <th>E-mail</th>
                                             <th>Cargo</th>
                                             <th>Permissões</th>
-                                            <th>Último Acesso</th>
+                                            <th>Data de Cadastro</th>
                                             <th>Ações</th>
                                         </tr>
                                     </thead>
@@ -80,8 +85,8 @@
                                                 <td>@item.Email</td>
                                                 <td>@item.Cargo</td>
                                                 <td>
-                                                    <a class="ver_mensagem_contato" data-toggle="modal" data-target="#VerResposta_@item.Id">
-                                                        + Ver Resposta
+                                                    <a class="btn-newuser" style="padding: 2px 15px;" data-toggle="modal" data-target="#VerResposta_@item.Id">
+                                                        Ver
                                                     </a>
 
                                                     <div class="modal fade" id="VerResposta_@item.Id" tabindex="-1" role="dialog" aria-labelledby="VerResposta" aria-hidden="true">
@@ -100,7 +105,7 @@
                                                                         {
                                                                             foreach (var permissao in item.UsuarioModuloPermissoes)
                                                                             {
-                                                                                <div class="col-md-12">
+                                                                                <div class="col-md-4">
                                                                                     <span class="permissao">
                                                                                         <b>@permissao.Modulo.Nome</b>
 
@@ -142,7 +147,7 @@
                                                     </div>
                                                 </td>
 
-                                                <td>24-17-2025</td>
+                                                <td>@item.DataInc.ToShortDateString()</td>
 
                                                 <td class="acoes">
                                                     <a class="btn-icon btnEditUsuario" data-id="@item.Id">
@@ -274,5 +279,21 @@
                 }
             });
         });
+    });
+
+        document.getElementById('campoPesquisa').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            var search = this.value.trim();
+            var url = '@Url.Action("Index", "Perfis")';
+            if (search) {
+                window.location.href = url + '?search=' + encodeURIComponent(search);
+            } else {
+                window.location.href = url;
+            }
+        }
+    });
+
+    document.getElementById("btnExportar").addEventListener("click", function () {
+        window.location.href = '@Url.Action("ExportarUsuarios", "Perfis")';
     });
 </script>

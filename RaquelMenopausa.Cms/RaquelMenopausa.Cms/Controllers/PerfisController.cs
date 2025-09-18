@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RaquelMenopausa.Cms.Helpers;
 using RaquelMenopausa.Cms.Models;
-using RaquelMenopausa.Cms.Models.Dto;
-using System.Linq;
-using System.Reflection;
 using X.PagedList.Extensions;
 using Yourcode.Core.Utilities;
 
@@ -29,7 +26,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-listar")]
-        public IActionResult Index(int? page)
+        public IActionResult Index(int? page, string search)
         {
             if (TempData["SUCESSO"] != null)
                 ViewData["SUCESSO"] = TempData["SUCESSO"];
@@ -47,13 +44,27 @@ namespace RaquelMenopausa.Cms.Controllers
             IQueryable<Usuario> query = _db.Usuarios
                 .Where(o => o.Situacao)
                 .Include(o => o.Permissao)
-                .Include(o => o.UsuarioModuloPermissoes) // Relação do usuário com módulos
+                .Include(o => o.UsuarioModuloPermissoes) 
                 .ThenInclude(ump => ump.Modulo);
 
             if (!usuarioLogadoEhMaster)
             {
                 query = query.Where(o => !o.Email.EndsWith("@yourcode.com.br"));
             }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.ToLower();
+                query = query.Where(u =>
+                    u.Nome.ToLower().Contains(search) ||
+                    u.Email.ToLower().Contains(search) ||
+                    u.Cargo.ToLower().Contains(search));
+            }
+            ViewBag.Search = search; 
+
+
+            var totalUsuarios = query.Count(); 
+            ViewBag.TotalUsuarios = totalUsuarios;
 
             var model = query
                 .OrderBy(o => o.Nome)
@@ -121,27 +132,27 @@ namespace RaquelMenopausa.Cms.Controllers
                     }
 
 
-                        var nome_site = _db.Configs.Where(o => o.Chave == "nome-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
-                        var admin_site = _db.Configs.Where(o => o.Chave == "admin-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                    var nome_site = _db.Configs.Where(o => o.Chave == "nome-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                    var admin_site = _db.Configs.Where(o => o.Chave == "admin-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
 
-                        var mensagemHTML = "";
-                        mensagemHTML = "Seu usuário foi cadastrado no administrador do site " + nome_site + ".<br />Segue abaixo os dados para acesso:" +
-                           "<br><br>Link: <a target='_blank' href='" + admin_site + "'>" + admin_site + "</a>" +
-                           "<br>Login: " + usuario.Email +
-                           "<br>Senha: " + senha_sem_criptografia +
-                           "<br><br>Atenciosamente,<br><b>Suporte Técnico - " + nome_site + "</b>";
+                    var mensagemHTML = "";
+                    mensagemHTML = "Seu usuário foi cadastrado no administrador do site " + nome_site + ".<br />Segue abaixo os dados para acesso:" +
+                       "<br><br>Link: <a target='_blank' href='" + admin_site + "'>" + admin_site + "</a>" +
+                       "<br>Login: " + usuario.Email +
+                       "<br>Senha: " + senha_sem_criptografia +
+                       "<br><br>Atenciosamente,<br><b>Suporte Técnico - " + nome_site + "</b>";
 
 
-                        bool enviado = await CmsNotificationHelper.SendEmail(
-                            clienteId: 1149,
-                            projetoId: 354,
-                            nome: nome_site,
-                            remetente: "noreply@raquelmenopausa.com.br",
-                            destinatario: usuario.Email,
-                            assunto: "Cadastro de Usuário",
-                            mensagem: mensagemHTML
-                        );
-                    
+                    bool enviado = await CmsNotificationHelper.SendEmail(
+                        clienteId: 1149,
+                        projetoId: 354,
+                        nome: nome_site,
+                        remetente: "noreply@raquelmenopausa.com.br",
+                        destinatario: usuario.Email,
+                        assunto: "Cadastro de Usuário",
+                        mensagem: mensagemHTML
+                    );
+
 
                     TempData["SUCESSO"] = "Usuário criado com sucesso!";
 
@@ -275,6 +286,8 @@ namespace RaquelMenopausa.Cms.Controllers
             var todosModulos = await _db.Modulos
                 .Where(x => x.Situacao)
                 .OrderBy(x => x.Nome)
+                .GroupBy(x => x.Id) 
+                .Select(g => g.First())
                 .ToListAsync();
 
             var permissoesUsuario = await _db.UsuarioModuloPermissoes
@@ -290,6 +303,7 @@ namespace RaquelMenopausa.Cms.Controllers
                     Selected = permissoesUsuario.Contains(m.Id)
                 })
                 .ToList();
+
 
             return PartialView("EditUsuario", usuario);
         }
@@ -324,23 +338,52 @@ namespace RaquelMenopausa.Cms.Controllers
 
                 await _db.SaveChangesAsync();
 
-                
-                var permissoesAntigas = _db.UsuarioModuloPermissoes.Where(x => x.UsuarioId == usuario.Id);
-                _db.UsuarioModuloPermissoes.RemoveRange(permissoesAntigas);
-                await _db.SaveChangesAsync();
+                var modulosSelecionados = form["modulosSelecionados"]
+                    .Select(int.Parse)
+                    .Distinct() // remove qualquer duplicata vinda do front-end
+                    .ToList();
 
-                var modulosSelecionados = form["modulosSelecionados"];
+                var permissoesAtuais = await _db.UsuarioModuloPermissoes
+                    .Where(x => x.UsuarioId == usuario.Id)
+                    .ToListAsync();
+
+                foreach (var permissao in permissoesAtuais)
+                {
+                    if (!modulosSelecionados.Contains(permissao.ModuloId) && permissao.Permitir)
+                    {
+                        permissao.Permitir = false;
+                        _db.Entry(permissao).State = EntityState.Modified;
+                    }
+                }
+
                 foreach (var moduloId in modulosSelecionados)
                 {
-                    _db.UsuarioModuloPermissoes.Add(new UsuarioModuloPermissao
+                    var permissaoExistente = permissoesAtuais
+                        .FirstOrDefault(p => p.ModuloId == moduloId && p.UsuarioId == usuario.Id);
+
+                    if (permissaoExistente != null)
                     {
-                        UsuarioId = usuario.Id,
-                        ModuloId = int.Parse(moduloId),
-                        Permitir = true
-                    });
+                        if (!permissaoExistente.Permitir)
+                        {
+                            permissaoExistente.Permitir = true;
+                            _db.Entry(permissaoExistente).State = EntityState.Modified;
+                        }
+                    }
+                    else
+                    {
+                        var novaPermissao = new UsuarioModuloPermissao
+                        {
+                            UsuarioId = usuario.Id,
+                            ModuloId = moduloId,
+                            Permitir = true
+                        };
+
+                        _db.UsuarioModuloPermissoes.Add(novaPermissao);
+                    }
                 }
 
                 await _db.SaveChangesAsync();
+
 
                 TempData["SUCESSO"] = "Usuário atualizado com sucesso!";
 
@@ -507,8 +550,57 @@ namespace RaquelMenopausa.Cms.Controllers
             }
         }
 
+public IActionResult ExportarUsuarios()
+    {
+        var usuarios = _db.Usuarios
+            .Where(u => u.Situacao)
+            .OrderBy(u => u.Nome)
+            .Select(u => new
+            {
+                u.Nome,
+                u.Email,
+                u.Cargo,
+                Status = u.Ativo.GetValueOrDefault() ? "Ativo" : "Inativo",
+                DataCadastro = u.DataInc.ToString("dd/MM/yyyy")
+            })
+            .ToList();
 
-        private bool VerificaModuloSelecionado(string[] arraySelecionados, int p)
+        using (var workbook = new XLWorkbook())
+        {
+            var worksheet = workbook.Worksheets.Add("Usuários");
+
+            worksheet.Cell(1, 1).Value = "Nome";
+            worksheet.Cell(1, 2).Value = "Email";
+            worksheet.Cell(1, 3).Value = "Cargo";
+            worksheet.Cell(1, 4).Value = "Status";
+            worksheet.Cell(1, 5).Value = "Data de Cadastro";
+
+            int row = 2;
+            foreach (var usuario in usuarios)
+            {
+                worksheet.Cell(row, 1).Value = usuario.Nome;
+                worksheet.Cell(row, 2).Value = usuario.Email;
+                worksheet.Cell(row, 3).Value = usuario.Cargo;
+                worksheet.Cell(row, 4).Value = usuario.Status;
+                worksheet.Cell(row, 5).Value = usuario.DataCadastro;
+                row++;
+            }
+
+            worksheet.Columns().AdjustToContents();
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
+                return File(content,
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            $"Usuarios_{DateTime.Now:yyyyMMdd}.xlsx");
+            }
+        }
+    }
+
+
+    private bool VerificaModuloSelecionado(string[] arraySelecionados, int p)
         {
             bool flag = false;
             foreach (var item in arraySelecionados)

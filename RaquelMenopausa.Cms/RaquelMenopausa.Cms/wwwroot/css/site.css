@@ -617,6 +617,9 @@ html {
     border-radius: 8px;
     padding: 10px;
     background: #fff;
+    max-height: 325px; 
+    overflow-y: auto; 
+    display: block;
 }
 
 .permissions-table {
