@@ -84,7 +84,7 @@ namespace RaquelMenopausa.Cms.Controllers
         public IActionResult CreateUsuario()
         {
 
-            var queryModulo = _db.Modulos.ToList();
+            var queryModulo = _db.Modulos.Where(o => o.Situacao && o.Ativo).ToList();
             ViewData["listaModulo"] = queryModulo;
 
             return PartialView("CreateUsuario");

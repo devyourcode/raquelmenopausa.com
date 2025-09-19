@@ -23,13 +23,16 @@
 </script>
 
 <aside class="main-sidebar">
+
     <section class="sidebar">
         <img src="~/img/imgsite/logo.png" class="img-logo" />
         <img src="~/img/avatar5.png" class="img-navbar" />
 
         <p class="title-name">Teste</p>
         <p class="title-cargo">Cargo Teste</p>
+        </section>
 
+        <div class="sidebar-menu-wrapper">
         <ul class="sidebar-menu" id="menu">
             <li class="header text-center">Painéis</li>
 
@@ -58,8 +61,10 @@
                 </a>
             </li>
 
-            <li class="line-navbar"></li>
+            <li class="line-navbar hidden modulo-perfis"></li>
+            
         </ul>
+        </div>
 
         <div class="logout-fixed">
             <a href="@Href("~/home/logout")">
@@ -67,6 +72,6 @@
                 <span>Sair</span>
             </a>
         </div>
-    </section>
+    
 </aside>
 

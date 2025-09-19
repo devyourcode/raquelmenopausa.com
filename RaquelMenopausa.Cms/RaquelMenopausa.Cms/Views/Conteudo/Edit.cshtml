@@ -1,0 +1,177 @@
+﻿<form id="formCreateUsuario">
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Nome">Nome da usuária</label>
+                <div class="input-wrapper">
+                    <input type="text" id="Nome" name="Nome" class="search-input" placeholder="Digite o seu nome" value="Ana Silva" />
+                    <img src="~/img/imgsite/pincel.png" alt="Ícone" class="input-icon" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Chamada">Como quer ser chamada</label>
+                <div class="input-wrapper">
+                    <input type="text" id="Chamada" name="Chamada" class="search-input" placeholder="Digite como quer ser chamada" value="Aninha" />
+                    <img src="~/img/imgsite/pincel.png" alt="Ícone" class="input-icon" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Email">E-mail cadastrado</label>
+                <div class="input-wrapper">
+                    <input type="email" id="Email" name="Email" class="search-input" placeholder="Digite o seu e-mail" value="anasilva@email.com" />
+                    <img src="~/img/imgsite/pincel.png" alt="Ícone" class="input-icon" />
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="checkEmail" />
+                        <span class="checkmark"></span>
+                        Email verificado
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Status">Status</label>
+
+                <div class="checkbox-inline-wrapper">
+                    <label class="custom-checkbox-inline">
+                        <input type="checkbox" id="ativo" name="status" value="Ativo">
+                        <span class="checkmark"></span>
+                        Ativo
+                    </label>
+
+                    <label class="custom-checkbox-inline">
+                        <input type="checkbox" id="banido" name="status" value="Banido">
+                        <span class="checkmark"></span>
+                        Banido
+                    </label>
+
+                    <label class="custom-checkbox-inline">
+                        <input type="checkbox" id="deletado" name="status" value="Deletado">
+                        <span class="checkmark"></span>
+                        Deletado
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Admin">Admin</label>
+
+                <div class="checkbox-inline-wrapper">
+                    <label class="custom-checkbox-inline">
+                        <input type="checkbox" id="ativo" name="administradorraquel" value="Administrador Raquel">
+                        <span class="checkmark"></span>
+                        Administrador Raquel
+                    </label>
+
+                    <label class="custom-checkbox-inline">
+                        <input type="checkbox" id="banido" name="administradorpatrocinador" value="Administrador Patrocinador">
+                        <span class="checkmark"></span>
+                        Administrador Patrocinador
+                    </label>
+
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="col-md-12 col-xs-12">
+            <label class="label-title">Foto de Perfil</label>
+            <div class="custom-file-upload">
+                <label for="arquivo" class="upload-label">
+                    <img src="~/img/imgsite/mdi_attach-file.png" style="margin-top:4px" class="icon-nav" alt="Mais" />
+                    <span class="text-bold">Adicionar imagem</span>
+                </label>
+                <span class="divider">|</span>
+                <span id="file-name" class="file-name">Nenhum arquivo adicionado</span>
+                <input type="file" id="arquivo" name="arquivo" accept="image/*" />
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="line"></div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Nome">ID usuária</label>
+                <div class="input-wrapper">
+                    <input type="text" id="IdUsuaria" name="IdUsuaria" class="search-input" placeholder="Digite o ID da Usuária" value="25489159255" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Chamada">Código de recuperação de senha</label>
+                <div class="input-wrapper">
+                    <input type="text" id="CodSenha" name="CodSenha" class="search-input" placeholder="Digite o código" value="2589636" />
+                    <img src="~/img/imgsite/solar_copy-linear.png" alt="Ícone" class="input-icon" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Nome">ID Social</label>
+                <div class="input-wrapper">
+                    <input type="text" id="IdSocial" name="IdSocial" class="search-input" placeholder="Digite o ID Social" value="25489159255" />
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Chamada">Código de verificação do e-mail</label>
+                <div class="input-wrapper">
+                    <input type="text" id="CodEmail" name="CodEmail" class="search-input" placeholder="Digite o código" value="2589636" />
+                    <img src="~/img/imgsite/solar_copy-linear.png" alt="Ícone" class="input-icon" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="DataCreate">Data da criação</label>
+                <div class="input-wrapper">
+                    <input type="date" id="DataCreate" name="DataCreate" class="search-input" placeholder="Digite a data da criação" value="" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="DataCreate">Data de exclusão</label>
+                <div class="input-wrapper">
+                    <input type="date" id="DateDelete" name="DateDelete" class="search-input" placeholder="Digite a data de exclusão" value="-" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="DataCreate">Versão dos Termos de Uso Aceito</label>
+                <div class="input-wrapper">
+                    <input type="text" id="Termos" name="Termos" class="search-input" placeholder="Digite a versão dos termos" value="5" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="buttons-container">
+        <button type="button" class="btn-cancelar">CANCELAR</button>
+        <button type="submit" class="btn-save">SALVAR ALTERAÇÕES</button>
+    </div>
+
+
+</form>
