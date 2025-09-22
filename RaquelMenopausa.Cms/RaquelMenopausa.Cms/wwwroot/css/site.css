@@ -566,6 +566,14 @@ html {
     text-overflow: ellipsis;
 }
 
+.file-name-midia {
+    color: #555;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 #arquivo {
     display: none;
 }
@@ -784,3 +792,40 @@ html {
     gap: 10px;
     margin-bottom:15px
 }
+
+.status-publish {
+    color: white;
+    background: #46B953;
+    padding: 6px 14px;
+    border-radius: 18px;
+}
+
+.status-rasc {
+    color: black;
+    background: #FFE695;
+    padding: 6px 14px;
+    border-radius: 18px;
+}
+
+.engaj {
+    padding: 2px;
+    gap: 12px;
+    background: white;
+    color: #525252;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.icon-engaj {
+    width: 20px;
+    height: 20px;
+}
+
+.select-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #333;
+}
+

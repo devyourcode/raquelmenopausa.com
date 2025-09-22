@@ -72,7 +72,6 @@
                                             <th>Nome</th>
                                             <th>E-mail</th>
                                             <th>Cargo</th>
-                                            <th>Permissões</th>
                                             <th>Data de Cadastro</th>
                                             <th>Ações</th>
                                         </tr>
@@ -84,11 +83,15 @@
                                                 <td>@item.Nome</td>
                                                 <td>@item.Email</td>
                                                 <td>@item.Cargo</td>
-                                                <td>
-                                                    <a class="btn-newuser" style="padding: 2px 15px;" data-toggle="modal" data-target="#VerResposta_@item.Id">
-                                                        Ver
-                                                    </a>
+                                                <td>@item.DataInc.ToShortDateString()</td>
 
+                                                <td class="acoes">
+                                                    <a class="btn-icon btnEditUsuario" data-id="@item.Id">
+                                                        <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
+                                                    </a>
+                                                    <a class="btn-icon">
+                                                        <img src="~/img/imgsite/shield.png" class="icon-nav" alt="Segurança" data-toggle="modal" data-target="#VerResposta_@item.Id" />
+                                                    </a>
                                                     <div class="modal fade" id="VerResposta_@item.Id" tabindex="-1" role="dialog" aria-labelledby="VerResposta" aria-hidden="true">
                                                         <div class="modal-dialog modal-dialog-centered" role="document">
                                                             <div class="modal-content">
@@ -121,12 +124,12 @@
 
                                                                                         @if (permissao.Modulo.Nome.Contains("Criar"))
                                                                                         {
-                                                                                            
+
                                                                                         }
 
                                                                                         @if (permissao.Modulo.Nome.Contains("Deletar"))
                                                                                         {
-                                                                                           
+
                                                                                         }
                                                                                     </span>
                                                                                     <br />
@@ -145,18 +148,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </td>
-
-                                                <td>@item.DataInc.ToShortDateString()</td>
-
-                                                <td class="acoes">
-                                                    <a class="btn-icon btnEditUsuario" data-id="@item.Id">
-                                                        <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
-                                                    </a>
-
-                                                    <a class="btn-icon">
-                                                        <img src="~/img/imgsite/shield.png" class="icon-nav" alt="Segurança" />
-                                                    </a>
                                                     <a href="@Href("~/perfis/delete/" + item.Id)" onclick="return confirm('Deseja realmente excluir?');" class="btn-icon hidden modulo-perfis-deletar">
                                                         <img src="~/img/imgsite/tabler_trash.png" class="icon-nav" alt="Deletar" />
                                                     </a>
@@ -220,6 +211,8 @@
         </div>
     </div>
 </div>
+
+
 
 <script>
     $(document).ready(function () {

@@ -62,7 +62,7 @@ namespace RaquelMenopausa.Cms.Controllers
         }
 
         [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-criar")]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-criar")]
         public IActionResult Create()
         {
             return PartialView("Create");

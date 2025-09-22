@@ -62,30 +62,31 @@
                     <p><b>Pesquisar</b></p>
 
                     <div class="filter-group">
-                        <input type="text" style="background:#FBFBFB" placeholder="Pesquisar por nome ou e-mail" class="search-input" />
+                        <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
                         <div class="box-todo">
+                            @* <label for="status" class="select-label">Status</label> *@
                             <select>
                                 <option value="Todos">Todos</option>
                                 <option value="Ativos">Ativos</option>
                                 <option value="Inativos">Inativos</option>
                             </select>
-                            <div class="box-todo">
-                                <select>
-                                    <option value="Todos">Todos</option>
-                                    <option value="Ativos">Ativos</option>
-                                    <option value="Inativos">Inativos</option>
-                                </select>
-                            </div>
+                        </div>
+                        <div class="box-todo">
+                            @* <label for="status" class="select-label">Status</label> *@
+                            <select>
+                                <option value="Todos">Todos</option>
+                                <option value="Ativos">Ativos</option>
+                                <option value="Inativos">Inativos</option>
+                            </select>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </section>
 
     <div class="col-md-12 d-flex justify-content-end align-items-center box-button">
-        <a id="btnNovoUsuario" class="btn-newuser">
+        <a id="btnNovoConteudo" class="btn-newuser">
             + Novo Conteúdo
         </a>
     </div>
@@ -117,22 +118,35 @@
                                             <tr>
                                                 <td>@item.Nome</td>
                                                 <td>@item.Cargo</td>
-                                                <td>@item.Email</td>
-                                                <td>
-                                                    @(item.Permissao.Tipo)
-                                                </td>
-
+                                                <td>@item.DataInc.ToShortDateString()</td>
                                                 <td>
                                                     @if (item.Ativo == true)
                                                     {
-                                                        <span>Ativo</span>
+                                                        <span class="status-publish">Publicada</span>
                                                     }
                                                     else
                                                     {
-                                                        <span>Inativo</span>
+                                                        <span class="status-rasc">Rascunho</span>
                                                     }
                                                 </td>
-
+                                                <td>
+                                                    <span class="engaj">
+                                                        <img src="~/img/imgsite/like.png" class="icon-engaj" alt="Curtidas" title="Curtidas" />
+                                                        204
+                                                    </span>
+                                                    <span class="engaj">
+                                                        <img src="~/img/imgsite/message.png" class="icon-engaj" alt="Mensagens" title="Mensagens" />
+                                                        32
+                                                    </span>
+                                                    <span class="engaj">
+                                                        <img src="~/img/imgsite/hugeicons_view.png" class="icon-engaj" alt="Visualizações" title="Visualizações" />
+                                                        300
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="permissao"><b>Ondas de calor</b></span>
+                                                    <span class="permissao"><b>Sono</b></span>
+                                                </td>
                                                 <td class="acoes">
                                                     <a id="btnNovoUsuario" class="btn-icon">
                                                         <img src="~/img/imgsite/gridicons_play.png" class="icon-nav" alt="" />
@@ -172,7 +186,7 @@
     </section>
 </div>
 
-<div class="modal fade" id="usuarioModal" tabindex="-1" role="dialog" aria-labelledby="usuarioModalLabel">
+<div class="modal fade" id="conteudoModal" tabindex="-1" role="dialog" aria-labelledby="conteudoModalLabel">
     <div class="modal-dialog">
         <div class="modal-content">
 
@@ -180,7 +194,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h2 id="usuarioModalLabel"><b>Editar Usuária</b></h2>
+                <h2 id="conteudoModalLabel"><b>Criar Conteúdo</b></h2>
             </div>
 
             <div class="modal-body" id="modalBody">
@@ -219,26 +233,26 @@
 
     $(document).ready(function () {
 
-        $("#btnNovoUsuario").click(function () {
-            $.get("/Usuario/Edit", function (data) {
+        $("#btnNovoConteudo").click(function () {
+            $.get("/Conteudo/Create", function (data) {
                 $("#modalBody").html(data);
 
-                $("#usuarioModal").modal('show');
+                $("#conteudoModal").modal('show');
             });
         });
 
-        $(document).on("submit", "#formCreateUsuario", function (e) {
+        $(document).on("submit", "#formCreateConteudo", function (e) {
             e.preventDefault();
 
             $.ajax({
                 type: "POST",
-                url: "/Usuario/Create",
+                url: "/Conteudo/Create",
                 data: $(this).serialize(),
                 success: function (response) {
                     if (response.success) {
                         alert(response.message);
 
-                        $("#usuarioModal").modal('hide');
+                        $("#conteudoModal").modal('hide');
                     } else {
                         $("#modalBody").html(response);
                     }
