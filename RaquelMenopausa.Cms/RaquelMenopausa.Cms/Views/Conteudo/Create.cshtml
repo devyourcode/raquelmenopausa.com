@@ -1,4 +1,21 @@
-﻿<form id="formCreateConteudo">
+﻿<style>
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .col-md-6 {
+        width: 50%;
+        float: left;
+        padding-right: 15px;
+        padding-left: 15px;
+        box-sizing: border-box;
+    }
+</style>
+
+<form id="formCreateConteudo">
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
@@ -12,13 +29,13 @@
         <div class="col-md-6 col-xs-12">
             <label class="label-title">Imagem de capa</label>
             <div class="custom-file-upload">
-                <label for="arquivo" class="upload-label">
-                    <img src="~/img/imgsite/mdi_attach-file.png" style="margin-top:4px" class="icon-nav" alt="Mais" />
+                <label for="arquivoImagem" class="upload-label">
+                    <img src="~/img/imgsite/mdi_attach-file.png" style="margin-top:4px; height: 20px;" class="icon-nav" alt="Mais" />
                     <span class="text-bold">Adicionar imagem</span>
                 </label>
                 <span class="divider">|</span>
-                <span id="file-name" class="file-name">Nenhum arquivo adicionado</span>
-                <input type="file" id="arquivo" name="arquivo" accept="image/*" />
+                <span id="file-name-imagem" class="file-name">Nenhum arquivo adicionado</span>
+                <input type="file" id="arquivoImagem" name="arquivoImagem" accept="image/*" />
             </div>
         </div>
 
@@ -26,14 +43,14 @@
             <div class="form-group custom-input">
                 <label for="Titulo">Título</label>
                 <div class="input-wrapper">
-                    <input type="text" id="Titulo" name="Titulo" class="search-input" placeholder="insira o título do conteúdo"/>
+                    <input type="text" id="Titulo" name="Titulo" class="search-input" placeholder="insira o título do conteúdo" />
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xs-12">
             <label class="label-title">Áudio ou Vídeo</label>
-            <div class="custom-file-upload">
+            <div class="custom-file-upload" style="padding: 6px 12px;">
                 <label for="arquivoMidia" class="upload-label">
                     <span class="text-bold">Adicionar arquivo</span>
                 </label>
@@ -42,30 +59,211 @@
                 <input type="file" id="arquivoMidia" name="arquivoMidia" accept="audio/*,video/*" />
             </div>
         </div>
-        
+
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
                 <label for="Introducao">Introdução</label>
-                <div class="input-wrapper">
-                    <input type="text" id="Introducao" name="Introducao" class="search-input" placeholder="insira a introdução do conteúdo" />
+                <div class="input-wrapper textarea-wrapper">
+                    <textarea id="Introducao" name="Introducao" class="search-input textarea-introducao"
+                              placeholder="insira a introdução do conteúdo"
+                              maxlength="400"></textarea>
+                    <span id="charCount" class="char-counter">0/400</span>
                 </div>
             </div>
         </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label class="label-title">Cor do conteúdo</label>
+                <div class="color-options">
+                    <label class="color-option" style="background-color: #8B3E08;">
+                        <input type="checkbox" name="CorConteudo" value="#8B3E08">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #D96B05;">
+                        <input type="checkbox" name="CorConteudo" value="#D96B05">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #E2A168;">
+                        <input type="checkbox" name="CorConteudo" value="#E2A168">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #1E2923;">
+                        <input type="checkbox" name="CorConteudo" value="#1E2923">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #3C5245;">
+                        <input type="checkbox" name="CorConteudo" value="#3C5245">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #AAB098;">
+                        <input type="checkbox" name="CorConteudo" value="#AAB098">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #4E3B63;">
+                        <input type="checkbox" name="CorConteudo" value="#4E3B63">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #7A6196;">
+                        <input type="checkbox" name="CorConteudo" value="#7A6196">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #B6A4C9;">
+                        <input type="checkbox" name="CorConteudo" value="#B6A4C9">
+                        <span class="inner-box"></span>
+                    </label>
+                    <label class="color-option" style="background-color: #FFFFFF; border: 2px solid #ccc;">
+                        <input type="checkbox" name="CorConteudo" value="#FFFFFF" style="border: 2px solid #606060">
+                        <span class="inner-box dark"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+
 
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
                 <label for="Texto">Texto Principal</label>
-                <div class="input-wrapper">
-                    <input type="text" id="Texto" name="Texto" class="search-input" placeholder="insira a texto do conteúdo" />
+                <div class="input-wrapper textarea-wrapper">
+                    <textarea id="Texto" name="Texto" class="search-input textarea-introducao"
+                              placeholder="insira o texto do conteúdo" style="height:300px"></textarea>
                 </div>
             </div>
         </div>
 
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label class="label-title">Tags</label>
+
+                <div class="tag-section">
+                    <p class="tag-title">Categorias</p>
+                    <div class="tag-options">
+                        <label class="tag-pill">
+                            <input type="checkbox" name="Categorias" value="Mitos"> Mitos
+                        </label>
+                        <label class="tag-pill">
+                            <input type="checkbox" name="Categorias" value="Tabus"> Tabus
+                        </label>
+                        <label class="tag-pill">
+                            <input type="checkbox" name="Categorias" value="Informativo"> Informativo
+                        </label>
+                    </div>
+                </div>
+
+                <div class="tag-section">
+                    <p class="tag-title">Sintomas</p>
+                    <div class="symptom-options">
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Fogachos e Suores Noturnos">
+                            Fogachos e Suores Noturnos
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Reprodutor">
+                            Alterações no Sistema Reprodutor
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Urinário">
+                            Alterações no Sistema Urinário
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Muscular e Ósseo">
+                            Alterações no Sistema Muscular e Ósseo
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações na Pele e no Cabelo">
+                            Alterações na Pele e no Cabelo
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações Bucais">
+                            Alterações Bucais
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                        <label class="symptom-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                    </div>
+                    <p class="tag-title">Soluções</p>
+                    <div class="symptom-options">
+                        <label class="soluction-item">
+                            <input type="checkbox" name="Sintomas" value="Fogachos e Suores Noturnos">
+                            Fogachos e Suores Noturnos
+                        </label>
+                        <label class="soluction-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Reprodutor">
+                            Alterações no Sistema Reprodutor
+                        </label>
+                        <label class="soluction-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Urinário">
+                            Alterações no Sistema Urinário
+                        </label>
+                        <label class="soluction-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Muscular e Ósseo">
+                            Alterações no Sistema Muscular e Ósseo
+                        </label>
+                        <label class="soluction-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações na Pele e no Cabelo">
+                            Alterações na Pele e no Cabelo
+                        </label>
+                        <label class="soluction-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações Bucais">
+                            Alterações Bucais
+                        </label>
+                        <label class="soluction-item">
+                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
+                            Alterações no Sistema Cardiovascular
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
     </div>
+
     <div class="buttons-container">
         <button type="button" class="btn-cancelar">CANCELAR</button>
-        <button type="submit" class="btn-save">SALVAR ALTERAÇÕES</button>
+        <button type="submit" class="btn-rascunho">SALVAR COMO RASCUNHO</button>
+        <button type="submit" class="btn-save">CRIAR PUBLICAÇÃO</button>
     </div>
-
-
 </form>
+
+<script>
+    const textarea = document.getElementById('Introducao');
+    const charCount = document.getElementById('charCount');
+
+    textarea.addEventListener('input', function () {
+        charCount.textContent = `${this.value.length}/400`;
+    });
+</script>
+
+
+
