@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using RaquelMenopausa.Cms.Helpers;
 using RaquelMenopausa.Cms.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,14 @@ builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpClient("CMS", client =>
+{
+    client.BaseAddress = new Uri("https://yourcode.raquelmenopausa.net");
+});
+
+builder.Services.AddScoped<CmsService>();
+
 
 #region autenticação
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -1,4 +1,6 @@
-﻿<style>
+﻿@model RaquelMenopausa.Cms.Models.Dto.TagResponseDto
+
+<style>
     .row {
         display: flex;
         flex-wrap: wrap;
@@ -139,6 +141,47 @@
                 <div class="tag-section">
                     <p class="tag-title">Categorias</p>
                     <div class="tag-options">
+                        @foreach (var category in Model.ArticleCategories)
+                        {
+                            <label class="tag-pill">
+                                <input type="checkbox" name="Categorias" value="@category.Label"> @category.Label
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div class="tag-section">
+                    <p class="tag-title">Sintomas</p>
+                    <div class="symptom-options">
+                        @foreach (var symptom in Model.SymptomCategories)
+                        {
+                            <label class="symptom-item">
+                                <input type="checkbox" name="Sintomas" value="@symptom.Label"> @symptom.Label
+                            </label>
+                        }
+                    </div>
+
+                    <p class="tag-title">Soluções</p>
+                    <div class="symptom-options">
+                        @foreach (var solution in Model.Solutions)
+                        {
+                            <label class="soluction-item">
+                                <input type="checkbox" name="Solucoes" value="@solution.Label"> @solution.Label
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        @* <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label class="label-title">Tags</label>
+
+                <div class="tag-section">
+                    <p class="tag-title">Categorias</p>
+                    <div class="tag-options">
                         <label class="tag-pill">
                             <input type="checkbox" name="Categorias" value="Mitos"> Mitos
                         </label>
@@ -244,7 +287,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> *@
 
         
     </div>
