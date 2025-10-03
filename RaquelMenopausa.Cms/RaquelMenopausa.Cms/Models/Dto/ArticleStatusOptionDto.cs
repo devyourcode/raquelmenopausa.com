@@ -1,9 +1,14 @@
-﻿namespace RaquelMenopausa.Cms.Models.Dto
+﻿using System.Text.Json.Serialization;
+
+namespace RaquelMenopausa.Cms.Models.Dto
 {
     public class ArticleStatusOptionDto
     {
-        public string? Label { get; set; }
-        public string? Value { get; set; }
+        [JsonPropertyName("label")]
+        public string Label { get; set; }
+
+        [JsonPropertyName("value")]
+        public string Value { get; set; }
     }
 
 }

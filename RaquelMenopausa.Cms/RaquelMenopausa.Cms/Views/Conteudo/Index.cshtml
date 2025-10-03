@@ -62,23 +62,26 @@
                     <p><b>Pesquisar</b></p>
 
                     <div class="filter-group">
-                        <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
+                        
+                            <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
                         <div class="box-todo">
-                            @* <label for="status" class="select-label">Status</label> *@
+                            <select name="status">
+                                @foreach (var option in (List<RaquelMenopausa.Cms.Models.Dto.ArticleStatusOptionDto>)ViewBag.StatusOptions)
+                                {
+                                    <option value="@option.Value">@option.Label</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="box-todo">
                             <select>
                                 <option value="Todos">Todos</option>
                                 <option value="Ativos">Ativos</option>
                                 <option value="Inativos">Inativos</option>
                             </select>
                         </div>
-                        <div class="box-todo">
-                            @* <label for="status" class="select-label">Status</label> *@
-                            <select>
-                                <option value="Todos">Todos</option>
-                                <option value="Ativos">Ativos</option>
-                                <option value="Inativos">Inativos</option>
-                            </select>
-                        </div>
+                            
+                        
                     </div>
                 </div>
             </div>
@@ -132,26 +135,31 @@
                                                 <td>
                                                     <span class="engaj">
                                                         <img src="~/img/imgsite/like.png" class="icon-engaj" alt="Curtidas" title="Curtidas" />
-                                                        204
+                                                        2
                                                     </span>
                                                     <span class="engaj">
                                                         <img src="~/img/imgsite/message.png" class="icon-engaj" alt="Mensagens" title="Mensagens" />
-                                                        32
+                                                        2
                                                     </span>
                                                     <span class="engaj">
                                                         <img src="~/img/imgsite/hugeicons_view.png" class="icon-engaj" alt="Visualizações" title="Visualizações" />
-                                                        300
+                                                        2
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span class="permissao"><b>Ondas de calor</b></span>
-                                                    <span class="permissao"><b>Sono</b></span>
+                                                    @* @if (item.ArticleArticleCategories != null)
+                                                    {
+                                                        foreach (var cat in item.ArticleArticleCategories)
+                                                        { *@
+                                                            <span class="permissao"><b>Teste</b></span>
+                                                        @* }
+                                                    } *@
                                                 </td>
                                                 <td class="acoes">
                                                     <a id="btnNovoUsuario" class="btn-icon">
                                                         <img src="~/img/imgsite/gridicons_play.png" class="icon-nav" alt="" />
                                                     </a>
-                                                    <a id="btnNovoUsuario" class="btn-icon">
+                                                    <a id="btnEditConteudo" href="@Url.Action("Edit", "Conteudos", new { id = "ccb27765-7b0b-4cdc-af3e-54d83329c16b" })" class="btn-icon">
                                                         <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
                                                     </a>
                                                     <a href="@Href("~/perfis/delete/" + item.Id)" onclick="return confirm('Deseja realmente excluir?');" class="btn-icon hidden modulo-perfis-deletar">
@@ -203,6 +211,23 @@
     </div>
 </div>
 
+<div class="modal fade" id="conteudoEditModal" tabindex="-1" role="dialog" aria-labelledby="conteudoModalEditLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2 id="conteudoModalEditLabel"><b>Editar Conteúdo</b></h2>
+            </div>
+
+            <div class="modal-body" id="modalBodyEdit">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
         if ('@ViewData["Mensagem"]' == "true") {
@@ -237,6 +262,14 @@
                 $("#modalBody").html(data);
 
                 $("#conteudoModal").modal('show');
+            });
+        });
+
+        $("#btnEditConteudo").click(function () {
+            $.get("/Conteudo/Edit", function (data) {
+                $("#modalBodyEdit").html(data);
+
+                $("#conteudoEditModal").modal('show');
             });
         });
 

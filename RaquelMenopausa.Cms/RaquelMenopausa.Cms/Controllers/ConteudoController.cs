@@ -6,6 +6,8 @@ using NuGet.Common;
 using RaquelMenopausa.Cms.Helpers;
 using RaquelMenopausa.Cms.Models;
 using RaquelMenopausa.Cms.Models.Dto;
+using System.Linq.Dynamic.Core.Tokenizer;
+using X.PagedList;
 using X.PagedList.Extensions;
 using Yourcode.Core.Utilities;
 
@@ -30,39 +32,44 @@ namespace RaquelMenopausa.Cms.Controllers
 
 
 
+
+        //    public async Task<IActionResult> Index(int? page, string search, string status)
+        //    {
+        //        int pageSize = 10;
+        //        int pageIndex = page ?? 1;
+
+        //        int skip = (pageIndex - 1) * pageSize;
+        //        int take = pageSize;
+
+
+        //        string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDVlNWM1LWUxOTEtNGE0ZS04M2ZlLTNjMTFjMDg4MGM3OCIsInVzZXJuYW1lIjoiVXNlciAzIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU5MzQyMjQxLCJleHAiOjE3NTk5NDcwNDF9.OTNA-NiIsOkdiy0fvI8AgzgGkoUF-7Q3CRwrAp1GWQU"; // futuramente pegar do login
+        //        var statusOptions = await _cmsService.GetArticleStatusOptionsAsync(token);
+
+        //        ViewBag.StatusOptions = statusOptions;
+
+        //        var result = await _cmsService.GetArtigosAsync(skip, take, search, status, token: token);
+
+        //        var pagedList = new StaticPagedList<ConteudoDto>(
+        //    result, pageIndex, pageSize, result.Count
+        //);
+
+        //        ViewBag.PageCount = pagedList.PageCount;
+
+        //        return View(pagedList);
+        //    }
+
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-listar")]
-        public IActionResult Index(int? page)
-        {
-            int usuarioLogadoId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+        public async Task<IActionResult> Index(int? page) { int usuarioLogadoId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value); var usuarioLogado = _db.Usuarios.Include(u => u.Permissao).FirstOrDefault(u => u.Id == usuarioLogadoId); bool usuarioLogadoEhMaster = usuarioLogado.Email.EndsWith("@yourcode.com.br"); IQueryable<Usuario> query = _db.Usuarios.Where(o => o.Situacao).Include(o => o.Permissao); if (!usuarioLogadoEhMaster) { query = query.Where(o => !o.Email.EndsWith("@yourcode.com.br")); } var model = query.OrderBy(o => o.Nome).ToList();
 
-            var usuarioLogado = _db.Usuarios
-                .Include(u => u.Permissao)
-                .FirstOrDefault(u => u.Id == usuarioLogadoId);
+            string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDVlNWM1LWUxOTEtNGE0ZS04M2ZlLTNjMTFjMDg4MGM3OCIsInVzZXJuYW1lIjoiVXNlciAzIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU5MzQyMjQxLCJleHAiOjE3NTk5NDcwNDF9.OTNA-NiIsOkdiy0fvI8AgzgGkoUF-7Q3CRwrAp1GWQU";
+            var statusOptions = await _cmsService.GetArticleStatusOptionsAsync(token);
 
-            bool usuarioLogadoEhMaster = usuarioLogado.Email.EndsWith("@yourcode.com.br");
+            ViewBag.StatusOptions = statusOptions;
+            
 
-            IQueryable<Usuario> query = _db.Usuarios
-                .Where(o => o.Situacao)
-                .Include(o => o.Permissao);
+            int pageSize = 12; int pageIndex = page ?? 1; var emp = model.ToPagedList(pageIndex, pageSize); ViewBag.PageCount = emp.PageCount; return View(emp); }
 
-            if (!usuarioLogadoEhMaster)
-            {
-                query = query.Where(o => !o.Email.EndsWith("@yourcode.com.br"));
-            }
-
-            var model = query
-                .OrderBy(o => o.Nome)
-                .ToList();
-
-            int pageSize = 12;
-            int pageIndex = page ?? 1;
-
-            var emp = model.ToPagedList(pageIndex, pageSize);
-            ViewBag.PageCount = emp.PageCount;
-
-            return View(emp);
-        }
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-criar")]
@@ -74,13 +81,17 @@ namespace RaquelMenopausa.Cms.Controllers
             return PartialView("Create", tags);
         }
 
-        
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-editar")]
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit(string id)
         {
-            return PartialView("Edit");
+            string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDVlNWM1LWUxOTEtNGE0ZS04M2ZlLTNjMTFjMDg4MGM3OCIsInVzZXJuYW1lIjoiVXNlciAzIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU5MzQyMjQxLCJleHAiOjE3NTk5NDcwNDF9.OTNA-NiIsOkdiy0fvI8AgzgGkoUF-7Q3CRwrAp1GWQU";
+
+            var conteudoedit = await _cmsService.GetArticleAsync(token, id);
+            var tags = await _cmsService.GetTagsAsync(token);
+
+            return PartialView("Edit", conteudoedit);
         }
 
         public async Task<IActionResult> GetArticleStatus()
