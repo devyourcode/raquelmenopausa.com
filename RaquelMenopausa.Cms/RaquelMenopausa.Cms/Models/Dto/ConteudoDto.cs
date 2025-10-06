@@ -67,6 +67,12 @@ namespace RaquelMenopausa.Cms.Models.Dto
         [JsonPropertyName("subject")]
         public string Subject { get; set; }
 
+        [JsonPropertyName("share_link")]
+        public string ShareLink { get; set; }
+
+        [JsonPropertyName("hash")]
+        public string Hash { get; set; }
+
         [JsonPropertyName("articleArticleCategories")]
         public List<ArticleCategoryLinkDto> ArticleArticleCategories { get; set; }
 

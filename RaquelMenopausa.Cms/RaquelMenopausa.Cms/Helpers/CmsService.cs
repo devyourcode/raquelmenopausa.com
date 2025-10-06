@@ -29,6 +29,57 @@ namespace RaquelMenopausa.Cms.Helpers
             return result ?? new List<ArticleStatusOptionDto>();
         }
 
+        //public async Task<IndicatorsDto> GetIndicators(string token)
+        //{
+        //    _client.DefaultRequestHeaders.Authorization =
+        //        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        //    var response = await _client.GetAsync("/api/cms-dashboard/contents/get-article-indicators");
+        //    response.EnsureSuccessStatusCode();
+
+        //    var result = await response.Content.ReadFromJsonAsync<IndicatorsDto>();
+        //    return result ?? new IndicatorsDto();
+        //}
+
+        public async Task<IndicatorsDto> GetIndicators(
+    string token,
+    string search = null,
+    string status = null,
+    string tag = null
+)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var query = new List<string>();
+
+            if (!string.IsNullOrEmpty(search))
+                query.Add($"search={Uri.EscapeDataString(search)}");
+
+            if (!string.IsNullOrEmpty(status))
+                query.Add($"status={status}");
+
+            if (!string.IsNullOrEmpty(tag))
+            {
+                if (tag.StartsWith("a_"))
+                    query.Add($"articleCategories={tag.Substring(2)}");
+                else if (tag.StartsWith("s_"))
+                    query.Add($"symptomCategories={tag.Substring(2)}");
+                else if (tag.StartsWith("so_"))
+                    query.Add($"solutions={tag.Substring(3)}");
+            }
+
+            var qs = query.Count > 0 ? "?" + string.Join("&", query) : "";
+
+            var response = await _client.GetAsync($"/api/cms-dashboard/contents/get-article-indicators{qs}");
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<IndicatorsDto>();
+            return result ?? new IndicatorsDto();
+        }
+
+
+
 
         public async Task<TagResponseDto> GetTagsAsync(string token)
         {
@@ -69,15 +120,7 @@ namespace RaquelMenopausa.Cms.Helpers
 
 
 
-        public async Task<List<ConteudoDto>> GetArtigosAsync(
-    int skip,
-    int take,
-    string search = null,
-    string status = null,
-    List<int> articleCategories = null,
-    List<int> symptomCategories = null,
-    List<int> solutions = null,
-    string token = null)
+        public async Task<List<ConteudoDto>> GetArtigosAsync(int skip, int take, string search = null, string status = null, string tag = null, List<int> articleCategories = null, List<int> symptomCategories = null, List<int> solutions = null, string token = null)
         {
             var query = new List<string>();
 
@@ -86,6 +129,17 @@ namespace RaquelMenopausa.Cms.Helpers
 
             if (!string.IsNullOrEmpty(status))
                 query.Add($"status={status}");
+
+            if (!string.IsNullOrEmpty(tag))
+            {
+                if (tag.StartsWith("a_"))
+                    query.Add($"articleCategories={tag.Substring(2)}");
+                else if (tag.StartsWith("s_"))
+                    query.Add($"symptomCategories={tag.Substring(2)}");
+                else if (tag.StartsWith("so_"))
+                    query.Add($"solutions={tag.Substring(3)}");
+            }
+
 
             if (articleCategories?.Any() == true)
                 query.AddRange(articleCategories.Select(c => $"articleCategories={c}"));
@@ -108,18 +162,34 @@ namespace RaquelMenopausa.Cms.Helpers
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(json);
-            var result = JsonSerializer.Deserialize<List<List<ConteudoDto>>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
 
-            return result?.SelectMany(x => x).ToList() ?? new List<ConteudoDto>();
+            using var doc = JsonDocument.Parse(json);
+
+            if (doc.RootElement.ValueKind == JsonValueKind.Array &&
+                doc.RootElement[0].ValueKind == JsonValueKind.Array)
+            {
+                var innerArray = doc.RootElement[0].GetRawText();
+
+                var result = JsonSerializer.Deserialize<List<ConteudoDto>>(innerArray, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                return result ?? new List<ConteudoDto>();
+            }
+            else
+            {
+                var result = JsonSerializer.Deserialize<List<ConteudoDto>>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                return result ?? new List<ConteudoDto>();
+            }
         }
     }
 
 
-
-    }
+}
 
 

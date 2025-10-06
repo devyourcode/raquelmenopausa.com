@@ -1,6 +1,6 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
-@model IPagedList<Usuario>
+@model IPagedList<RaquelMenopausa.Cms.Models.Dto.ConteudoDto>
 
 @{
     ViewBag.Title = "Conteúdos | " + ViewBag.TitlePage;
@@ -35,19 +35,19 @@
                 <div class="col-md-3">
                     <div class="box-number">
                         <p>Total de Conteúdos</p>
-                        <h2><b>520</b></h2>
+                        <h2><b>@ViewBag.Indicators.ArticlesCount</b></h2>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="box-number">
                         <p>Conteúdos Publicados</p>
-                        <h2><b>490</b></h2>
+                        <h2><b>@ViewBag.Indicators.PublishedArticlesCount</b></h2>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="box-number">
                         <p>Conteúdos em Rascunhos</p>
-                        <h2><b>10</b></h2>
+                        <h2><b>@ViewBag.Indicators.DraftArticlesCount</b></h2>
                     </div>
                 </div>
             </div>
@@ -62,8 +62,8 @@
                     <p><b>Pesquisar</b></p>
 
                     <div class="filter-group">
-                        
-                            <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
+
+                        <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
                         <div class="box-todo">
                             <select name="status">
                                 @foreach (var option in (List<RaquelMenopausa.Cms.Models.Dto.ArticleStatusOptionDto>)ViewBag.StatusOptions)
@@ -74,14 +74,18 @@
                         </div>
 
                         <div class="box-todo">
-                            <select>
-                                <option value="Todos">Todos</option>
-                                <option value="Ativos">Ativos</option>
-                                <option value="Inativos">Inativos</option>
+                            <select name="tag">
+                                @foreach (var option in (IEnumerable<dynamic>)ViewBag.Tags)
+                                {
+                                    <option value="@option.Value">@option.Label</option>
+                                }
                             </select>
                         </div>
-                            
-                        
+
+                        <button type="button" id="btnSearch" class="btn-search">
+                           <i class="fa fa-search"></i>
+                        </button>
+
                     </div>
                 </div>
             </div>
@@ -119,11 +123,11 @@
                                         @foreach (var item in Model)
                                         {
                                             <tr>
-                                                <td>@item.Nome</td>
-                                                <td>@item.Cargo</td>
-                                                <td>@item.DataInc.ToShortDateString()</td>
+                                                <td>@item.Title</td>
+                                                <td>@item.Intro</td>
+                                                <td>@item.DateCreated.ToShortDateString()</td>
                                                 <td>
-                                                    @if (item.Ativo == true)
+                                                    @if (item.Status == "PUBLISHED")
                                                     {
                                                         <span class="status-publish">Publicada</span>
                                                     }
@@ -135,34 +139,34 @@
                                                 <td>
                                                     <span class="engaj">
                                                         <img src="~/img/imgsite/like.png" class="icon-engaj" alt="Curtidas" title="Curtidas" />
-                                                        2
+                                                        @item.LikesCount
                                                     </span>
                                                     <span class="engaj">
                                                         <img src="~/img/imgsite/message.png" class="icon-engaj" alt="Mensagens" title="Mensagens" />
-                                                        2
+                                                        @item.CommentsCount
                                                     </span>
                                                     <span class="engaj">
                                                         <img src="~/img/imgsite/hugeicons_view.png" class="icon-engaj" alt="Visualizações" title="Visualizações" />
-                                                        2
+                                                        @item.SharesCount
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    @* @if (item.ArticleArticleCategories != null)
+                                                    @if (item.ArticleArticleCategories != null)
                                                     {
                                                         foreach (var cat in item.ArticleArticleCategories)
-                                                        { *@
-                                                            <span class="permissao"><b>Teste</b></span>
-                                                        @* }
-                                                    } *@
+                                                        {
+                                                            <span class="permissao"><b>@cat.ArticleCategory.Name</b></span>
+                                                        }
+                                                    }
                                                 </td>
                                                 <td class="acoes">
                                                     <a id="btnNovoUsuario" class="btn-icon">
                                                         <img src="~/img/imgsite/gridicons_play.png" class="icon-nav" alt="" />
                                                     </a>
-                                                    <a id="btnEditConteudo" href="@Url.Action("Edit", "Conteudos", new { id = "ccb27765-7b0b-4cdc-af3e-54d83329c16b" })" class="btn-icon">
+                                                    <a id="btnNovoUsuario" class="btn-icon">
                                                         <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
                                                     </a>
-                                                    <a href="@Href("~/perfis/delete/" + item.Id)" onclick="return confirm('Deseja realmente excluir?');" class="btn-icon hidden modulo-perfis-deletar">
+                                                    <a href="@Href("~/perfis/delete/" + item.ArticleId)" onclick="return confirm('Deseja realmente excluir?');" class="btn-icon hidden modulo-perfis-deletar">
                                                         <img src="~/img/imgsite/tabler_trash.png" class="icon-nav" alt="Deletar" />
                                                     </a>
 
@@ -266,12 +270,13 @@
         });
 
         $("#btnEditConteudo").click(function () {
-            $.get("/Conteudo/Edit", function (data) {
+            $.get("/Conteudo/Edit/43c6ce96-134d-4438-b462-0effa38d3736", function (data) {
                 $("#modalBodyEdit").html(data);
 
                 $("#conteudoEditModal").modal('show');
             });
         });
+
 
         $(document).on("submit", "#formCreateConteudo", function (e) {
             e.preventDefault();
@@ -293,4 +298,16 @@
         });
     });
 
+    document.getElementById("btnSearch").addEventListener("click", function () {
+        const search = document.querySelector(".search-input").value;
+        const status = document.querySelector("select[name='status']").value;
+        const tag = document.querySelector("select[name='tag']").value;
+
+        const params = new URLSearchParams();
+        if (search) params.append("search", search);
+        if (status) params.append("status", status);
+        if (tag) params.append("tag", tag);
+
+        window.location.href = `/Conteudo/Index?${params.toString()}`;
+    });
 </script>
