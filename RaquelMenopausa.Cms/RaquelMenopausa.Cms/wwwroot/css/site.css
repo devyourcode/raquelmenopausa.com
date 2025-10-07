@@ -610,6 +610,24 @@ input[type="file"] {
         color: white !important;
     }
 
+.btn-search {
+    background: #FF8C42;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    border:none;
+}
+
+.btn-viewtag {
+    cursor: pointer;
+    background: #837e7e;
+    color: white;
+    padding: 2px 15px;
+    border-radius: 9px;
+}
+
 .permissao {
     border-radius: 26px;
     padding: 2px;

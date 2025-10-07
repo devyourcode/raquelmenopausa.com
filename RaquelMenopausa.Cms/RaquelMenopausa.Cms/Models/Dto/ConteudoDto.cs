@@ -53,10 +53,10 @@ namespace RaquelMenopausa.Cms.Models.Dto
         public int CommentsCount { get; set; }
 
         [JsonPropertyName("date_created")]
-        public DateTime DateCreated { get; set; }
+        public DateTime? DateCreated { get; set; }
 
         [JsonPropertyName("date_updated")]
-        public DateTime DateUpdated { get; set; }
+        public DateTime? DateUpdated { get; set; }
 
         [JsonPropertyName("status")]
         public string Status { get; set; }
@@ -152,9 +152,9 @@ namespace RaquelMenopausa.Cms.Models.Dto
         public string Name { get; set; }
     }
 
-    public class PagedResult<T>
+    public class ConteudoPagedResponse
     {
-        public List<T> Items { get; set; }
+        public List<ConteudoDto> Items { get; set; } = new();
         public int TotalCount { get; set; }
     }
 

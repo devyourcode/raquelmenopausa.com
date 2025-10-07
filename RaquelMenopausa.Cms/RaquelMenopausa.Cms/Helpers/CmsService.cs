@@ -29,24 +29,7 @@ namespace RaquelMenopausa.Cms.Helpers
             return result ?? new List<ArticleStatusOptionDto>();
         }
 
-        //public async Task<IndicatorsDto> GetIndicators(string token)
-        //{
-        //    _client.DefaultRequestHeaders.Authorization =
-        //        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-        //    var response = await _client.GetAsync("/api/cms-dashboard/contents/get-article-indicators");
-        //    response.EnsureSuccessStatusCode();
-
-        //    var result = await response.Content.ReadFromJsonAsync<IndicatorsDto>();
-        //    return result ?? new IndicatorsDto();
-        //}
-
-        public async Task<IndicatorsDto> GetIndicators(
-    string token,
-    string search = null,
-    string status = null,
-    string tag = null
-)
+        public async Task<IndicatorsDto> GetIndicators(string token, string search = null, string status = null, string tag = null)
         {
             _client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
@@ -77,9 +60,6 @@ namespace RaquelMenopausa.Cms.Helpers
             var result = await response.Content.ReadFromJsonAsync<IndicatorsDto>();
             return result ?? new IndicatorsDto();
         }
-
-
-
 
         public async Task<TagResponseDto> GetTagsAsync(string token)
         {
@@ -119,8 +99,7 @@ namespace RaquelMenopausa.Cms.Helpers
         }
 
 
-
-        public async Task<List<ConteudoDto>> GetArtigosAsync(int skip, int take, string search = null, string status = null, string tag = null, List<int> articleCategories = null, List<int> symptomCategories = null, List<int> solutions = null, string token = null)
+        public async Task<ConteudoPagedResponse> GetArtigosAsync(int skip, int take, string search = null, string status = null, string tag = null, List<int> articleCategories = null, List<int> symptomCategories = null, List<int> solutions = null, string token = null)
         {
             var query = new List<string>();
 
@@ -140,20 +119,8 @@ namespace RaquelMenopausa.Cms.Helpers
                     query.Add($"solutions={tag.Substring(3)}");
             }
 
-
-            if (articleCategories?.Any() == true)
-                query.AddRange(articleCategories.Select(c => $"articleCategories={c}"));
-
-            if (symptomCategories?.Any() == true)
-                query.AddRange(symptomCategories.Select(c => $"symptomCategories={c}"));
-
-            if (solutions?.Any() == true)
-                query.AddRange(solutions.Select(s => $"solutions={s}"));
-
             var qs = query.Count > 0 ? "?" + string.Join("&", query) : "";
-
-            var request = new HttpRequestMessage(HttpMethod.Get,
-                $"/api/cms-dashboard/contents/get-articles-paged/{skip}/{take}{qs}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/cms-dashboard/contents/get-articles-paged/{skip}/{take}{qs}");
 
             if (!string.IsNullOrEmpty(token))
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -162,34 +129,75 @@ namespace RaquelMenopausa.Cms.Helpers
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-
             using var doc = JsonDocument.Parse(json);
 
-            if (doc.RootElement.ValueKind == JsonValueKind.Array &&
-                doc.RootElement[0].ValueKind == JsonValueKind.Array)
+            var paged = new ConteudoPagedResponse();
+
+            if (doc.RootElement.ValueKind == JsonValueKind.Array)
             {
-                var innerArray = doc.RootElement[0].GetRawText();
+                var items = doc.RootElement[0].GetRawText();
+                var total = doc.RootElement[1].GetInt32();
 
-                var result = JsonSerializer.Deserialize<List<ConteudoDto>>(innerArray, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                return result ?? new List<ConteudoDto>();
+                paged.Items = JsonSerializer.Deserialize<List<ConteudoDto>>(items,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                paged.TotalCount = total;
             }
-            else
+
+            return paged;
+        }
+
+        public async Task CreateArtigoAsync(string title, string intro, string text, string references, string color, string status, string subject, List<int> articleCategories, List<int> symptomCategories, List<int> solutions, IFormFile imageUpload, IFormFile audioVideoUpload, string token)
+        {
+            using var content = new MultipartFormDataContent();
+
+            references = "teste";
+
+            content.Add(new StringContent(title ?? ""), "title");
+            content.Add(new StringContent(intro ?? ""), "intro");
+            content.Add(new StringContent(text ?? ""), "text");
+            content.Add(new StringContent(references ?? ""), "references");
+            content.Add(new StringContent(color ?? ""), "color");
+            content.Add(new StringContent(status ?? ""), "status");
+            content.Add(new StringContent(subject ?? ""), "subject");
+
+            if (articleCategories != null)
+                foreach (var id in articleCategories)
+                    content.Add(new StringContent(id.ToString()), "articleCategories");
+
+            if (symptomCategories != null)
+                foreach (var id in symptomCategories)
+                    content.Add(new StringContent(id.ToString()), "symptomCategories");
+
+            if (solutions != null)
+                foreach (var id in solutions)
+                    content.Add(new StringContent(id.ToString()), "solutions");
+
+            if (imageUpload != null)
             {
-                var result = JsonSerializer.Deserialize<List<ConteudoDto>>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                return result ?? new List<ConteudoDto>();
+                var imageContent = new StreamContent(imageUpload.OpenReadStream());
+                imageContent.Headers.ContentType = new MediaTypeHeaderValue(imageUpload.ContentType);
+                content.Add(imageContent, "imageUpload", imageUpload.FileName);
             }
+
+            if (audioVideoUpload != null)
+            {
+                var mediaContent = new StreamContent(audioVideoUpload.OpenReadStream());
+                mediaContent.Headers.ContentType = new MediaTypeHeaderValue(audioVideoUpload.ContentType);
+                content.Add(mediaContent, "audioVideoUpload", audioVideoUpload.FileName);
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/cms-dashboard/contents/create-article")
+            {
+                Content = content
+            };
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
         }
     }
-
-
 }
 
 

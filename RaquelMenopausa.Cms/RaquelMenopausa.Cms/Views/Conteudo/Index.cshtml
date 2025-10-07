@@ -10,6 +10,23 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@functions {
+    string TruncateText(string text, int maxLength)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
+            return text;
+
+        var truncated = text.Substring(0, maxLength);
+
+        var lastSpace = truncated.LastIndexOf(' ');
+        if (lastSpace > 0)
+            truncated = truncated.Substring(0, lastSpace);
+
+        return truncated + "...";
+    }
+}
+
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="row">
@@ -83,7 +100,7 @@
                         </div>
 
                         <button type="button" id="btnSearch" class="btn-search">
-                           <i class="fa fa-search"></i>
+                            <i class="fa fa-search"></i>
                         </button>
 
                     </div>
@@ -123,9 +140,10 @@
                                         @foreach (var item in Model)
                                         {
                                             <tr>
-                                                <td>@item.Title</td>
-                                                <td>@item.Intro</td>
-                                                <td>@item.DateCreated.ToShortDateString()</td>
+                                                <td>@TruncateText(item.Title, 50)</td>
+
+                                                <td>@TruncateText(item.Intro, 60)</td>
+                                                <td>@item.DateCreated?.ToShortDateString()</td>
                                                 <td>
                                                     @if (item.Status == "PUBLISHED")
                                                     {
@@ -151,14 +169,55 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    @if (item.ArticleArticleCategories != null)
-                                                    {
-                                                        foreach (var cat in item.ArticleArticleCategories)
-                                                        {
-                                                            <span class="permissao"><b>@cat.ArticleCategory.Name</b></span>
-                                                        }
-                                                    }
+                                                    <a>
+                                                        <p class="btn-viewtag" alt="Segurança" data-toggle="modal" data-target="#VerResposta_@item.ArticleId">Ver</p>
+                                                    </a>
+                                                    <div class="modal fade" id="VerResposta_@item.ArticleId" tabindex="-1" role="dialog" aria-labelledby="VerResposta" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h2 class="modal-title" style="color:#000">Tags</h2>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                @{
+                                                                    var tags = new List<string>();
+
+                                                                    if (item.ArticleArticleCategories != null)
+                                                                        tags.AddRange(item.ArticleArticleCategories
+                                                                        .Where(c => c.ArticleCategory != null)
+                                                                        .Select(c => c.ArticleCategory.Name));
+
+                                                                    if (item.ArticleSymptomCategories != null)
+                                                                        tags.AddRange(item.ArticleSymptomCategories
+                                                                        .Where(c => c.SymptomCategory != null)
+                                                                        .Select(c => c.SymptomCategory.Description));
+
+                                                                    if (item.ArticleSolutions != null)
+                                                                        tags.AddRange(item.ArticleSolutions
+                                                                        .Where(c => c.Solution != null)
+                                                                        .Select(c => c.Solution.Name));
+                                                                }
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        @foreach (var tag in tags.Distinct())
+                                                                        {
+                                                                            <div class="col-md-4">
+
+                                                                                <span class="permissao"><b>@tag</b></span>
+
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
                                                 </td>
+
                                                 <td class="acoes">
                                                     <a id="btnNovoUsuario" class="btn-icon">
                                                         <img src="~/img/imgsite/gridicons_play.png" class="icon-nav" alt="" />
@@ -166,6 +225,7 @@
                                                     <a id="btnNovoUsuario" class="btn-icon">
                                                         <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
                                                     </a>
+
                                                     <a href="@Href("~/perfis/delete/" + item.ArticleId)" onclick="return confirm('Deseja realmente excluir?');" class="btn-icon hidden modulo-perfis-deletar">
                                                         <img src="~/img/imgsite/tabler_trash.png" class="icon-nav" alt="Deletar" />
                                                     </a>

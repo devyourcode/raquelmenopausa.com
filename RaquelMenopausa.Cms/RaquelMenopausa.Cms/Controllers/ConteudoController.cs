@@ -40,8 +40,8 @@ namespace RaquelMenopausa.Cms.Controllers
             int skip = (pageIndex - 1) * pageSize;
             int take = pageSize;
 
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
 
-            string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDVlNWM1LWUxOTEtNGE0ZS04M2ZlLTNjMTFjMDg4MGM3OCIsInVzZXJuYW1lIjoiVXNlciAzIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU5MzQyMjQxLCJleHAiOjE3NTk5NDcwNDF9.OTNA-NiIsOkdiy0fvI8AgzgGkoUF-7Q3CRwrAp1GWQU"; // futuramente pegar do login
             var statusOptions = await _cmsService.GetArticleStatusOptionsAsync(token);
 
             ViewBag.StatusOptions = statusOptions;
@@ -81,46 +81,74 @@ namespace RaquelMenopausa.Cms.Controllers
 
             var result = await _cmsService.GetArtigosAsync(skip, take, search, status, tag, token: token);
 
-            ViewBag.Indicators = await _cmsService.GetIndicators(token, search, status, tag);
+            ViewBag.Indicators = await _cmsService.GetIndicators(token);
 
             var pagedList = new StaticPagedList<ConteudoDto>(
-            result, pageIndex, pageSize, result.Count
+                result.Items, pageIndex, pageSize, result.TotalCount
             );
+
 
             ViewBag.PageCount = pagedList.PageCount;
 
             return View(pagedList);
         }
 
-        //[HttpGet]
-        //[AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-listar")]
-        //public async Task<IActionResult> Index(int? page) { int usuarioLogadoId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value); var usuarioLogado = _db.Usuarios.Include(u => u.Permissao).FirstOrDefault(u => u.Id == usuarioLogadoId); bool usuarioLogadoEhMaster = usuarioLogado.Email.EndsWith("@yourcode.com.br"); IQueryable<Usuario> query = _db.Usuarios.Where(o => o.Situacao).Include(o => o.Permissao); if (!usuarioLogadoEhMaster) { query = query.Where(o => !o.Email.EndsWith("@yourcode.com.br")); } var model = query.OrderBy(o => o.Nome).ToList();
-
-        //    string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDVlNWM1LWUxOTEtNGE0ZS04M2ZlLTNjMTFjMDg4MGM3OCIsInVzZXJuYW1lIjoiVXNlciAzIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU5MzQyMjQxLCJleHAiOjE3NTk5NDcwNDF9.OTNA-NiIsOkdiy0fvI8AgzgGkoUF-7Q3CRwrAp1GWQU";
-        //    var statusOptions = await _cmsService.GetArticleStatusOptionsAsync(token);
-
-        //    ViewBag.StatusOptions = statusOptions;
-
-
-        //    int pageSize = 12; int pageIndex = page ?? 1; var emp = model.ToPagedList(pageIndex, pageSize); ViewBag.PageCount = emp.PageCount; return View(emp); }
-
-
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-criar")]
         public async Task<IActionResult> Create()
         {
-            string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDVlNWM1LWUxOTEtNGE0ZS04M2ZlLTNjMTFjMDg4MGM3OCIsInVzZXJuYW1lIjoiVXNlciAzIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU5MzQyMjQxLCJleHAiOjE3NTk5NDcwNDF9.OTNA-NiIsOkdiy0fvI8AgzgGkoUF-7Q3CRwrAp1GWQU"; // futuramente pegar do login
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
             var tags = await _cmsService.GetTagsAsync(token);
 
             return PartialView("Create", tags);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Create(IFormCollection form, IFormFile arquivoImagem, IFormFile arquivoMidia)
+        {
+            try
+            {
+                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+                var titulo = form["Titulo"];
+                var assunto = form["Assunto"];
+                var introducao = form["Introducao"];
+                var texto = form["Texto"];
+                var cor = form["CorConteudo"];
+                var referencias = form["Referencias"];
+
+                // 🔹 Define o status conforme o botão clicado
+                var acao = form["acao"];
+                var status = acao == "rascunho" ? "DRAFT" : "PUBLISHED";
+
+                // Tags selecionadas
+                var categorias = form["Categorias"].Select(int.Parse).ToList();
+                var sintomas = form["Sintomas"].Select(int.Parse).ToList();
+                var solucoes = form["Solucoes"].Select(int.Parse).ToList();
+
+                await _cmsService.CreateArtigoAsync(
+                    titulo, introducao, texto, referencias, cor, status, assunto,
+                    categorias, sintomas, solucoes, arquivoImagem, arquivoMidia, token
+                );
+
+                TempData["SuccessMessage"] = status == "draft"
+                    ? "Artigo salvo como rascunho!"
+                    : "Publicação criada com sucesso!";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Erro ao criar artigo: {ex.Message}";
+                return RedirectToAction("Create");
+            }
+        }
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-editar")]
         public async Task<IActionResult> Edit(string id)
         {
-            string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDVlNWM1LWUxOTEtNGE0ZS04M2ZlLTNjMTFjMDg4MGM3OCIsInVzZXJuYW1lIjoiVXNlciAzIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU5MzQyMjQxLCJleHAiOjE3NTk5NDcwNDF9.OTNA-NiIsOkdiy0fvI8AgzgGkoUF-7Q3CRwrAp1GWQU";
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
 
             var conteudoedit = await _cmsService.GetArticleAsync(token, id);
             var tags = await _cmsService.GetTagsAsync(token);
@@ -130,7 +158,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
         public async Task<IActionResult> GetArticleStatus()
         {
-            string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDVlNWM1LWUxOTEtNGE0ZS04M2ZlLTNjMTFjMDg4MGM3OCIsInVzZXJuYW1lIjoiVXNlciAzIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU5MzQyMjQxLCJleHAiOjE3NTk5NDcwNDF9.OTNA-NiIsOkdiy0fvI8AgzgGkoUF-7Q3CRwrAp1GWQU";
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
             var result = await _cmsService.GetArticleStatusOptionsAsync(token);
             return Ok(result);
         }

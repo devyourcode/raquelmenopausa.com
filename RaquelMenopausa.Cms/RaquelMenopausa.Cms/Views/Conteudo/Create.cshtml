@@ -17,7 +17,8 @@
     }
 </style>
 
-<form id="formCreateConteudo">
+@using (Html.BeginForm("Create", "Conteudo", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
+{
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
@@ -67,8 +68,8 @@
                 <label for="Introducao">Introdução</label>
                 <div class="input-wrapper textarea-wrapper">
                     <textarea id="Introducao" name="Introducao" class="search-input textarea-introducao"
-                              placeholder="insira a introdução do conteúdo"
-                              maxlength="400"></textarea>
+                          placeholder="insira a introdução do conteúdo"
+                          maxlength="400"></textarea>
                     <span id="charCount" class="char-counter">0/400</span>
                 </div>
             </div>
@@ -78,44 +79,44 @@
             <div class="form-group custom-input">
                 <label class="label-title">Cor do conteúdo</label>
                 <div class="color-options">
-                    <label class="color-option" style="background-color: #8B3E08;">
-                        <input type="checkbox" name="CorConteudo" value="#8B3E08">
+                    <label class="color-option" style="background-color: #974808;">
+                        <input type="checkbox" name="CorConteudo" value="#974808">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #D96B05;">
-                        <input type="checkbox" name="CorConteudo" value="#D96B05">
+                    <label class="color-option" style="background-color: #BD5A0A;">
+                        <input type="checkbox" name="CorConteudo" value="#BD5A0A">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #E2A168;">
-                        <input type="checkbox" name="CorConteudo" value="#E2A168">
+                    <label class="color-option" style="background-color: #D18C54;">
+                        <input type="checkbox" name="CorConteudo" value="#D18C54">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #1E2923;">
-                        <input type="checkbox" name="CorConteudo" value="#1E2923">
+                    <label class="color-option" style="background-color: #293D35;">
+                        <input type="checkbox" name="CorConteudo" value="#293D35">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #3C5245;">
-                        <input type="checkbox" name="CorConteudo" value="#3C5245">
+                    <label class="color-option" style="background-color: #3B574B;">
+                        <input type="checkbox" name="CorConteudo" value="#3B574B">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #AAB098;">
-                        <input type="checkbox" name="CorConteudo" value="#AAB098">
+                    <label class="color-option" style="background-color: #A6AE97;">
+                        <input type="checkbox" name="CorConteudo" value="#A6AE97">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #4E3B63;">
-                        <input type="checkbox" name="CorConteudo" value="#4E3B63">
+                    <label class="color-option" style="background-color: #4E4265;">
+                        <input type="checkbox" name="CorConteudo" value="#4E4265">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #7A6196;">
-                        <input type="checkbox" name="CorConteudo" value="#7A6196">
+                    <label class="color-option" style="background-color: #6F5E90;">
+                        <input type="checkbox" name="CorConteudo" value="#6F5E90">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #B6A4C9;">
-                        <input type="checkbox" name="CorConteudo" value="#B6A4C9">
+                    <label class="color-option" style="background-color: #9A8EB1;">
+                        <input type="checkbox" name="CorConteudo" value="#9A8EB1">
                         <span class="inner-box"></span>
                     </label>
-                    <label class="color-option" style="background-color: #FFFFFF; border: 2px solid #ccc;">
-                        <input type="checkbox" name="CorConteudo" value="#FFFFFF" style="border: 2px solid #606060">
+                    <label class="color-option" style="background-color: #FBFBFB; border: 2px solid #ccc;">
+                        <input type="checkbox" name="CorConteudo" value="#FBFBFB" style="border: 2px solid #606060">
                         <span class="inner-box dark"></span>
                     </label>
                 </div>
@@ -129,7 +130,7 @@
                 <label for="Texto">Texto Principal</label>
                 <div class="input-wrapper textarea-wrapper">
                     <textarea id="Texto" name="Texto" class="search-input textarea-introducao"
-                              placeholder="insira o texto do conteúdo" style="height:300px"></textarea>
+                          placeholder="insira o texto do conteúdo" style="height:300px"></textarea>
                 </div>
             </div>
         </div>
@@ -145,7 +146,7 @@
                         @foreach (var category in Model.ArticleCategories)
                         {
                             <label class="tag-pill">
-                                <input type="checkbox" name="Categorias" value="@category.Label"> @category.Label
+                                <input type="checkbox" name="Categorias" value="@category.Value"> @category.Label
                             </label>
                         }
                     </div>
@@ -157,7 +158,7 @@
                         @foreach (var symptom in Model.SymptomCategories)
                         {
                             <label class="symptom-item">
-                                <input type="checkbox" name="Sintomas" value="@symptom.Label"> @symptom.Label
+                                <input type="checkbox" name="Sintomas" value="@symptom.Value"> @symptom.Label
                             </label>
                         }
                     </div>
@@ -167,7 +168,7 @@
                         @foreach (var solution in Model.Solutions)
                         {
                             <label class="soluction-item">
-                                <input type="checkbox" name="Solucoes" value="@solution.Label"> @solution.Label
+                                <input type="checkbox" name="Solucoes" value="@solution.Value"> @solution.Label
                             </label>
                         }
                     </div>
@@ -176,7 +177,34 @@
         </div>
 
 
-        @* <div class="col-md-6 col-xs-12">
+        
+
+
+    </div>
+
+    <div class="buttons-container">
+        <button type="button" class="btn-cancelar" onclick="window.location.href='@Url.Action("Index", "Conteudo")'">
+            CANCELAR
+        </button>
+        <button type="submit" name="acao" value="rascunho" class="btn-rascunho">
+            SALVAR COMO RASCUNHO
+        </button>
+        <button type="submit" name="acao" value="publicar" class="btn-save">
+            CRIAR PUBLICAÇÃO
+        </button>
+    </div>
+}
+
+<script>
+    const textarea = document.getElementById('Introducao');
+    const charCount = document.getElementById('charCount');
+
+    textarea.addEventListener('input', function () {
+        charCount.textContent = `${this.value.length}/400`;
+    });
+</script>
+
+@* <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
                 <label class="label-title">Tags</label>
 
@@ -289,25 +317,4 @@
                 </div>
             </div>
         </div> *@
-
-        
-    </div>
-
-    <div class="buttons-container">
-        <button type="button" class="btn-cancelar">CANCELAR</button>
-        <button type="submit" class="btn-rascunho">SALVAR COMO RASCUNHO</button>
-        <button type="submit" class="btn-save">CRIAR PUBLICAÇÃO</button>
-    </div>
-</form>
-
-<script>
-    const textarea = document.getElementById('Introducao');
-    const charCount = document.getElementById('charCount');
-
-    textarea.addEventListener('input', function () {
-        charCount.textContent = `${this.value.length}/400`;
-    });
-</script>
-
-
 
