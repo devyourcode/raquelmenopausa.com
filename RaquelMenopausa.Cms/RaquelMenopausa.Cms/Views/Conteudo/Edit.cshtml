@@ -326,6 +326,53 @@
 
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
+                <label class="label-title">Tags</label>
+
+                <!-- CATEGORIAS -->
+                <div class="tag-section">
+                    <p class="tag-title">Categorias</p>
+                    <div class="tag-options">
+                        @foreach (var category in Model.ArticleArticleCategories)
+                        {
+                            <label class="tag-pill">
+                                <input type="checkbox" name="Categorias" value="@category.ArticleCategory.ArticleCategoryId">
+                                @category.ArticleCategory.Name
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <!-- SINTOMAS -->
+                <div class="tag-section">
+                    <p class="tag-title">Sintomas</p>
+                    <div class="symptom-options">
+                        @foreach (var symptom in Model.ArticleSymptomCategories)
+                        {
+                            <label class="symptom-item">
+                                <input type="checkbox" name="Sintomas" value="@symptom.SymptomCategory.SymptomCategoryId">
+                                @symptom.SymptomCategory.Description
+                            </label>
+                        }
+                    </div>
+
+                    <!-- SOLUÇÕES -->
+                    <p class="tag-title">Soluções</p>
+                    <div class="symptom-options">
+                        @foreach (var solution in Model.ArticleSolutions)
+                        {
+                            <label class="soluction-item">
+                                <input type="checkbox" name="Solucoes" value="@solution.Solution.SolutionId">
+                                @solution.Solution.Name
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
                 <label for="Title">Link de compartilhamento</label>
                 <div class="input-wrapper">
                     <input type="text" id="Title" name="Title" class="search-input"

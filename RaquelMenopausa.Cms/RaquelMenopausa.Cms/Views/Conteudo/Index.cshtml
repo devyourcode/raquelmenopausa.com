@@ -222,11 +222,11 @@
                                                     <a id="btnNovoUsuario" class="btn-icon">
                                                         <img src="~/img/imgsite/gridicons_play.png" class="icon-nav" alt="" />
                                                     </a>
-                                                    <a id="btnNovoUsuario" class="btn-icon">
+                                                    <a class="btnEditConteudo" href="@Href("~/conteudo/edit/" + item.ArticleId)">
                                                         <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
                                                     </a>
 
-                                                    <a href="@Href("~/perfis/delete/" + item.ArticleId)" onclick="return confirm('Deseja realmente excluir?');" class="btn-icon hidden modulo-perfis-deletar">
+                                                    <a href="@Href("~/conteudo/delete/" + item.ArticleId)" onclick="return confirm('Deseja realmente excluir?');" class="btn-icon hidden modulo-perfis-deletar">
                                                         <img src="~/img/imgsite/tabler_trash.png" class="icon-nav" alt="Deletar" />
                                                     </a>
 
@@ -292,50 +292,51 @@
     </div>
 </div>
 
-<script>
+    <script>
     $(document).ready(function () {
+
         if ('@ViewData["Mensagem"]' == "true") {
             $.growl.notice({ title: "Sucesso!", message: "Alterações Salvas!" });
         }
         if ('@ViewData["Mensagem"]' == "false") {
             $.growl.error({ title: "Erro!", message: "Algo deu errado!" });
         }
-    });
 
         $('.dropdown').on('show.bs.dropdown', function () {
-        var $dropdown = $(this);
-        var $menu = $dropdown.find('.dropdown-menu');
-        var $toggle = $dropdown.find('.dropdown-toggle');
+            var $dropdown = $(this);
+            var $menu = $dropdown.find('.dropdown-menu');
+            var $toggle = $dropdown.find('.dropdown-toggle');
 
-        var windowHeight = $(window).height();
-        var buttonOffset = $toggle.offset().top - $(window).scrollTop();
-        var spaceBelow = windowHeight - (buttonOffset + $toggle.outerHeight());
-        var menuHeight = $menu.outerHeight();
+            var windowHeight = $(window).height();
+            var buttonOffset = $toggle.offset().top - $(window).scrollTop();
+            var spaceBelow = windowHeight - (buttonOffset + $toggle.outerHeight());
+            var menuHeight = $menu.outerHeight();
 
-        if (spaceBelow < menuHeight) {
-            $dropdown.addClass('dropup');
-        } else {
-            $dropdown.removeClass('dropup');
-        }
-    });
-
-    $(document).ready(function () {
+            if (spaceBelow < menuHeight) {
+                $dropdown.addClass('dropup');
+            } else {
+                $dropdown.removeClass('dropup');
+            }
+        });
 
         $("#btnNovoConteudo").click(function () {
             $.get("/Conteudo/Create", function (data) {
                 $("#modalBody").html(data);
-
                 $("#conteudoModal").modal('show');
             });
         });
 
-        $("#btnEditConteudo").click(function () {
-            $.get("/Conteudo/Edit/43c6ce96-134d-4438-b462-0effa38d3736", function (data) {
-                $("#modalBodyEdit").html(data);
+            $(document).on("click", ".btnEditConteudo", function (e) {
+        e.preventDefault(); // impede redirecionamento normal
+        var href = $(this).attr("href");
+        var id = href.split("/").pop(); // pega o último trecho da URL
+        console.log("Edit clicked, ID:", id);
 
-                $("#conteudoEditModal").modal('show');
-            });
+        $.get(href, function (data) {
+            $("#modalBodyEdit").html(data);
+            $("#conteudoEditModal").modal('show');
         });
+    });
 
 
         $(document).on("submit", "#formCreateConteudo", function (e) {
@@ -348,7 +349,6 @@
                 success: function (response) {
                     if (response.success) {
                         alert(response.message);
-
                         $("#conteudoModal").modal('hide');
                     } else {
                         $("#modalBody").html(response);
@@ -371,3 +371,6 @@
         window.location.href = `/Conteudo/Index?${params.toString()}`;
     });
 </script>
+
+
+    

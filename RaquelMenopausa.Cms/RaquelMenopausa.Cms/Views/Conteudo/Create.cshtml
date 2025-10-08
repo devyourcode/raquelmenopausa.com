@@ -11,14 +11,16 @@
     .col-md-6 {
         width: 50%;
         float: left;
-        padding-right: 15px;
+        padding-right: 30px;
         padding-left: 15px;
         box-sizing: border-box;
     }
+
 </style>
 
 @using (Html.BeginForm("Create", "Conteudo", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
 {
+    <div class="container-form">
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
@@ -192,6 +194,7 @@
         <button type="submit" name="acao" value="publicar" class="btn-save">
             CRIAR PUBLICAÇÃO
         </button>
+    </div>
     </div>
 }
 

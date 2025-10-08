@@ -1030,6 +1030,7 @@ input[type="file"] {
         transition: all 0.2s ease;
         border: 2px solid #000;
         outline: none;
+        margin-bottom:-3px;
     }
 
         .symptom-item input[type="checkbox"]:checked {
@@ -1061,6 +1062,7 @@ input[type="file"] {
     transition: all 0.2s ease;
     border: 2px solid #000;
     outline: none;
+    margin-bottom:-3px;
 }
 
     .tag-pill input[type="checkbox"]:checked {
@@ -1092,6 +1094,7 @@ input[type="file"] {
     transition: all 0.2s ease;
     border: 2px solid #000;
     outline: none;
+    margin-bottom:-3px;
 }
 
     .soluction-item input[type="checkbox"]:checked {
@@ -1114,4 +1117,14 @@ input[type="file"] {
 .soluction-item input {
     margin-right: 8px;
     background: #fff;
+}
+
+.container-form {
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+.form-horizontal {
+    width: 100%;
+    display: block;
 }

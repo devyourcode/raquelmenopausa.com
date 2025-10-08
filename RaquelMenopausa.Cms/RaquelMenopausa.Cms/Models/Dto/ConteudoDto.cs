@@ -103,6 +103,7 @@ namespace RaquelMenopausa.Cms.Models.Dto
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
+        public bool Selected { get; set; }
     }
 
     // ----------- SINTOMAS -------------
@@ -128,6 +129,7 @@ namespace RaquelMenopausa.Cms.Models.Dto
 
         [JsonPropertyName("order")]
         public int Order { get; set; }
+        public bool Selected { get; set; }
     }
 
     // ----------- SOLUÇÕES -------------
@@ -150,6 +152,7 @@ namespace RaquelMenopausa.Cms.Models.Dto
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
+        public bool Selected { get; set; }
     }
 
     public class ConteudoPagedResponse

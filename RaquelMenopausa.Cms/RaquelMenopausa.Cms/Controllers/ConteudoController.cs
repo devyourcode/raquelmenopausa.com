@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -117,11 +118,9 @@ namespace RaquelMenopausa.Cms.Controllers
                 var cor = form["CorConteudo"];
                 var referencias = form["Referencias"];
 
-                // 🔹 Define o status conforme o botão clicado
                 var acao = form["acao"];
                 var status = acao == "rascunho" ? "DRAFT" : "PUBLISHED";
 
-                // Tags selecionadas
                 var categorias = form["Categorias"].Select(int.Parse).ToList();
                 var sintomas = form["Sintomas"].Select(int.Parse).ToList();
                 var solucoes = form["Solucoes"].Select(int.Parse).ToList();
@@ -140,7 +139,7 @@ namespace RaquelMenopausa.Cms.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Erro ao criar artigo: {ex.Message}";
-                return RedirectToAction("Create");
+                return RedirectToAction("Index");
             }
         }
 
@@ -150,10 +149,57 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
 
-            var conteudoedit = await _cmsService.GetArticleAsync(token, id);
+            var artigo = await _cmsService.GetArticleAsync(token, id);
             var tags = await _cmsService.GetTagsAsync(token);
 
-            return PartialView("Edit", conteudoedit);
+            artigo.ArticleArticleCategories = tags.ArticleCategories.Select(cat => new ArticleCategoryLinkDto
+            {
+                ArticleId = artigo.ArticleId,
+                ArticleCategoryId = int.Parse(cat.Value),
+                ArticleCategory = new ArticleCategoryDetailDto
+                {
+                    ArticleCategoryId = int.Parse(cat.Value),
+                    Name = cat.Label,
+                    Selected = artigo.ArticleArticleCategories.Any(a => a.ArticleCategoryId == int.Parse(cat.Value))
+                }
+            }).ToList();
+
+            artigo.ArticleSymptomCategories = tags.SymptomCategories.Select(sym => new ArticleSymptomCategoryLinkDto
+            {
+                ArticleId = artigo.ArticleId,
+                SymptomCategoryId = int.Parse(sym.Value),
+                SymptomCategory = new SymptomCategoryDetailDto
+                {
+                    SymptomCategoryId = int.Parse(sym.Value),
+                    Description = sym.Label,
+                    Selected = artigo.ArticleSymptomCategories.Any(a => a.SymptomCategoryId == int.Parse(sym.Value))
+                }
+            }).ToList();
+
+            artigo.ArticleSolutions = tags.Solutions.Select(sol => new ArticleSolutionLinkDto
+            {
+                ArticleId = artigo.ArticleId,
+                SolutionId = int.Parse(sol.Value),
+                Solution = new SolutionDetailDto
+                {
+                    SolutionId = int.Parse(sol.Value),
+                    Name = sol.Label,
+                    Selected = artigo.ArticleSolutions.Any(a => a.SolutionId == int.Parse(sol.Value))
+                }
+            }).ToList();
+
+            return PartialView("Edit", artigo);
+        }
+
+        [HttpGet]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-deletar")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+            var conteudoedit = await _cmsService.DeleteAsync(token, id);
+
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> GetArticleStatus()

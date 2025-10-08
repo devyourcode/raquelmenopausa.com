@@ -98,6 +98,17 @@ namespace RaquelMenopausa.Cms.Helpers
             return result;
         }
 
+        public async Task<ConteudoDto> DeleteAsync(string token, string articleId)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.DeleteAsync($"/api/cms-dashboard/contents/delete-article/{articleId}");
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<ConteudoDto>();
+            return result;
+        }
 
         public async Task<ConteudoPagedResponse> GetArtigosAsync(int skip, int take, string search = null, string status = null, string tag = null, List<int> articleCategories = null, List<int> symptomCategories = null, List<int> solutions = null, string token = null)
         {
@@ -160,17 +171,14 @@ namespace RaquelMenopausa.Cms.Helpers
             content.Add(new StringContent(status ?? ""), "status");
             content.Add(new StringContent(subject ?? ""), "subject");
 
-            if (articleCategories != null)
-                foreach (var id in articleCategories)
-                    content.Add(new StringContent(id.ToString()), "articleCategories");
+            if (articleCategories?.Any() == true)
+                content.Add(new StringContent(string.Join(", ", articleCategories)), "articleCategories");
 
-            if (symptomCategories != null)
-                foreach (var id in symptomCategories)
-                    content.Add(new StringContent(id.ToString()), "symptomCategories");
+            if (symptomCategories?.Any() == true)
+                content.Add(new StringContent(string.Join(", ", symptomCategories)), "symptomCategories");
 
-            if (solutions != null)
-                foreach (var id in solutions)
-                    content.Add(new StringContent(id.ToString()), "solutions");
+            if (solutions?.Any() == true)
+                content.Add(new StringContent(string.Join(", ", solutions)), "solutions");
 
             if (imageUpload != null)
             {
