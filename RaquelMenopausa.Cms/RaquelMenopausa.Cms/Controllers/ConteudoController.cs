@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MySqlX.XDevAPI;
 using NuGet.Common;
 using NuGet.Packaging;
 using RaquelMenopausa.Cms.Helpers;
@@ -152,44 +153,81 @@ namespace RaquelMenopausa.Cms.Controllers
             var artigo = await _cmsService.GetArticleAsync(token, id);
             var tags = await _cmsService.GetTagsAsync(token);
 
-            artigo.ArticleArticleCategories = tags.ArticleCategories.Select(cat => new ArticleCategoryLinkDto
+            foreach (var cat in tags.ArticleCategories)
             {
-                ArticleId = artigo.ArticleId,
-                ArticleCategoryId = int.Parse(cat.Value),
-                ArticleCategory = new ArticleCategoryDetailDto
-                {
-                    ArticleCategoryId = int.Parse(cat.Value),
-                    Name = cat.Label,
-                    Selected = artigo.ArticleArticleCategories.Any(a => a.ArticleCategoryId == int.Parse(cat.Value))
-                }
-            }).ToList();
+                cat.Selected = artigo.ArticleArticleCategories
+                    .Any(a => a.ArticleCategoryId == int.Parse(cat.Value));
+            }
 
-            artigo.ArticleSymptomCategories = tags.SymptomCategories.Select(sym => new ArticleSymptomCategoryLinkDto
+            foreach (var sym in tags.SymptomCategories)
             {
-                ArticleId = artigo.ArticleId,
-                SymptomCategoryId = int.Parse(sym.Value),
-                SymptomCategory = new SymptomCategoryDetailDto
-                {
-                    SymptomCategoryId = int.Parse(sym.Value),
-                    Description = sym.Label,
-                    Selected = artigo.ArticleSymptomCategories.Any(a => a.SymptomCategoryId == int.Parse(sym.Value))
-                }
-            }).ToList();
+                sym.Selected = artigo.ArticleSymptomCategories
+                    .Any(a => a.SymptomCategoryId == int.Parse(sym.Value));
+            }
 
-            artigo.ArticleSolutions = tags.Solutions.Select(sol => new ArticleSolutionLinkDto
+            foreach (var sol in tags.Solutions)
             {
-                ArticleId = artigo.ArticleId,
-                SolutionId = int.Parse(sol.Value),
-                Solution = new SolutionDetailDto
-                {
-                    SolutionId = int.Parse(sol.Value),
-                    Name = sol.Label,
-                    Selected = artigo.ArticleSolutions.Any(a => a.SolutionId == int.Parse(sol.Value))
-                }
-            }).ToList();
+                sol.Selected = artigo.ArticleSolutions
+                    .Any(a => a.SolutionId == int.Parse(sol.Value));
+            }
 
+            ViewBag.Tags = tags;
             return PartialView("Edit", artigo);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(IFormCollection form, IFormFile arquivoImagem, IFormFile arquivoMidia)
+        {
+            try
+            {
+                var token = _context.Configs
+                    .Where(o => o.Chave == "token" && o.Situacao)
+                    .Select(o => o.Valor)
+                    .FirstOrDefault();
+
+                var id = form["article_id"];
+                var hash = form["hash"];
+
+                var titulo = form["Title"];               // <input name="Title" />
+                var assunto = form["Subject"];            // <input name="Subject" />
+                var introducao = form["Introducao"];      // <textarea name="Introducao" />
+                var texto = form["Text"];                 // <textarea name="Text" />
+                var cor = form["Color"];                  // <input type="checkbox" name="Color" />
+                var referencias = form["References"];     // (você pode adicionar esse campo no form depois se quiser)
+
+                var acao = form["acao"];
+                var status = acao == "rascunho" ? "DRAFT" : "PUBLISHED";
+
+                var categorias = form["Categorias"].Select(int.Parse).ToList();
+                var sintomas = form["Sintomas"].Select(int.Parse).ToList();
+                var solucoes = form["Solucoes"].Select(int.Parse).ToList();
+
+                bool changedImage = form["ChangedImage"] == "true";
+                bool changedAudioVideo = form["ChangedAudioVideo"] == "true";
+
+                await _cmsService.UpdateArticleAsync(
+                    id, hash, titulo, introducao, texto, referencias, cor, status, assunto,
+                    categorias, sintomas, solucoes,
+                    arquivoImagem, arquivoMidia,
+                    changedImage, changedAudioVideo, token
+                );
+
+                TempData["SuccessMessage"] = status == "DRAFT"
+                    ? "Artigo salvo como rascunho!"
+                    : "Artigo atualizado com sucesso!";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Erro ao atualizar artigo: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+
+
+
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-deletar")]

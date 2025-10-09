@@ -22,179 +22,22 @@
     .col-md-6 {
         width: 50%;
         float: left;
-        padding-right: 15px;
+        padding-right: 30px;
         padding-left: 15px;
         box-sizing: border-box;
     }
+
 </style>
 
-<form id="formEditConteudo">
-    <div class="row">
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="Assunto">Assunto</label>
-                <div class="input-wrapper">
-                    <input type="text" id="Assunto" name="Assunto" class="search-input" placeholder="insira o assunto do conteúdo" />
-                </div>
-            </div>
-        </div>
+@using (Html.BeginForm("Edit", "Conteudo", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
+{
+    <input type="hidden" id="article_id" name="article_id" value="@Model.ArticleId" />
+    <input type="hidden" id="hash" name="hash" value="@Model.Hash" />
 
-        <div class="col-md-6 col-xs-12">
-            <label class="label-title">Imagem de capa</label>
-            <div class="custom-file-upload">
-                <label for="arquivoImagem" class="upload-label">
-                    <img src="~/img/imgsite/mdi_attach-file.png" style="margin-top:4px; height: 20px;" class="icon-nav" alt="Mais" />
-                    <span class="text-bold">Adicionar imagem</span>
-                </label>
-                <span class="divider">|</span>
-                <span id="file-name-imagem" class="file-name">Nenhum arquivo adicionado</span>
-                <input type="file" id="arquivoImagem" name="arquivoImagem" accept="image/*" />
-            </div>
-        </div>
-
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="Titulo">Título</label>
-                <div class="input-wrapper">
-                    <input type="text" id="Titulo" name="Titulo" class="search-input" placeholder="insira o título do conteúdo" />
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-xs-12">
-            <label class="label-title">Áudio ou Vídeo</label>
-            <div class="custom-file-upload" style="padding: 6px 12px;">
-                <label for="arquivoMidia" class="upload-label">
-                    <span class="text-bold">Adicionar arquivo</span>
-                </label>
-                <span class="divider">|</span>
-                <span id="file-name-midia" class="file-name">Nenhum arquivo adicionado</span>
-                <input type="file" id="arquivoMidia" name="arquivoMidia" accept="audio/*,video/*" />
-            </div>
-        </div>
-
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="Introducao">Introdução</label>
-                <div class="input-wrapper textarea-wrapper">
-                    <textarea id="Introducao" name="Introducao" class="search-input textarea-introducao"
-                              placeholder="insira a introdução do conteúdo"
-                              maxlength="400"></textarea>
-                    <span id="charCount" class="char-counter">0/400</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label class="label-title">Cor do conteúdo</label>
-                <div class="color-options">
-                    <label class="color-option" style="background-color: #8B3E08;">
-                        <input type="checkbox" name="CorConteudo" value="#8B3E08">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #D96B05;">
-                        <input type="checkbox" name="CorConteudo" value="#D96B05">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #E2A168;">
-                        <input type="checkbox" name="CorConteudo" value="#E2A168">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #1E2923;">
-                        <input type="checkbox" name="CorConteudo" value="#1E2923">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #3C5245;">
-                        <input type="checkbox" name="CorConteudo" value="#3C5245">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #AAB098;">
-                        <input type="checkbox" name="CorConteudo" value="#AAB098">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #4E3B63;">
-                        <input type="checkbox" name="CorConteudo" value="#4E3B63">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #7A6196;">
-                        <input type="checkbox" name="CorConteudo" value="#7A6196">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #B6A4C9;">
-                        <input type="checkbox" name="CorConteudo" value="#B6A4C9">
-                        <span class="inner-box"></span>
-                    </label>
-                    <label class="color-option" style="background-color: #FFFFFF; border: 2px solid #ccc;">
-                        <input type="checkbox" name="CorConteudo" value="#FFFFFF" style="border: 2px solid #606060">
-                        <span class="inner-box dark"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
+    <input type="hidden" id="changedImage" name="changedImage" value="false" />
+    <input type="hidden" id="changedAudioVideo" name="changedAudioVideo" value="false" />
 
 
-
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="Texto">Texto Principal</label>
-                <div class="input-wrapper textarea-wrapper">
-                    <textarea id="Texto" name="Texto" class="search-input textarea-introducao"
-                              placeholder="insira o texto do conteúdo" style="height:300px"></textarea>
-                </div>
-            </div>
-        </div>
-
-        @* <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label class="label-title">Tags</label>
-
-                <div class="tag-section">
-                    <p class="tag-title">Categorias</p>
-                    <div class="tag-options">
-                        @foreach (var category in Model.ArticleCategories)
-                        {
-                            <label class="tag-pill">
-                                <input type="checkbox" name="Categorias" value="@category.Label"> @category.Label
-                            </label>
-                        }
-                    </div>
-                </div>
-
-                <div class="tag-section">
-                    <p class="tag-title">Sintomas</p>
-                    <div class="symptom-options">
-                        @foreach (var symptom in Model.SymptomCategories)
-                        {
-                            <label class="symptom-item">
-                                <input type="checkbox" name="Sintomas" value="@symptom.Label"> @symptom.Label
-                            </label>
-                        }
-                    </div>
-
-                    <p class="tag-title">Soluções</p>
-                    <div class="symptom-options">
-                        @foreach (var solution in Model.Solutions)
-                        {
-                            <label class="soluction-item">
-                                <input type="checkbox" name="Solucoes" value="@solution.Label"> @solution.Label
-                            </label>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div> *@
-    </div>
-
-    <div class="buttons-container">
-        <button type="button" class="btn-cancelar">CANCELAR</button>
-        <button type="submit" class="btn-rascunho">SALVAR COMO RASCUNHO</button>
-        <button type="submit" class="btn-save">CRIAR PUBLICAÇÃO</button>
-    </div>
-</form>
-
-
-<form id="formEditConteudo">
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
@@ -234,7 +77,6 @@
                 <input type="file" id="arquivoImagem" name="arquivoImagem" accept="image/*" />
             </div>
         </div>
-
 
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
@@ -282,8 +124,19 @@
             }
         </div>
 
-
         <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="Introducao">Introdução</label>
+                <div class="input-wrapper textarea-wrapper">
+                    <textarea id="Introducao" name="Introducao" class="search-input textarea-introducao"
+                              placeholder="insira a introdução do conteúdo"
+                              maxlength="400">@Model.Intro</textarea>
+                    <span id="charCount" class="char-counter">0/400</span>
+                </div>
+            </div>
+        </div>
+
+        @* <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
                 <label for="Intro">Introdução</label>
                 <div class="input-wrapper textarea-wrapper">
@@ -293,7 +146,7 @@
                     <span id="charCount" class="char-counter">@($"{Model.Intro?.Length ?? 0}/400")</span>
                 </div>
             </div>
-        </div>
+        </div> *@
 
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
@@ -301,18 +154,20 @@
                 <div class="color-options">
                     @foreach (var cor in new[] { "#974808", "#BD5A0A", "#D18C54", "#293D35", "#3B574B", "#A6AE97", "#4E4265", "#6F5E90", "#9A8EB1", "#FBFBFB" })
                     {
-                        <label class="color-option" style="background-color:@cor; @(cor=="#FFFFFF" ? "border:2px solid #ccc;" : "")">
+                        <label class="color-option" style="background-color:@cor; @(cor == "#FFFFFF" ? "border:2px solid #ccc;" : "")">
                             <input type="checkbox"
                                    name="Color"
                                    value="@cor"
                                    @(("#" + Model.Color).Equals(cor, StringComparison.OrdinalIgnoreCase) ? "checked" : "") />
 
-                            <span class="inner-box @(cor=="#FFFFFF" ? "dark" : "")"></span>
+                            <span class="inner-box @(cor == "#FFFFFF" ? "dark" : "")"></span>
                         </label>
                     }
                 </div>
             </div>
         </div>
+
+
 
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
@@ -328,41 +183,38 @@
             <div class="form-group custom-input">
                 <label class="label-title">Tags</label>
 
-                <!-- CATEGORIAS -->
                 <div class="tag-section">
                     <p class="tag-title">Categorias</p>
                     <div class="tag-options">
-                        @foreach (var category in Model.ArticleArticleCategories)
+                        @foreach (var cat in ViewBag.Tags.ArticleCategories)
                         {
                             <label class="tag-pill">
-                                <input type="checkbox" name="Categorias" value="@category.ArticleCategory.ArticleCategoryId">
-                                @category.ArticleCategory.Name
+                                <input type="checkbox" name="Categorias" value="@cat.Value" @(cat.Selected ? "checked" : "")>
+                                @cat.Label
                             </label>
                         }
                     </div>
                 </div>
 
-                <!-- SINTOMAS -->
                 <div class="tag-section">
                     <p class="tag-title">Sintomas</p>
                     <div class="symptom-options">
-                        @foreach (var symptom in Model.ArticleSymptomCategories)
+                        @foreach (var cat in ViewBag.Tags.SymptomCategories)
                         {
                             <label class="symptom-item">
-                                <input type="checkbox" name="Sintomas" value="@symptom.SymptomCategory.SymptomCategoryId">
-                                @symptom.SymptomCategory.Description
+                                <input type="checkbox" name="Sintomas" value="@cat.Value" @(cat.Selected ? "checked" : "")>
+                                @cat.Label
                             </label>
                         }
                     </div>
 
-                    <!-- SOLUÇÕES -->
                     <p class="tag-title">Soluções</p>
                     <div class="symptom-options">
-                        @foreach (var solution in Model.ArticleSolutions)
+                        @foreach (var cat in ViewBag.Tags.Solutions)
                         {
                             <label class="soluction-item">
-                                <input type="checkbox" name="Solucoes" value="@solution.Solution.SolutionId">
-                                @solution.Solution.Name
+                                <input type="checkbox" name="Solucoes" value="@cat.Value" @(cat.Selected ? "checked" : "")>
+                                @cat.Label
                             </label>
                         }
                     </div>
@@ -384,10 +236,12 @@
 
     <div class="buttons-container">
         <button type="button" class="btn-cancelar">CANCELAR</button>
-        <button type="submit" class="btn-rascunho">SALVAR COMO RASCUNHO</button>
-        <button type="submit" class="btn-save">CRIAR PUBLICAÇÃO</button>
+        <button type="submit" name="status" value="DRAFT" class="btn-rascunho">SALVAR COMO RASCUNHO</button>
+        <button type="submit" name="status" value="PUBLISHED" class="btn-save">CRIAR PUBLICAÇÃO</button>
+
     </div>
-</form>
+}
+
 
 
 <script>
@@ -396,6 +250,14 @@
 
     textarea.addEventListener('input', function () {
         charCount.textContent = `${this.value.length}/400`;
+    });
+
+        document.getElementById("arquivoImagem").addEventListener("change", function () {
+        document.getElementById("changedImage").value = "true";
+    });
+
+    document.getElementById("arquivoMidia").addEventListener("change", function () {
+        document.getElementById("changedAudioVideo").value = "true";
     });
 </script>
 

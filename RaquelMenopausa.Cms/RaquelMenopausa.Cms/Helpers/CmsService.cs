@@ -161,7 +161,6 @@ namespace RaquelMenopausa.Cms.Helpers
         {
             using var content = new MultipartFormDataContent();
 
-            references = "teste";
 
             content.Add(new StringContent(title ?? ""), "title");
             content.Add(new StringContent(intro ?? ""), "intro");
@@ -205,6 +204,78 @@ namespace RaquelMenopausa.Cms.Helpers
             var response = await _client.SendAsync(request);
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task UpdateArticleAsync(
+    string articleId,
+    string hash,
+    string title,
+    string intro,
+    string text,
+    string references,
+    string color,
+    string status,
+    string subject,
+    List<int> articleCategories,
+    List<int> symptomCategories,
+    List<int> solutions,
+    IFormFile imageUpload,
+    IFormFile audioVideoUpload,
+    bool changedImage,
+    bool changedAudioVideo,
+    string token)
+        {
+            using var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(articleId ?? ""), "article_id");
+            content.Add(new StringContent(hash ?? ""), "hash");
+            content.Add(new StringContent(title ?? ""), "title");
+            content.Add(new StringContent(intro ?? ""), "intro");
+            content.Add(new StringContent(text ?? ""), "text");
+            content.Add(new StringContent(references ?? ""), "references");
+            content.Add(new StringContent(color ?? ""), "color");
+            content.Add(new StringContent(status ?? ""), "status");
+            content.Add(new StringContent(subject ?? ""), "subject");
+
+            content.Add(new StringContent(changedImage.ToString().ToLower()), "changedImage");
+            content.Add(new StringContent(changedAudioVideo.ToString().ToLower()), "changedAudioVideo");
+
+            if (articleCategories?.Any() == true)
+                content.Add(new StringContent(string.Join(", ", articleCategories)), "articleCategories");
+
+            if (symptomCategories?.Any() == true)
+                content.Add(new StringContent(string.Join(", ", symptomCategories)), "symptomCategories");
+
+            if (solutions?.Any() == true)
+                content.Add(new StringContent(string.Join(", ", solutions)), "solutions");
+
+            if (imageUpload != null)
+            {
+                var imageContent = new StreamContent(imageUpload.OpenReadStream());
+                imageContent.Headers.ContentType = new MediaTypeHeaderValue(imageUpload.ContentType);
+                content.Add(imageContent, "imageUpload", imageUpload.FileName);
+            }
+
+            if (audioVideoUpload != null)
+            {
+                var mediaContent = new StreamContent(audioVideoUpload.OpenReadStream());
+                mediaContent.Headers.ContentType = new MediaTypeHeaderValue(audioVideoUpload.ContentType);
+                content.Add(mediaContent, "audioVideoUpload", audioVideoUpload.FileName);
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Put, "/api/cms-dashboard/contents/update-article")
+            {
+                Content = content
+            };
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+
+
     }
 }
 

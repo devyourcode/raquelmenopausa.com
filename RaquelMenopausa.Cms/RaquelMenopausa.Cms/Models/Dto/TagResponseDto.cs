@@ -16,6 +16,7 @@ namespace RaquelMenopausa.Cms.Models.Dto
 
         [JsonPropertyName("value")]
         public string Value { get; set; }
+        public bool Selected { get; set; }
     }
 
     public class SymptomCategoryDto
@@ -25,6 +26,7 @@ namespace RaquelMenopausa.Cms.Models.Dto
 
         [JsonPropertyName("value")]
         public string Value { get; set; }
+        public bool Selected { get; set; }
     }
 
     public class SolutionDto
@@ -34,6 +36,7 @@ namespace RaquelMenopausa.Cms.Models.Dto
 
         [JsonPropertyName("value")]
         public string Value { get; set; }
+        public bool Selected { get; set; }
     }
 
 
