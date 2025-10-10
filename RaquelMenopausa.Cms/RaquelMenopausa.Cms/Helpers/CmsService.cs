@@ -205,24 +205,15 @@ namespace RaquelMenopausa.Cms.Helpers
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task UpdateArticleAsync(
-    string articleId,
-    string hash,
-    string title,
-    string intro,
-    string text,
-    string references,
-    string color,
-    string status,
-    string subject,
-    List<int> articleCategories,
-    List<int> symptomCategories,
-    List<int> solutions,
-    IFormFile imageUpload,
-    IFormFile audioVideoUpload,
-    bool changedImage,
-    bool changedAudioVideo,
-    string token)
+        public async Task UpdateArticleAsync(string articleId, string hash, string title, string intro, string text, string references, string color, string status, string subject,
+        List<int> articleCategories,
+        List<int> symptomCategories,
+        List<int> solutions,
+        IFormFile imageUpload,
+        IFormFile audioVideoUpload,
+        bool changedImage,
+        bool changedAudioVideo,
+        string token)
         {
             using var content = new MultipartFormDataContent();
 
@@ -274,7 +265,48 @@ namespace RaquelMenopausa.Cms.Helpers
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task<ConteudoDto> PublishAsync(string token, string id)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
+            var response = await _client.PostAsync($"/api/cms-dashboard/contents/publish-article/{id}", new StringContent(""));
+
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<ConteudoDto>();
+            return result;
+        }
+
+        public async Task<byte[]> GetArticlesCsvAsync(string token, string search = null, string status = null, string tag = null)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var query = new List<string>();
+
+            if (!string.IsNullOrEmpty(search))
+                query.Add($"search={Uri.EscapeDataString(search)}");
+
+            if (!string.IsNullOrEmpty(status))
+                query.Add($"status={Uri.EscapeDataString(status)}");
+            else
+            {
+                query.Add("status=DRAFT");
+                query.Add("status=PUBLISHED");
+            }
+
+            if (!string.IsNullOrEmpty(tag))
+                query.Add($"articleCategories={Uri.EscapeDataString(tag)}");
+
+            var queryString = string.Join("&", query);
+            var endpoint = $"/api/cms-dashboard/contents/get-articles-csv?{queryString}";
+
+            var response = await _client.GetAsync(endpoint);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsByteArrayAsync();
+        }
 
     }
 }

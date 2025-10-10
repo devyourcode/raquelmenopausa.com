@@ -188,12 +188,12 @@ namespace RaquelMenopausa.Cms.Controllers
                 var id = form["article_id"];
                 var hash = form["hash"];
 
-                var titulo = form["Title"];               // <input name="Title" />
-                var assunto = form["Subject"];            // <input name="Subject" />
-                var introducao = form["Introducao"];      // <textarea name="Introducao" />
-                var texto = form["Text"];                 // <textarea name="Text" />
-                var cor = form["Color"];                  // <input type="checkbox" name="Color" />
-                var referencias = form["References"];     // (você pode adicionar esse campo no form depois se quiser)
+                var titulo = form["Titulo"];               
+                var assunto = form["Subject"];            
+                var introducao = form["Introducao"];      
+                var texto = form["Text"];                 
+                var cor = form["Cor"];                  
+                var referencias = form["References"];    
 
                 var acao = form["acao"];
                 var status = acao == "rascunho" ? "DRAFT" : "PUBLISHED";
@@ -225,10 +225,6 @@ namespace RaquelMenopausa.Cms.Controllers
             }
         }
 
-
-
-
-
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-deletar")]
         public async Task<IActionResult> Delete(string id)
@@ -239,6 +235,35 @@ namespace RaquelMenopausa.Cms.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-publicar")]
+        public async Task<IActionResult> Publish(string id)
+        {
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+            var conteudoedit = await _cmsService.PublishAsync(token, id);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadCsv(string search = null, string status = null, string tag = null)
+        {
+            try
+            {
+                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+                var csvBytes = await _cmsService.GetArticlesCsvAsync(token, search, status, tag);
+
+                return File(csvBytes, "text/csv", "conteudos.csv");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro ao baixar CSV: {ex.Message}");
+            }
+        }
+
 
         public async Task<IActionResult> GetArticleStatus()
         {

@@ -37,7 +37,7 @@
     <input type="hidden" id="changedImage" name="changedImage" value="false" />
     <input type="hidden" id="changedAudioVideo" name="changedAudioVideo" value="false" />
 
-
+    <div class="container-form">
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <div class="form-group custom-input">
@@ -82,7 +82,7 @@
             <div class="form-group custom-input">
                 <label for="Title">Título</label>
                 <div class="input-wrapper">
-                    <input type="text" id="Title" name="Title" class="search-input"
+                    <input type="text" id="Titulo" name="Titulo" class="search-input"
                            placeholder="insira o título do conteúdo"
                            value="@Model.Title" />
                 </div>
@@ -148,24 +148,26 @@
             </div>
         </div> *@
 
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label class="label-title">Cor do conteúdo</label>
-                <div class="color-options">
-                    @foreach (var cor in new[] { "#974808", "#BD5A0A", "#D18C54", "#293D35", "#3B574B", "#A6AE97", "#4E4265", "#6F5E90", "#9A8EB1", "#FBFBFB" })
-                    {
-                        <label class="color-option" style="background-color:@cor; @(cor == "#FFFFFF" ? "border:2px solid #ccc;" : "")">
-                            <input type="checkbox"
-                                   name="Color"
-                                   value="@cor"
-                                   @(("#" + Model.Color).Equals(cor, StringComparison.OrdinalIgnoreCase) ? "checked" : "") />
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group custom-input">
+                    <label class="label-title">Cor do conteúdo</label>
+                    <div class="color-options">
+                        @foreach (var cor in new[] { "#974808", "#BD5A0A", "#D18C54", "#293D35", "#3B574B", "#A6AE97", "#4E4265", "#6F5E90", "#9A8EB1", "#FFFFFF" })
+                        {
+                            var estilo = cor == "#FFFFFF" ? "border: 2px solid #606060;" : "";
+                            <label class="color-option" style="background-color:@cor; @estilo">
+                                <input type="checkbox"
+                                       name="Cor"
+                                       value="@cor"
+                                       @(("#" + Model.Color).Equals(cor, StringComparison.OrdinalIgnoreCase) ? "checked" : "") />
 
-                            <span class="inner-box @(cor == "#FFFFFF" ? "dark" : "")"></span>
-                        </label>
-                    }
+                                <span class="inner-box @(cor == "#FFFFFF" ? "border-dark" : "")"></span>
+                            </label>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+
 
 
 
@@ -233,12 +235,16 @@
             </div>
         </div>
     </div>
+    </div>
 
     <div class="buttons-container">
         <button type="button" class="btn-cancelar">CANCELAR</button>
-        <button type="submit" name="status" value="DRAFT" class="btn-rascunho">SALVAR COMO RASCUNHO</button>
-        <button type="submit" name="status" value="PUBLISHED" class="btn-save">CRIAR PUBLICAÇÃO</button>
-
+        <button type="submit" name="acao" value="rascunho" class="btn-rascunho">
+            SALVAR COMO RASCUNHO
+        </button>
+        <button type="submit" name="acao" value="publicar" class="btn-save">
+            CRIAR PUBLICAÇÃO
+        </button>
     </div>
 }
 

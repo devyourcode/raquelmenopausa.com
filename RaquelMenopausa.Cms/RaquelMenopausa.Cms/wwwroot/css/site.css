@@ -1128,3 +1128,17 @@ input[type="file"] {
     width: 100%;
     display: block;
 }
+
+.color-option[style*="#FFFFFF"] {
+    border: 2px solid #606060 !important;
+}
+
+/* Borda padrão quando selecionado */
+.color-option input:checked + .inner-box {
+    outline: 2px solid #606060;
+}
+
+/* Se for branco e estiver selecionado, borda especial */
+.color-option[style*="#FFFFFF"] input:checked + .inner-box {
+    outline: 2px solid #606060 !important;
+}

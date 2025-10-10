@@ -8,6 +8,13 @@
     ViewBag.FacebookImage = ViewBag.DomainSite + "content/upload/config/" + ViewBag.ShareImg;
     ViewBag.Url = ViewBag.DomainSite;
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var search = Context.Request.Query["search"].ToString();
+    var status = Context.Request.Query["status"].ToString();
+    var tag = Context.Request.Query["tag"].ToString();
+
+    var downloadUrl = Url.Action("DownloadCsv", "Conteudo", new { search, status, tag });
+
 }
 
 @functions {
@@ -36,14 +43,17 @@
                     <b>Gerenciador Conteúdos</b>
                 </h1>
             </div>
-            <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
+            @* <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
                 <div class="box-filter">
-                    <img src="~/img/imgsite/download.png" class="icon-download" />
+                    <img src="~/img/imgsite/download.png" id="btnDownloadCsv" class="icon-download" style="cursor:pointer;" title="Baixar CSV" />
                 </div>
+            </div> *@
+            <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
+                <a href="@downloadUrl" class="box-filter">
+                    <img src="~/img/imgsite/download.png" style="width:28px !important; width: 30px !important;height: 28px;" class="icon-nav" />
+                </a>
             </div>
         </div>
-
-
     </section>
 
     <section>
@@ -201,11 +211,11 @@
                                                                 }
                                                                 <div class="modal-body">
                                                                     <div class="row">
-                                                                        @foreach (var tag in tags.Distinct())
+                                                                        @foreach (var tg in tags.Distinct())
                                                                         {
                                                                             <div class="col-md-4">
 
-                                                                                <span class="permissao"><b>@tag</b></span>
+                                                                                <span class="permissao"><b>@tg</b></span>
 
                                                                             </div>
                                                                         }
@@ -219,8 +229,15 @@
                                                 </td>
 
                                                 <td class="acoes">
-                                                    <a id="btnNovoUsuario" class="btn-icon">
-                                                        <img src="~/img/imgsite/gridicons_play.png" class="icon-nav" alt="" />
+                                                    <a href="@Href("~/conteudo/publish/" + item.ArticleId)" class="btn-icon hidden modulo-conteudo-publicar" class="btn-icon">
+                                                        @if (item.Status == "PUBLISHED")
+                                                        {
+                                                            <img src="~/img/imgsite/gridicons_play.png" class="icon-nav" alt="Publicar" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="~/img/imgsite/gridicons_play-1.png" class="icon-nav" alt="Não Publicar" />
+                                                        }
                                                     </a>
                                                     <a class="btnEditConteudo" href="@Href("~/conteudo/edit/" + item.ArticleId)">
                                                         <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
@@ -292,7 +309,7 @@
     </div>
 </div>
 
-    <script>
+<script>
     $(document).ready(function () {
 
         if ('@ViewData["Mensagem"]' == "true") {
@@ -370,7 +387,17 @@
 
         window.location.href = `/Conteudo/Index?${params.toString()}`;
     });
+
+    document.getElementById("btnDownloadCsv").addEventListener("click", function () {
+        const search = document.getElementById("txtSearch").value;
+        const status = document.getElementById("selectStatus").value;
+        const tag = document.getElementById("selectTag").value;
+
+        const url = `/Conteudo/DownloadCsv?search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}&tag=${encodeURIComponent(tag)}`;
+
+        window.location.href = url;
+    });
 </script>
 
 
-    
+
