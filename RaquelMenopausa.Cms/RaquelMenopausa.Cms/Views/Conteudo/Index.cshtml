@@ -17,6 +17,7 @@
 
 }
 
+
 @functions {
     string TruncateText(string text, int maxLength)
     {
@@ -43,14 +44,9 @@
                     <b>Gerenciador Conteúdos</b>
                 </h1>
             </div>
-            @* <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
-                <div class="box-filter">
-                    <img src="~/img/imgsite/download.png" id="btnDownloadCsv" class="icon-download" style="cursor:pointer;" title="Baixar CSV" />
-                </div>
-            </div> *@
             <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
                 <a href="@downloadUrl" class="box-filter">
-                    <img src="~/img/imgsite/download.png" style="width:28px !important; width: 30px !important;height: 28px;" class="icon-nav" />
+                    <img src="~/img/imgsite/download.png" class="icon-download" />
                 </a>
             </div>
         </div>
@@ -86,32 +82,44 @@
             <div class="col-md-12">
                 <div class="box-search">
                     <h1>Filtro e Pesquisa</h1>
-                    <p><b>Pesquisar</b></p>
+
 
                     <div class="filter-group">
-
-                        <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
-                        <div class="box-todo">
-                            <select name="status">
-                                @foreach (var option in (List<RaquelMenopausa.Cms.Models.Dto.ArticleStatusOptionDto>)ViewBag.StatusOptions)
-                                {
-                                    <option value="@option.Value">@option.Label</option>
-                                }
-                            </select>
+                        <div class="col-md-6">
+                            <div class="box-pesquisa">
+                                <p><b>Pesquisar</b></p>
+                                <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="box-todo">
+                                <p><b>Status</b></p>
+                                <select name="status">
+                                    @foreach (var option in (List<RaquelMenopausa.Cms.Models.Dto.ArticleStatusOptionDto>)ViewBag.StatusOptions)
+                                    {
+                                        <option value="@option.Value">@option.Label</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="box-todo">
-                            <select name="tag">
-                                @foreach (var option in (IEnumerable<dynamic>)ViewBag.Tags)
-                                {
-                                    <option value="@option.Value">@option.Label</option>
-                                }
-                            </select>
-                        </div>
+                        <div class="col-md-2">
+                            <div class="box-todo">
+                                <p><b>Tag</b></p>
+                                <select name="tag">
+                                    @foreach (var option in (IEnumerable<dynamic>)ViewBag.Tags)
+                                    {
+                                        <option value="@option.Value">@option.Label</option>
+                                    }
+                                </select>
+                            </div>
 
-                        <button type="button" id="btnSearch" class="btn-search">
-                            <i class="fa fa-search"></i>
-                        </button>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" id="btnSearch" class="btn-search">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
 
                     </div>
                 </div>
@@ -180,7 +188,7 @@
                                                 </td>
                                                 <td>
                                                     <a>
-                                                        <p class="btn-viewtag" alt="Segurança" data-toggle="modal" data-target="#VerResposta_@item.ArticleId">Ver</p>
+                                                        <p class="btn-viewtag" alt="Ver Tags" data-toggle="modal" data-target="#VerResposta_@item.ArticleId">Ver</p>
                                                     </a>
                                                     <div class="modal fade" id="VerResposta_@item.ArticleId" tabindex="-1" role="dialog" aria-labelledby="VerResposta" aria-hidden="true">
                                                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -191,39 +199,82 @@
                                                                         <span aria-hidden="true">&times;</span>
                                                                     </button>
                                                                 </div>
+
                                                                 @{
-                                                                    var tags = new List<string>();
+                                                                    var articleCategories = item.ArticleArticleCategories?
+                                                                    .Where(c => c.ArticleCategory != null)
+                                                                    .Select(c => c.ArticleCategory.Name)
+                                                                    .Distinct()
+                                                                    .ToList() ?? new List<string>();
 
-                                                                    if (item.ArticleArticleCategories != null)
-                                                                        tags.AddRange(item.ArticleArticleCategories
-                                                                        .Where(c => c.ArticleCategory != null)
-                                                                        .Select(c => c.ArticleCategory.Name));
+                                                                    var symptomCategories = item.ArticleSymptomCategories?
+                                                                    .Where(c => c.SymptomCategory != null)
+                                                                    .Select(c => c.SymptomCategory.Description)
+                                                                    .Distinct()
+                                                                    .ToList() ?? new List<string>();
 
-                                                                    if (item.ArticleSymptomCategories != null)
-                                                                        tags.AddRange(item.ArticleSymptomCategories
-                                                                        .Where(c => c.SymptomCategory != null)
-                                                                        .Select(c => c.SymptomCategory.Description));
-
-                                                                    if (item.ArticleSolutions != null)
-                                                                        tags.AddRange(item.ArticleSolutions
-                                                                        .Where(c => c.Solution != null)
-                                                                        .Select(c => c.Solution.Name));
+                                                                    var solutions = item.ArticleSolutions?
+                                                                    .Where(c => c.Solution != null)
+                                                                    .Select(c => c.Solution.Name)
+                                                                    .Distinct()
+                                                                    .ToList() ?? new List<string>();
                                                                 }
+
                                                                 <div class="modal-body">
                                                                     <div class="row">
-                                                                        @foreach (var tg in tags.Distinct())
+
+                                                                        @if (articleCategories.Any())
                                                                         {
-                                                                            <div class="col-md-4">
-
-                                                                                <span class="permissao"><b>@tg</b></span>
-
+                                                                            <div class="col-md-12 mb-3">
+                                                                                <h5 class="categoria-titulo">Categorias</h5>
+                                                                                <div class="tag-list">
+                                                                                    @foreach (var tg in articleCategories)
+                                                                                    {
+                                                                                        <span class="permissao"><b>@tg</b></span>
+                                                                                    }
+                                                                                </div>
                                                                             </div>
                                                                         }
+
+                                                                        @if (symptomCategories.Any())
+                                                                        {
+                                                                            <div class="col-md-12 mb-3">
+                                                                                <h5 class="categoria-titulo">Sintomas</h5>
+                                                                                <div class="tag-list">
+                                                                                    @foreach (var tg in symptomCategories)
+                                                                                    {
+                                                                                        <span class="permissao"><b>@tg</b></span>
+                                                                                    }
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+
+                                                                        @if (solutions.Any())
+                                                                        {
+                                                                            <div class="col-md-12 mb-3">
+                                                                                <h5 class="categoria-titulo">Soluções</h5>
+                                                                                <div class="tag-list">
+                                                                                    @foreach (var tg in solutions)
+                                                                                    {
+                                                                                        <span class="permissao"><b>@tg</b></span>
+                                                                                    }
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+
+                                                                        @if (!articleCategories.Any() && !symptomCategories.Any() && !solutions.Any())
+                                                                        {
+                                                                            <div class="col-md-12">
+                                                                                <p>Nenhuma tag encontrada.</p>
+                                                                            </div>
+                                                                        }
+
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
+
 
 
                                                 </td>

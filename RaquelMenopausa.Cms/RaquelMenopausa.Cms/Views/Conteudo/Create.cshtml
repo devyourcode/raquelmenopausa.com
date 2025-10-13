@@ -205,6 +205,25 @@
     textarea.addEventListener('input', function () {
         charCount.textContent = `${this.value.length}/400`;
     });
+
+    document.getElementById("arquivoImagem").addEventListener("change", function () {
+        const fileNameSpan = document.getElementById("file-name-imagem");
+        if (this.files && this.files.length > 0) {
+            fileNameSpan.textContent = this.files[0].name;
+        } else {
+            fileNameSpan.textContent = "Nenhum arquivo adicionado";
+        }
+    });
+
+    document.getElementById("arquivoMidia").addEventListener("change", function () {
+        const fileNameSpan = document.getElementById("file-name-midia");
+        if (this.files && this.files.length > 0) {
+            fileNameSpan.textContent = this.files[0].name;
+        } else {
+            fileNameSpan.textContent = "Nenhum arquivo adicionado";
+        }
+    });
+
 </script>
 
 @* <div class="col-md-6 col-xs-12">
