@@ -308,6 +308,112 @@ namespace RaquelMenopausa.Cms.Helpers
             return await response.Content.ReadAsByteArrayAsync();
         }
 
+        public async Task<UsuariaPagedResponse> GetUsuariasAsync(int skip, int take, string search = null, string status = null, string token = null, DateTime? initialDate = null, DateTime? finalDate = null)
+        {
+            var query = new List<string>();
+
+            if (initialDate.HasValue)
+                query.Add($"initialDate={initialDate.Value:yyyy-MM-dd}");
+
+            if (finalDate.HasValue)
+                query.Add($"finalDate={finalDate.Value:yyyy-MM-dd}");
+
+            if (!string.IsNullOrEmpty(search))
+                query.Add($"search={Uri.EscapeDataString(search)}");
+
+            if (!string.IsNullOrEmpty(status) && status != "Todos")
+                query.Add($"status={status}");
+
+
+
+            var qs = query.Count > 0 ? "?" + string.Join("&", query) : "";
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/cms-dashboards/users/get-users-paged/{skip}/{take}{qs}");
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+
+            var paged = new UsuariaPagedResponse();
+
+            if (doc.RootElement.ValueKind == JsonValueKind.Array)
+            {
+                var items = doc.RootElement[0].GetRawText();
+                var total = doc.RootElement[1].GetInt32();
+
+                paged.Items = JsonSerializer.Deserialize<List<UsuariaDto>>(items,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                paged.TotalCount = total;
+            }
+
+            return paged;
+        }
+
+        public async Task<IndicatorsUsersDto> GetIndicatorsUsers(string token, string search = null, string status = null, DateTime? initialDate = null, DateTime? finalDate = null)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var query = new List<string>();
+
+            if (!string.IsNullOrEmpty(search))
+                query.Add($"search={Uri.EscapeDataString(search)}");
+
+            if (!string.IsNullOrEmpty(status))
+                query.Add($"status={status}");
+
+            if (initialDate.HasValue)
+                query.Add($"initialDate={initialDate.Value:yyyy-MM-dd}");
+
+            if (finalDate.HasValue)
+                query.Add($"finalDate={finalDate.Value:yyyy-MM-dd}");
+
+            var qs = query.Count > 0 ? "?" + string.Join("&", query) : "";
+
+            var response = await _client.GetAsync($"/api/cms-dashboards/users/get-users-indicators{qs}");
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<IndicatorsUsersDto>();
+            return result ?? new IndicatorsUsersDto();
+        }
+
+        public async Task<byte[]> GetUsersCsvAsync(string token, string search = null, string status = null, DateTime? initialDate = null, DateTime? finalDate = null)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var query = new List<string>();
+
+            if (!string.IsNullOrEmpty(search))
+                query.Add($"search={Uri.EscapeDataString(search)}");
+
+            if (!string.IsNullOrEmpty(status))
+                query.Add($"status={Uri.EscapeDataString(status)}");
+            else
+            {
+                query.Add("status=ACTIVE");
+                query.Add("status=SUSPENDED");
+            }
+
+            if (initialDate.HasValue)
+                query.Add($"initialDate={initialDate.Value:yyyy-MM-dd}");
+
+            if (finalDate.HasValue)
+                query.Add($"finalDate={finalDate.Value:yyyy-MM-dd}");
+
+            var queryString = string.Join("&", query);
+            var endpoint = $"/api/cms-dashboards/users/get-users-csv?{queryString}";
+
+            var response = await _client.GetAsync(endpoint);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsByteArrayAsync();
+        }
+
     }
 }
 

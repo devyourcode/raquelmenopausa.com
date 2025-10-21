@@ -3,72 +3,68 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Common;
-using X.PagedList.Extensions;
 using RaquelMenopausa.Cms.Helpers;
 using RaquelMenopausa.Cms.Models;
+using RaquelMenopausa.Cms.Models.Dto;
+using X.PagedList;
+using X.PagedList.Extensions;
 using Yourcode.Core.Utilities;
 
 namespace RaquelMenopausa.Cms.Controllers
 {
     [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario")]
-    public class UsuarioController : CustomController
+    public class UsuariaController : CustomController
     {
-        private readonly ILogger<UsuarioController> _logger;
+        private readonly ILogger<UsuariaController> _logger;
         private readonly IWebHostEnvironment _env;
         private readonly Context _db;
+        private readonly CmsService _cmsService;
 
-        public UsuarioController(ILogger<UsuarioController> logger, Context db, IWebHostEnvironment env)
+        public UsuariaController(ILogger<UsuariaController> logger, Context db, IWebHostEnvironment env, CmsService cmsService)
             : base(logger, db)
         {
             _db = db;
             _env = env;
             _logger = logger;
+            _cmsService = cmsService;
         }
 
 
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-listar")]
-        public IActionResult Index(int? page)
+        public async Task<IActionResult> Index(int? page, string search, string status, string periodo)
         {
-            //var listConfig = new List<Usuario>();
-            //if (((USUARIO)Session["USUARIO"]).PERMISSAO.TIPO.Contains("Administrador"))
-            //{
-            //    listConfig = db.USUARIO.Where(o => o.SITUACAO).OrderBy(o => o.NOME).ToList();
-            //}
-            //else
-            //{
-            //    listConfig = db.USUARIO.Where(o => o.SITUACAO && o.PERMISSAO.TIPO.Contains("Usuário")).OrderBy(o => o.NOME).ToList();
-            //}
-
-            int usuarioLogadoId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-
-            var usuarioLogado = _db.Usuarios
-                .Include(u => u.Permissao)
-                .FirstOrDefault(u => u.Id == usuarioLogadoId);
-
-            bool usuarioLogadoEhMaster = usuarioLogado.Email.EndsWith("@yourcode.com.br");
-
-            IQueryable<Usuario> query = _db.Usuarios
-                .Where(o => o.Situacao)
-                .Include(o => o.Permissao);
-
-            if (!usuarioLogadoEhMaster)
-            {
-                query = query.Where(o => !o.Email.EndsWith("@yourcode.com.br"));
-            }
-
-            var model = query
-                .OrderBy(o => o.Nome)
-                .ToList();
-
-            int pageSize = 12;
+            int pageSize = 30;
             int pageIndex = page ?? 1;
 
-            var emp = model.ToPagedList(pageIndex, pageSize);
-            ViewBag.PageCount = emp.PageCount;
+            int skip = (pageIndex - 1) * pageSize;
+            int take = pageSize;
 
-            return View(emp);
+            DateTime initialDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime finalDate = initialDate.AddMonths(1).AddDays(-1);
+
+            if (!string.IsNullOrEmpty(periodo) && periodo.Contains("|"))
+            {
+                var parts = periodo.Split('|');
+                if (DateTime.TryParse(parts[0], out var ini)) initialDate = ini;
+                if (DateTime.TryParse(parts[1], out var fim)) finalDate = fim;
+            }
+
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+            var result = await _cmsService.GetUsuariasAsync(skip, take, search, status, token: token, initialDate: initialDate, finalDate: finalDate);
+
+            ViewBag.Indicators = await _cmsService.GetIndicatorsUsers(token, search, status, initialDate: initialDate, finalDate: finalDate);
+
+            var pagedList = new StaticPagedList<UsuariaDto>(
+                result.Items, pageIndex, pageSize, result.TotalCount
+            );
+
+
+            ViewBag.PageCount = pagedList.PageCount;
+
+            return View(pagedList);
         }
 
         [HttpGet]
@@ -245,79 +241,32 @@ namespace RaquelMenopausa.Cms.Controllers
             return View();
         }
 
-
-
         [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-deletar")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var usuario = await _db.Usuarios.FindAsync(id);
-            if (usuario == null)
-                return NotFound();
-
-            usuario.Situacao = false;
-            usuario.Ativo = false;
-            usuario.UserAlt = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            usuario.DataAlt = DateTime.Now;
-
-            await _db.SaveChangesAsync();
-
-            TempData["SUCESSO"] = "Usuário removido!";
-
-            #region LOG
-            var userName = User.Identity?.Name ?? "Usuário desconhecido";
-            var userId = User.FindFirst("sub")?.Value ?? "0";
-
-            LogAuditoria.Action(userName, Convert.ToInt32(userId), "deletou", "usuario", usuario.Id, usuario.Nome);
-            #endregion LOG
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-editar")]
-        public async Task<IActionResult> AtivarInativar(int id)
+        public async Task<IActionResult> DownloadCsv(string search = null, string status = null, string periodo = null)
         {
             try
             {
-                var registro = await _db.Usuarios.FirstOrDefaultAsync(o => o.Id == id);
-                if (registro != null)
+                DateTime initialDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateTime finalDate = initialDate.AddMonths(1).AddDays(-1);
+
+                if (!string.IsNullOrEmpty(periodo) && periodo.Contains("|"))
                 {
-                    registro.UserAlt = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-                    registro.DataAlt = DateTime.Now;
-
-                    if (registro.Ativo == true)
-                    {
-                        _logger.LogInformation($"Usuário {User.Identity.Name} ({registro.UserAlt}) DESATIVOU o usuário ({registro.Id})");
-
-                        registro.Ativo = false;
-                    }
-                    else
-                    {
-                        _logger.LogInformation($"Usuário {User.Identity.Name} ({registro.UserAlt}) ATIVOU o usuário ({registro.Id})");
-
-                        registro.Ativo = true;
-                    }
-
-                    await _db.SaveChangesAsync();
-                    TempData["SUCESSO"] = "Usuário atualizado com sucesso!";
-                    return RedirectToAction("Index");
+                    var parts = periodo.Split('|');
+                    if (DateTime.TryParse(parts[0], out var ini)) initialDate = ini;
+                    if (DateTime.TryParse(parts[1], out var fim)) finalDate = fim;
                 }
-                else
-                {
-                    TempData["ERRO"] = "Usuário não encontrado!";
-                    return RedirectToAction("Index");
-                }
+
+                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+                var csvBytes = await _cmsService.GetUsersCsvAsync(token, search, status, initialDate: initialDate, finalDate: finalDate);
+
+                return File(csvBytes, "text/csv", "Usuarias.csv");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao ativar/inativar usuário");
-
-                TempData["ERRO"] = "Ocorreu um erro ao processar sua solicitação.";
-                return RedirectToAction("Index");
+                return BadRequest($"Erro ao baixar CSV: {ex.Message}");
             }
         }
-
 
     }
 }

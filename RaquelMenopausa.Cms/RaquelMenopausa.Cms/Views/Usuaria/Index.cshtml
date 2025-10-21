@@ -1,13 +1,30 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
-@model IPagedList<Usuario>
+@model IPagedList<RaquelMenopausa.Cms.Models.Dto.UsuariaDto>
 
 @{
-    ViewBag.Title = "Usuários | " + ViewBag.TitlePage;
+    ViewBag.Title = "Usuárias | " + ViewBag.TitlePage;
     ViewBag.Description = ViewBag.DescriptionPage;
     ViewBag.FacebookImage = ViewBag.DomainSite + "content/upload/config/" + ViewBag.ShareImg;
     ViewBag.Url = ViewBag.DomainSite;
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var search = Context.Request.Query["search"].ToString();
+    var status = Context.Request.Query["status"].ToString();
+    DateTime? initialDate = null;
+    DateTime? finalDate = null;
+
+    if (DateTime.TryParse(Context.Request.Query["initialDate"], out var iDate))
+        initialDate = iDate;
+
+    if (DateTime.TryParse(Context.Request.Query["finalDate"], out var fDate))
+        finalDate = fDate;
+
+
+    int startYear = 2020;
+    int endYear = DateTime.Now.Year + 1;
+
+    var downloadUrl = Url.Action("DownloadCsv", "Usuaria", new { search, status,  });
 }
 
 <div class="content-wrapper">
@@ -16,20 +33,31 @@
             <div class="col-md-6">
                 <h1>
                     <img src="~/img/imgsite/tabler_users_orange.png" style="width:28px !important; width: 30px !important;height: 28px;" class="icon-nav" />
-                    <b>Gerenciador Usuários</b>
+                    <b>Gerenciador Usuárias</b>
                 </h1>
             </div>
             <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
-                <div class="box-filter">
+                <a href="@downloadUrl" class="box-filter">
                     <img src="~/img/imgsite/download.png" class="icon-download" />
-                </div>
+                </a>
                 <div class="box-date">
-                    <select>
-                        <option value="1">01/04/2025 - 28/07/2025</option>
-                        <option value="2">01/01/2025 - 31/03/2025</option>
-                        <option value="3">01/10/2024 - 31/12/2024</option>
+                    <select name="periodo" id="periodo">
+                        @for (int year = DateTime.Now.Year; year >= 2000; year--)
+                        {
+                            for (int month = 1; month <= 12; month++)
+                            {
+                                var startDate = new DateTime(year, month, 1);
+                                var endDate = startDate.AddMonths(1).AddDays(-1);
+                                var value = $"{startDate:yyyy-MM-dd}|{endDate:yyyy-MM-dd}";
+
+                                <option value="@value">
+                                    @($"{startDate:dd/MM/yyyy} - {endDate:dd/MM/yyyy}")
+                                </option>
+                            }
+                        }
                     </select>
                 </div>
+
 
             </div>
         </div>
@@ -45,32 +73,26 @@
                 <div class="col-md-3">
                     <div class="box-number">
                         <p>Total de Usuários</p>
-                        <h2><b>44.520</b></h2>
+                        <h2><b>@ViewBag.Indicators.UsersCount</b></h2>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="box-number">
                         <p>Usuários Ativos</p>
-                        <h2><b>27.856</b></h2>
+                        <h2><b>@ViewBag.Indicators.ActiveUsersCount</b></h2>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="box-number">
-                        <p>Usuários Inativos</p>
-                        <h2><b>2.567</b></h2>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="box-number">
-                        <p>Usuários Suspensos</p>
-                        <h2><b>200</b></h2>
+                        <p>Usuárias Suspensas</p>
+                        <h2><b>@ViewBag.Indicators.SuspendedUsersCount</b></h2>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="content-search">
+    @* <section class="content-search">
         <div class="row">
             <div class="col-md-12">
                 <div class="box-search">
@@ -82,8 +104,8 @@
                         <div class="box-todo">
                             <select>
                                 <option value="Todos">Todos</option>
-                                <option value="Ativos">Ativos</option>
-                                <option value="Inativos">Inativos</option>
+                                <option value="ACTIVE">Ativos</option>
+                                <option value="SUSPENDED">Suspensos</option>
                             </select>
                         </div>
                     </div>
@@ -91,8 +113,45 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> *@
 
+    <section class="content-search">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box-search">
+                    <h1>Filtro e Pesquisa</h1>
+
+
+                    <div class="filter-group">
+                        <div class="col-md-8">
+                            <div class="box-pesquisa">
+                                <p><b>Pesquisar</b></p>
+                                <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="box-todo">
+                                <p><b>Status</b></p>
+                                <select name="status">
+                                    <option value="Todos">Todos</option>
+                                    <option value="ACTIVE">Ativos</option>
+                                    <option value="SUSPENDED">Suspensos</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-1">
+                            <button type="button" id="btnSearch" class="btn-search">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section class="content">
         <div class="row">
@@ -118,24 +177,20 @@
                                         @foreach (var item in Model)
                                         {
                                             <tr>
-                                                <td>@item.Nome</td>
-                                                <td>@item.Cargo</td>
+                                                <td>@item.Profile.Name</td>
                                                 <td>@item.Email</td>
+                                                <td>@item.DateCreated.ToShortDateString()</td>
                                                 <td>
-                                                    @(item.Permissao.Tipo)
-                                                </td>
-
-                                                <td>
-                                                    @if (item.Ativo == true)
+                                                    @if (item.Status == "ACTIVE")
                                                     {
                                                         <span>Ativo</span>
                                                     }
                                                     else
                                                     {
-                                                        <span>Inativo</span>
+                                                        <span>Suspenso</span>
                                                     }
                                                 </td>
-
+                                                <td>@item.Observations</td>
                                                 <td class="acoes">
                                                     <a id="btnNovoUsuario" class="btn-icon">
                                                         <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
@@ -162,14 +217,14 @@
                         }
                         else
                         {
-                            <span>Nenhum usuário cadastrado.</span>
+                            <span>Nenhuma usuária cadastrada.</span>
                         }
 
                         @if (ViewBag.PageCount > 1)
                         {
                             <div class="col-md-12 text-center">
                                 <div id="Paging">
-                                    @Html.PagedListPager(Model, page => Url.Action("Index", "usuario", new { page }))
+                                    @Html.PagedListPager(Model, page => Url.Action("Index", "usuaria", new { page }))
                                 </div>
                             </div>
                         }
@@ -254,6 +309,19 @@
                 }
             });
         });
+    });
+
+    document.getElementById("btnSearch").addEventListener("click", function () {
+        const search = document.querySelector(".search-input").value;
+        const status = document.querySelector("select[name='status']").value;
+        const periodo = document.querySelector("select[name='periodo']").value;
+
+        const params = new URLSearchParams();
+        if (search) params.append("search", search);
+        if (status) params.append("status", status);
+        if (periodo) params.append("periodo", periodo);
+
+        window.location.href = `/Usuaria/Index?${params.toString()}`;
     });
 
 </script>
