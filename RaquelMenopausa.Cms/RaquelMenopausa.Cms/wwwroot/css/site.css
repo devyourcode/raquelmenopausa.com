@@ -170,6 +170,7 @@ html {
     display: flex;
     flex-direction: column;
     width: 125%;
+    margin-left:15px;
 }
 
 .box-pesquisa {
@@ -219,11 +220,6 @@ html {
     transition: background-color 0.2s ease;
     margin-top: 22px;
 }
-
-    .btn-search:hover {
-        background-color: #3a7147;
-    }
-
 
 @media (max-width: 768px) {
     .filter-group {
@@ -325,6 +321,25 @@ html {
     min-width: 180px;
     padding: 8px 0;
 }
+
+.table-responsive {
+    overflow: visible !important;
+}
+
+@media (min-width: 768px) {
+    .table-responsive {
+        overflow: visible !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .table-responsive {
+        overflow-x: auto !important;
+        overflow-y: hidden;
+    }
+}
+
+
 
     .dropdown-menu li a {
         display: block;

@@ -256,15 +256,65 @@ namespace RaquelMenopausa.Cms.Controllers
                     if (DateTime.TryParse(parts[1], out var fim)) finalDate = fim;
                 }
 
-                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                var token = _context.Configs
+                    .Where(o => o.Chave == "token" && o.Situacao)
+                    .Select(o => o.Valor)
+                    .FirstOrDefault();
 
-                var csvBytes = await _cmsService.GetUsersCsvAsync(token, search, status, initialDate: initialDate, finalDate: finalDate);
+                var csvBytes = await _cmsService.GetUsersCsvAsync(token, search, status,
+                    initialDate: initialDate, finalDate: finalDate);
 
                 return File(csvBytes, "text/csv", "Usuarias.csv");
             }
             catch (Exception ex)
             {
                 return BadRequest($"Erro ao baixar CSV: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria-suspender-conta")]
+        public async Task<IActionResult> Suspend(string id)
+        {
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+            var usuaria = await _cmsService.SuspendAccountAsync(token, id);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria-ativar-conta")]
+        public async Task<IActionResult> Activate(string id)
+        {
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+            var usuaria = await _cmsService.ActivateAccountAsync(token, id);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EnvioEmail(IFormCollection form)
+        {
+            try
+            {
+                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+                var id = form["UserId"];
+                var subject = form["subject"];
+                var content = form["content"];
+
+                await _cmsService.EnvioEmailAsync(id, subject, content,token);
+
+                TempData["SuccessMessage"] = "E-mail enviado com sucesso!";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Erro ao criar artigo: {ex.Message}";
+                return RedirectToAction("Index");
             }
         }
 

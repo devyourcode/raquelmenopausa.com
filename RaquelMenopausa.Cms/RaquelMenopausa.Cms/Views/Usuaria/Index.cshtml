@@ -23,8 +23,10 @@
 
     int startYear = 2020;
     int endYear = DateTime.Now.Year + 1;
+    var periodo = Context.Request.Query["periodo"].ToString();
 
-    var downloadUrl = Url.Action("DownloadCsv", "Usuaria", new { search, status,  });
+    var downloadUrl = Url.Action("DownloadCsv", "Usuaria", new { search, status, periodo });
+
 }
 
 <div class="content-wrapper">
@@ -92,29 +94,6 @@
         </div>
     </section>
 
-    @* <section class="content-search">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="box-search">
-                    <h1>Filtro e Pesquisa</h1>
-                    <p><b>Pesquisar</b></p>
-
-                    <div class="filter-group">
-                        <input type="text" style="background:#FBFBFB" placeholder="Pesquisar por nome ou e-mail" class="search-input" />
-                        <div class="box-todo">
-                            <select>
-                                <option value="Todos">Todos</option>
-                                <option value="ACTIVE">Ativos</option>
-                                <option value="SUSPENDED">Suspensos</option>
-                            </select>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </section> *@
-
     <section class="content-search">
         <div class="row">
             <div class="col-md-12">
@@ -126,7 +105,7 @@
                         <div class="col-md-8">
                             <div class="box-pesquisa">
                                 <p><b>Pesquisar</b></p>
-                                <input type="text" style="background:#FBFBFB" placeholder="Títulos ou assunto" class="search-input" />
+                                <input type="text" style="background:#FBFBFB" placeholder="pesquisar por nome ou e-mail" class="search-input" />
                             </div>
                         </div>
 
@@ -142,7 +121,7 @@
                         </div>
 
                         <div class="col-md-1">
-                            <button type="button" id="btnSearch" class="btn-search">
+                            <button type="button" style="margin-left:35px;" id="btnSearch" class="btn-search">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
@@ -181,13 +160,13 @@
                                                 <td>@item.Email</td>
                                                 <td>@item.DateCreated.ToShortDateString()</td>
                                                 <td>
-                                                    @if (item.Status == "ACTIVE")
+                                                    @if (item.Deleted == true)
                                                     {
-                                                        <span>Ativo</span>
+                                                        <span>Suspenso</span>
                                                     }
                                                     else
                                                     {
-                                                        <span>Suspenso</span>
+                                                        <span>Ativo</span>
                                                     }
                                                 </td>
                                                 <td>@item.Observations</td>
@@ -202,11 +181,64 @@
                                                             <img src="~/img/imgsite/ri_more-fill.png" class="icon-nav" alt="Mais" />
                                                         </button>
                                                         <ul class="dropdown-menu dropdown-menu-right">
-                                                            <li><a href="#"><img src="~/img/imgsite/ic_outline-email.png" class="icon-nav" alt="Mais" /> Enviar E-mail</a></li>
+                                                            <li><a data-toggle="modal" data-target="#VerResposta_@item.UserId"><img src="~/img/imgsite/ic_outline-email.png" class="icon-nav" alt="Mais" /> Enviar E-mail</a></li>
+
                                                             <li><a href="#"><img src="~/img/imgsite/ic_baseline-refresh.png" class="icon-nav" alt="Mais" /> Resetar Senha</a></li>
                                                             <li><a href="#"><img src="~/img/imgsite/ic_baseline-chat-bubble-outline.png" class="icon-nav" alt="Mais" /> Adicionar Observação</a></li>
-                                                            <li><a href="#"><img src="~/img/imgsite/bx_user-x.png" class="icon-nav" alt="Mais" /> Suspender Conta</a></li>
+                                                            @if (item.Deleted == true)
+                                                            {
+                                                                <li><a href="@Href("~/usuaria/activate/" + item.UserId)"><img src="~/img/imgsite/group.png" class="hidden modulo-usuaria-ativar-conta icon-nav " alt="Ativar conta" /> Ativar Conta</a></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li><a href="@Href("~/usuaria/suspend/" + item.UserId)"><img src="~/img/imgsite/bx_user-x.png" class="icon-nav hidden modulo-usuaria-suspender-conta" alt="Suspender conta" /> Suspender Conta</a></li>
+                                                            }
                                                         </ul>
+                                                        <div class="modal fade" id="VerResposta_@item.UserId" tabindex="-1" role="dialog" aria-labelledby="VerResposta" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h2 class="modal-title" style="color:#000">Enviar E-mail</h2>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <div class="modal-body">
+
+                                                                            @using (Html.BeginForm("EnvioEmail", "Usuaria", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
+                                                                            {
+                                                                            <input type="hidden" id="UserId" name="userId" value="@item.UserId" />
+                                                                                <div class="row g-3">
+                                                                                    <div class="col-md-8 col-xs-12">
+                                                                                        <div class="form-group custom-input">
+                                                                                            <label for="txtAssunto">Assunto</label>
+                                                                                            <div class="input-wrapper">
+                                                                                            <input type="text" id="txtAssunto" name="subject" class="search-input" placeholder="Digite o Assunto" />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-md-8 col-xs-12">
+                                                                                        <div class="form-group custom-input">
+                                                                                            <label for="txtTexto">Conteúdo</label>
+                                                                                            <div class="input-wrapper textarea-wrapper">
+                                                                                            <textarea id="txtTexto" name="content" class="search-input"
+                                                                                              placeholder="insira o texto" style="height:300px"></textarea>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                <div class="col-md-12 tex-center">
+                                                                                    <button type="submit" class="btn-search" id="btnSalvar">
+                                                                                        ENVIAR
+                                                                                    </button>
+                                                                                </div>
+                                                                                </div>
+                                                                                
+                                                                            }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -252,6 +284,9 @@
         </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="~/js/trumbowyg/trumbowyg.min.css" asp-append-version="true" />
+<script src="~/js/trumbowyg/trumbowyg.min.js" asp-append-version="true"></script>
 
 <script>
     $(document).ready(function () {
@@ -311,17 +346,60 @@
         });
     });
 
-    document.getElementById("btnSearch").addEventListener("click", function () {
+            document.getElementById("btnSearch").addEventListener("click", function () {
         const search = document.querySelector(".search-input").value;
         const status = document.querySelector("select[name='status']").value;
-        const periodo = document.querySelector("select[name='periodo']").value;
+        const periodoValue = document.querySelector("select[name='periodo']").value;
 
         const params = new URLSearchParams();
+
         if (search) params.append("search", search);
         if (status) params.append("status", status);
-        if (periodo) params.append("periodo", periodo);
+        if (periodoValue) params.append("periodo", periodoValue);
 
+        // Atualiza o link de download também
+        const downloadLink = document.querySelector(".box-filter a");
+        if (downloadLink) {
+            downloadLink.href = `/Usuaria/DownloadCsv?${params.toString()}`;
+        }
+
+        // Redireciona a página
         window.location.href = `/Usuaria/Index?${params.toString()}`;
     });
 
+    $(document).ready(function () {
+        $('#txtTexto').trumbowyg({
+            lang: 'pt_br',
+            btns: [
+                ['viewHTML'],
+                ['undo', 'redo'],
+                ['formatting'],
+                ['strong', 'em', 'del'],
+                ['superscript', 'subscript'],
+                ['link'],
+                ['insertImage'],
+                ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                ['unorderedList', 'orderedList'],
+                ['horizontalRule'],
+                ['removeformat'],
+                ['fullscreen']
+            ],
+            autogrow: true
+        });
+    });
+
+            $('#btnSalvar').on('click', function(e) {
+        let conteudo = $('#txtTexto').trumbowyg('html');
+        $('#txtTexto').val(conteudo);
+
+        if (!conteudo || conteudo.trim() === '') {
+            alert('O campo conteúdo é obrigatório!');
+            e.preventDefault(); // impede o submit
+            return false;
+        }
+    });
+
+
 </script>
+
+

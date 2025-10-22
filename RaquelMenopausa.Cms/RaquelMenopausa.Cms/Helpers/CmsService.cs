@@ -1,4 +1,5 @@
-﻿using RaquelMenopausa.Cms.Models.Dto;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using RaquelMenopausa.Cms.Models.Dto;
 using System.Linq.Dynamic.Core;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -346,7 +347,7 @@ namespace RaquelMenopausa.Cms.Helpers
                 var total = doc.RootElement[1].GetInt32();
 
                 paged.Items = JsonSerializer.Deserialize<List<UsuariaDto>>(items,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 paged.TotalCount = total;
             }
 
@@ -412,6 +413,55 @@ namespace RaquelMenopausa.Cms.Helpers
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadAsByteArrayAsync();
+        }
+
+        public async Task<UsuariaDto> SuspendAccountAsync(string token, string id)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.PostAsync($"/api/cms-dashboards/users/suspend-account/{id}", new StringContent(""));
+
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<UsuariaDto>();
+            return result;
+        }
+
+        public async Task<UsuariaDto> ActivateAccountAsync(string token, string id)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.PostAsync($"/api/cms-dashboards/users/activate-account/{id}", new StringContent(""));
+
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<UsuariaDto>();
+            return result;
+        }
+
+        public async Task EnvioEmailAsync(string id, string text, string subject, string token)
+        {
+            var data = new Dictionary<string, string>
+            {
+                { "userId", id },
+                { "subject", subject ?? "" },
+                { "content", text ?? "" }
+            };
+
+            var content = new FormUrlEncodedContent(data);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/cms-dashboards/users/send-email")
+            {
+                Content = content
+            };
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
         }
 
     }

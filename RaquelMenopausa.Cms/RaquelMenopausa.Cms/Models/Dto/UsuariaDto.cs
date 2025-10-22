@@ -59,7 +59,7 @@ namespace RaquelMenopausa.Cms.Models.Dto
         public string Status => Active ? "ACTIVE" : "SUSPENDED";
 
         [JsonPropertyName("banned")]
-        public bool? Banned { get; set; }
+        public DateTime? Banned { get; set; }
 
         [JsonPropertyName("deleted")]
         public bool Deleted { get; set; }

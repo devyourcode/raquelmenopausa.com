@@ -8,9 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Jobs\**" />
     <Compile Remove="Views\Robot\**" />
+    <Content Remove="Jobs\**" />
     <Content Remove="Views\Robot\**" />
+    <EmbeddedResource Remove="Jobs\**" />
     <EmbeddedResource Remove="Views\Robot\**" />
+    <None Remove="Jobs\**" />
     <None Remove="Views\Robot\**" />
   </ItemGroup>
 
@@ -3734,7 +3738,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Jobs\" />
     <Folder Include="wwwroot\vendors\bootstrap-wysihtml5-rails-b3\testapp\config\environments\" />
     <Folder Include="wwwroot\vendors\bootstrap-wysihtml5-rails-b3\testapp\config\initializers\" />
     <Folder Include="wwwroot\vendors\bootstrap-wysihtml5-rails-b3\testapp\config\locales\" />
