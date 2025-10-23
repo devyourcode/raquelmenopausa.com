@@ -145,7 +145,7 @@ namespace RaquelMenopausa.Cms.Controllers
         }
 
         [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-editar")]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-editar")]
         public async Task<IActionResult> Edit(string id)
         {
             var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();

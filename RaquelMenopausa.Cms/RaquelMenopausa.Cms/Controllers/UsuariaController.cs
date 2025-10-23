@@ -173,72 +173,56 @@ namespace RaquelMenopausa.Cms.Controllers
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-editar")]
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit(string id)
         {
-            return PartialView("Edit");
+            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+            var usuaria = await _cmsService.GetUsuariaAsync(token, id);
+
+            return PartialView("Edit", usuaria);
         }
 
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormCollection form)
+        public async Task<IActionResult> Edit(IFormCollection form, IFormFile arquivo)
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    var query = await _db.Usuarios.FirstOrDefaultAsync(o => o.Id == id);
-                    if (query != null)
-                    {
-                        query.Nome = form["txtNome"].ToString();
-                        query.Email = form["txtEmail"].ToString();
-                        query.Cargo = form["txtCargo"].ToString();
+                var token = _context.Configs
+                    .Where(o => o.Chave == "token" && o.Situacao)
+                    .Select(o => o.Valor)
+                    .FirstOrDefault();
 
-                        query.DataAlt = DateTime.Now;
-                        query.UserAlt = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+                var id = form["user_id"];
+                var hash = form["hash"];
 
-                        query.PermissaoId = int.Parse(form["txtPermissao"]);
-                        if (!string.IsNullOrWhiteSpace(form["txtSenha"]))
-                        {
-                            query.Senha = CryptoHelper.HashMd5(form["txtSenha"]);
-                        }
+                var nome = form["Nome"];
+                var chamada = form["Chamada"];
+                var email = form["Email"];
+                var EmailVerified = form["EmailVerified"];
+                var status = form["status"];
+                var admin = form["admin"];
 
-                        if (!string.IsNullOrEmpty(form["txtAtivo"]))
-                        {
-                            query.Ativo = Convert.ToBoolean(Convert.ToInt32(form["txtAtivo"]));
-                        }
+                //var acao = form["acao"];
+                //var status = acao == "rascunho" ? "DRAFT" : "PUBLISHED";
 
-                        await _db.SaveChangesAsync();
-                    }
+                bool changedImage = form["ChangedImage"] == "true";
 
-                    TempData["SUCESSO"] = "Popup atualizado com sucesso!";
+                //await _cmsService.UpdateArticleAsync(
+                //    id, hash, status,
+                //    changedImage, token
+                //);
 
-                    #region LOG
-                    var userName = User.Identity?.Name ?? "Usuário desconhecido";
-                    var userId = User.FindFirst("sub")?.Value ?? "0";
+                TempData["SuccessMessage"] = status == "DRAFT"
+                    ? "Artigo salvo como rascunho!"
+                    : "Artigo atualizado com sucesso!";
 
-                    LogAuditoria.Action(userName, Convert.ToInt32(userId), "editou", "usuario", query.Id, query.Nome);
-                    #endregion LOG
-
-                    return RedirectToAction(nameof(Index));
-                }
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao editar popup");
-
-                #region LOG
-                var userName = User.Identity?.Name ?? "Usuário desconhecido";
-                var userId = User.FindFirst("sub")?.Value ?? "0";
-                var query = await _db.Usuarios.FirstOrDefaultAsync(o => o.Id == id);
-
-                LogAuditoria.Action(userName, Convert.ToInt32(userId), "Erro ao editar", "usuario", query.Id, query.Nome);
-                #endregion LOG
-
-                TempData["ERRO"] = $"Ocorreu um erro: {ex.Message}";
+                TempData["ErrorMessage"] = $"Erro ao atualizar artigo: {ex.Message}";
+                return RedirectToAction("Index");
             }
-
-            return View();
         }
 
         [HttpGet]
@@ -280,6 +264,8 @@ namespace RaquelMenopausa.Cms.Controllers
 
             var usuaria = await _cmsService.SuspendAccountAsync(token, id);
 
+            TempData["SUCESSO"] = "Conta suspensa com sucesso!";
+
             return RedirectToAction("Index");
         }
 
@@ -290,6 +276,8 @@ namespace RaquelMenopausa.Cms.Controllers
             var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
 
             var usuaria = await _cmsService.ActivateAccountAsync(token, id);
+
+            TempData["SUCESSO"] = "Conta ativada com sucesso!";
 
             return RedirectToAction("Index");
         }
@@ -303,17 +291,66 @@ namespace RaquelMenopausa.Cms.Controllers
 
                 var id = form["UserId"];
                 var subject = form["subject"];
-                var content = form["content"];
+                var content = $"<p>{form["content"]}</p>";
+
 
                 await _cmsService.EnvioEmailAsync(id, subject, content,token);
 
-                TempData["SuccessMessage"] = "E-mail enviado com sucesso!";
+                TempData["SUCESSO"] = "E-mail enviado com sucesso!";
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Erro ao criar artigo: {ex.Message}";
+                TempData["ERRO"] = $"Erro ao enviar e-mail: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetSenha(IFormCollection form)
+        {
+            try
+            {
+                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+                var id = form["UserId"];
+                var newPassword = form["newPassword"];
+
+
+                await _cmsService.ResetSenhaAsync(id, newPassword, token);
+
+                TempData["SUCESSO"] = "Senha atualizada com sucesso!";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ERRO"] = $"Erro ao atualizar a senha: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddObservation(IFormCollection form)
+        {
+            try
+            {
+                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+                var id = form["UserId"];
+                var observations = form["observations"];
+
+
+                await _cmsService.AddObservationAsync(id, observations, token);
+
+                TempData["SUCESSO"] = "Observação adicionada com sucesso!";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ERRO"] = $"Erro ao adicionar observação: {ex.Message}";
                 return RedirectToAction("Index");
             }
         }

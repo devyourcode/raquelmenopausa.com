@@ -347,6 +347,7 @@ html {
         text-decoration: none;
         color: #333;
         font-size: 14px;
+        cursor:pointer;
     }
 
         .dropdown-menu li a:hover {
@@ -831,6 +832,11 @@ input[type="file"] {
     .content-wrapper {
         margin-left: 0;
     }
+
+    .camp-password {
+        margin-right: 40px !important;
+        margin-left: 40px !important;
+    }
 }
 
 .sidebar {
@@ -1171,4 +1177,20 @@ input[type="file"] {
     width: 100%;
     display: block;
 }
+
+.btn-enviar {
+    width: 30%;
+    height: 38px;
+    border: none;
+    background-color: #FF8C42;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 16px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 22px;
+}
+
 

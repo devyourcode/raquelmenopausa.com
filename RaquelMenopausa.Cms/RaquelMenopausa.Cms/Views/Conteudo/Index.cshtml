@@ -395,16 +395,16 @@
         });
 
             $(document).on("click", ".btnEditConteudo", function (e) {
-        e.preventDefault(); // impede redirecionamento normal
-        var href = $(this).attr("href");
-        var id = href.split("/").pop(); // pega o último trecho da URL
-        console.log("Edit clicked, ID:", id);
+            e.preventDefault();
+            var href = $(this).attr("href");
+            var id = href.split("/").pop();
+            console.log("Edit clicked, ID:", id);
 
-        $.get(href, function (data) {
-            $("#modalBodyEdit").html(data);
-            $("#conteudoEditModal").modal('show');
-        });
-    });
+            $.get(href, function (data) {
+                $("#modalBodyEdit").html(data);
+                $("#conteudoEditModal").modal('show');
+            });
+         });
 
 
         $(document).on("submit", "#formCreateConteudo", function (e) {

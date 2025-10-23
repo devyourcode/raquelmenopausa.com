@@ -441,20 +441,20 @@ namespace RaquelMenopausa.Cms.Helpers
             return result;
         }
 
-        public async Task EnvioEmailAsync(string id, string text, string subject, string token)
+        public async Task EnvioEmailAsync(string id, string subject, string content, string token)
         {
             var data = new Dictionary<string, string>
             {
                 { "userId", id },
                 { "subject", subject ?? "" },
-                { "content", text ?? "" }
+                { "content", content ?? "" }
             };
 
-            var content = new FormUrlEncodedContent(data);
+            var conteudo = new FormUrlEncodedContent(data);
 
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/cms-dashboards/users/send-email")
             {
-                Content = content
+                Content = conteudo
             };
 
             if (!string.IsNullOrEmpty(token))
@@ -462,6 +462,62 @@ namespace RaquelMenopausa.Cms.Helpers
 
             var response = await _client.SendAsync(request);
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task ResetSenhaAsync(string id, string newPassword, string token)
+        {
+            var data = new Dictionary<string, string>
+            {
+                { "userId", id },
+                { "newPassword", newPassword ?? "" },
+            };
+
+            var conteudo = new FormUrlEncodedContent(data);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/cms-dashboards/users/reset-password")
+            {
+                Content = conteudo
+            };
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task AddObservationAsync(string id, string observations, string token)
+        {
+            var data = new Dictionary<string, string>
+            {
+                { "userId", id },
+                { "observations", observations ?? "" },
+            };
+
+            var conteudo = new FormUrlEncodedContent(data);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/cms-dashboards/users/add-observations")
+            {
+                Content = conteudo
+            };
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<UsuariaDto> GetUsuariaAsync(string token, string id)
+        {
+            _client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.GetAsync($"/api/cms-dashboards/users/get-user/{id}");
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<UsuariaDto>();
+            return result;
         }
 
     }
