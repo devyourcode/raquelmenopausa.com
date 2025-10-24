@@ -80,19 +80,19 @@ namespace RaquelMenopausa.Cms.Controllers
         }
 
         [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-criar")]
-        public IActionResult CreateUsuario()
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-criar")]
+        public IActionResult Create()
         {
 
             var queryModulo = _db.Modulos.Where(o => o.Situacao && o.Ativo).ToList();
             ViewData["listaModulo"] = queryModulo;
 
-            return PartialView("CreateUsuario");
+            return PartialView("Create");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateUsuario(IFormCollection form)
+        public async Task<IActionResult> Create(IFormCollection form)
         {
             Usuario usuario = new Usuario();
 
@@ -192,87 +192,8 @@ namespace RaquelMenopausa.Cms.Controllers
         }
 
         [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-criar")]
-        public IActionResult Create()
-        {
-            var queryModulo = _db.Modulos.ToList();
-            ViewData["listaModulo"] = queryModulo;
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormCollection form)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var permissao = new Permissao
-                    {
-                        Tipo = form["txtNome"].ToString()
-                    };
-                    _db.Permissoes.Add(permissao);
-                    await _db.SaveChangesAsync();
-
-                    var queryModulos = await _db.Modulos.OrderBy(m => m.Nome).ToListAsync();
-                    var listaModulos = new List<ModuloPermissao>();
-
-                    foreach (var item in queryModulos)
-                    {
-                        listaModulos.Add(new ModuloPermissao
-                        {
-                            ModuloId = item.Id,
-                            PermissaoId = permissao.Id,
-                            Permitir = false
-                        });
-                    }
-
-                    _db.ModuloPermissoes.AddRange(listaModulos);
-                    await _db.SaveChangesAsync();
-
-                    // Marca os checkboxes selecionados como true
-                    if (form.TryGetValue("txtModulo", out var selecionados) && selecionados.Count > 0)
-                    {
-                        var modulosPermissao = await _db.ModuloPermissoes
-                            .Where(u => u.PermissaoId == permissao.Id)
-                            .ToListAsync();
-
-                        foreach (var sel in selecionados)
-                        {
-                            if (int.TryParse(sel, out int moduloId))
-                            {
-                                var usuarioModulo = modulosPermissao.FirstOrDefault(u => u.ModuloId == moduloId);
-                                if (usuarioModulo != null)
-                                    usuarioModulo.Permitir = true;
-                            }
-                        }
-                        await _db.SaveChangesAsync();
-                    }
-
-                    // LOG
-                    var userName = User.Identity?.Name ?? "Usuário desconhecido";
-                    var userId = User.FindFirst("sub")?.Value ?? "0";
-                    CmsGeneralHelper.SaveLogInfo($"{userName}({userId}) ADICIONOU A PERMISSÃO ({permissao.Id} {permissao.Tipo})");
-
-                    TempData["SUCESSO"] = "Perfil adicionado com sucesso!";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                TempData["ERRO"] = "Dados inválidos!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                TempData["ERRO"] = "Erro ao adicionar: " + ex.InnerException?.Message ?? ex.Message;
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-editar")]
-        public async Task<IActionResult> EditUsuario(int id)
+        public async Task<IActionResult> Edit(int id)
         {
 
             var usuario = await _db.Usuarios.FirstOrDefaultAsync(o => o.Id == id);
@@ -305,14 +226,13 @@ namespace RaquelMenopausa.Cms.Controllers
                 .ToList();
 
 
-            return PartialView("EditUsuario", usuario);
+            return PartialView("Edit", usuario);
         }
-
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditUsuario(int id, IFormCollection form)
+        public async Task<IActionResult> Edit(int id, IFormCollection form)
         {
             try
             {
@@ -410,115 +330,6 @@ namespace RaquelMenopausa.Cms.Controllers
                 return View();
             }
         }
-
-
-
-        [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-editar")]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var query = await _db.Permissoes
-                .FirstOrDefaultAsync(o => o.Id == id);
-
-            if (query != null)
-            {
-                ViewData["txtNome"] = query.Tipo;
-
-                //var modulesUser = ClaimsHelper.GetPermissoesDeModulos(User);
-                var moduloPermissao = _db.ModuloPermissoes.Where(x => x.PermissaoId == id).ToList();
-                var modulos = await _db.Modulos.Where(x => x.Situacao).ToListAsync();
-                var listModulo = modulos
-                    .Select(item => new SelectListItem
-                    {
-                        Value = item.Id.ToString(),
-                        Text = item.Nome,
-                        Selected = moduloPermissao
-                            .Where(x => x.ModuloId.Equals(item.Id))
-                            .Select(x => x.Permitir)
-                            .FirstOrDefault() == true
-                    })
-                    .OrderBy(o => o.Text)
-                    .ToList();
-
-                ViewData["listaModulo"] = listModulo;
-            }
-
-            return View();
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormCollection form)
-        {
-            try
-            {
-                var permissao = await _db.Permissoes
-                    .FirstOrDefaultAsync(o => o.Id == id);
-
-                if (permissao == null)
-                {
-                    TempData["ERRO"] = "Permissão não encontrada!";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                permissao.Tipo = form["txtNome"].ToString();
-                await _db.SaveChangesAsync();
-
-                var queryModulo = await _db.ModuloPermissoes
-                    .Where(o => o.PermissaoId == permissao.Id)
-                    .ToListAsync();
-
-                _db.ModuloPermissoes.RemoveRange(queryModulo);
-                await _db.SaveChangesAsync();
-
-                var queryModulos = await _db.Modulos.ToListAsync();
-                var novosModulos = new List<ModuloPermissao>();
-
-                foreach (var item in queryModulos)
-                {
-                    novosModulos.Add(new ModuloPermissao
-                    {
-                        ModuloId = item.Id,
-                        PermissaoId = permissao.Id,
-                        Permitir = false
-                    });
-                }
-
-                _db.ModuloPermissoes.AddRange(novosModulos);
-                await _db.SaveChangesAsync();
-
-                if (!string.IsNullOrEmpty(form["txtModulo"]))
-                {
-                    var modulos = await _db.ModuloPermissoes
-                        .Where(o => o.PermissaoId == permissao.Id)
-                        .ToListAsync();
-
-                    string[] arraySelecionados = form["txtModulo"].ToString().Split(',');
-
-                    foreach (var selecionado in arraySelecionados)
-                    {
-                        var usuario_modulo = modulos
-                            .FirstOrDefault(o => o.ModuloId == int.Parse(selecionado));
-
-                        if (usuario_modulo != null)
-                            usuario_modulo.Permitir = true;
-                    }
-
-                    await _db.SaveChangesAsync();
-                }
-
-                TempData["SUCESSO"] = "Perfil atualizado com sucesso!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                TempData["ERRO"] = "Erro ao atualizar!";
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-perfis-deletar")]

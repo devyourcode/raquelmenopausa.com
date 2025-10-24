@@ -164,7 +164,7 @@
                 <div class="form-group custom-input">
                     <label for="Nome">ID usuária</label>
                     <div class="input-wrapper">
-                        <input type="text" id="IdUsuaria" name="IdUsuaria" class="search-input" placeholder="Digite o ID da Usuária" value="@Model.UserId" />
+                        <input type="text" id="IdUsuaria" name="IdUsuaria" class="search-input" readonly value="@Model.UserId" />
                     </div>
                 </div>
             </div>
@@ -173,7 +173,7 @@
                 <div class="form-group custom-input">
                     <label for="Chamada">Código de recuperação de senha</label>
                     <div class="input-wrapper">
-                        <input type="text" id="CodSenha" name="CodSenha" class="search-input" placeholder="Digite o código" value="@Model.Code" />
+                        <input type="text" id="CodSenha" name="CodSenha" class="search-input" disabled value="@Model.Code" />
                         <img src="~/img/imgsite/solar_copy-linear.png" alt="Ícone" class="input-icon" />
                     </div>
                 </div>
@@ -183,8 +183,7 @@
                 <div class="form-group custom-input">
                     <label for="Nome">ID Social</label>
                     <div class="input-wrapper">
-                        <input type="text" id="IdSocial" name="IdSocial" class="search-input"
-                               placeholder="Digite o ID Social"
+                        <input type="text" id="IdSocial" name="IdSocial" class="search-input" readonly
                                value="@(Model.AppleId ?? Model.GoogleId)" />
                     </div>
                 </div>
@@ -195,7 +194,7 @@
                 <div class="form-group custom-input">
                     <label for="Chamada">Código de verificação do e-mail</label>
                     <div class="input-wrapper">
-                        <input type="text" id="CodEmail" name="CodEmail" class="search-input" placeholder="Digite o código" value="@Model.EmailVerificationCode" />
+                        <input type="text" id="CodEmail" name="CodEmail" class="search-input" readonly value="@Model.EmailVerificationCode" />
                         <img src="~/img/imgsite/solar_copy-linear.png" alt="Ícone" class="input-icon" />
                     </div>
                 </div>
@@ -209,11 +208,12 @@
                                id="DataCreate"
                                name="DataCreate"
                                class="search-input"
+                               readonly
                                value="@(Model.DateCreated.ToString("yyyy-MM-dd"))" />
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-4 col-xs-12" style="padding-left:25px; padding-right:25px;">
                 <div class="form-group custom-input">
                     <label for="DataCreate">Data de exclusão</label>
                     <div class="input-wrapper">
@@ -221,23 +221,25 @@
                                id="DateDelete"
                                name="DateDelete"
                                class="search-input"
+                               readonly
                                value="@(Model.DateDeleted?.ToString("yyyy-MM-dd"))" />
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-4 col-xs-12" style="padding-left:10px; padding-right:25px;">
                 <div class="form-group custom-input">
                     <label for="DataCreate">Versão dos Termos de Uso Aceito</label>
                     <div class="input-wrapper">
-                        <input type="text" id="Termos" name="Termos" class="search-input" placeholder="Digite a versão dos termos" value="@Model.TermOfUseVersion" />
+                        <input type="text" id="Termos" name="Termos" class="search-input" placeholder="Digite a versão dos termos" readonly value="@Model.TermOfUseVersion" />
                     </div>
                 </div>
             </div>
-
+            </div>
         </div>
-    </div>
     <div class="buttons-container">
-        <button type="button" class="btn-cancelar">CANCELAR</button>
+        <button type="button" class="btn-cancelar" onclick="window.location.href='@Url.Action("Index", "Usuaria")'">CANCELAR</button>
         <button type="submit" class="btn-save">SALVAR ALTERAÇÕES</button>
     </div>
 }
+
+

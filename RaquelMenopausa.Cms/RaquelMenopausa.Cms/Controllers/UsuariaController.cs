@@ -12,7 +12,7 @@ using Yourcode.Core.Utilities;
 
 namespace RaquelMenopausa.Cms.Controllers
 {
-    [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario")]
+    [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria")]
     public class UsuariaController : CustomController
     {
         private readonly ILogger<UsuariaController> _logger;
@@ -32,7 +32,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
 
         [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-listar")]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria-listar")]
         public async Task<IActionResult> Index(int? page, string search, string status, string periodo)
         {
             int pageSize = 30;
@@ -68,111 +68,7 @@ namespace RaquelMenopausa.Cms.Controllers
         }
 
         [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-criar")]
-        public IActionResult Create()
-        {
-            return PartialView("Create");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormCollection form)
-        {
-            Usuario usuario = new Usuario();
-
-            try
-            {
-
-                if (ModelState.IsValid)
-                {
-                    var senha_sem_criptografia = form["txtSenha"];
-
-                    usuario.Nome = form["txtNome"].ToString();
-                    usuario.Email = form["txtEmail"].ToString();
-                    usuario.Cargo = form["txtCargo"].ToString();
-                    usuario.PermissaoId = int.Parse(form["txtPermissao"].ToString());
-                    usuario.Senha = CryptoHelper.HashMd5(form["txtSenha"].ToString());
-                    usuario.Ativo = true;
-                    usuario.DataInc = DateTime.Now;
-                    usuario.Situacao = true;
-                    _db.Usuarios.Add(usuario);
-                    await _db.SaveChangesAsync();
-
-                    var EnviarEmail = int.Parse(form["EnviarEmail"].ToString());
-
-                    if (EnviarEmail == 1)
-                    {
-                        var nome_site = _db.Configs.Where(o => o.Chave == "nome-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
-                        var admin_site = _db.Configs.Where(o => o.Chave == "admin-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
-
-                        var mensagemHTML = "";
-                        mensagemHTML = "Seu usuário foi cadastrado no administrador do site " + nome_site + ".<br />Segue abaixo os dados para acesso:" +
-                           "<br><br>Link: <a target='_blank' href='" + admin_site + "'>" + admin_site + "</a>" +
-                           "<br>Login: " + usuario.Email +
-                           "<br>Senha: " + senha_sem_criptografia +
-                           "<br><br>Atenciosamente,<br><b>Suporte Técnico - " + nome_site + "</b>";
-
-
-                        bool enviado = await CmsNotificationHelper.SendEmail(
-                            clienteId: 1148,
-                            projetoId: 345,
-                            nome: "YourCode",
-                            remetente: "noreply@yourcode.com.br",
-                            destinatario: usuario.Email,
-                            assunto: "Teste",
-                            mensagem: mensagemHTML
-                        );
-                    }
-
-                    TempData["SUCESSO"] = "Usuário criado com sucesso!";
-
-                    #region LOG
-                    var userName = User.Identity?.Name ?? "Usuário desconhecido";
-                    var userId = User.FindFirst("sub")?.Value ?? "0";
-
-                    LogAuditoria.Action(userName, Convert.ToInt32(userId), "adicionou", "usuario", usuario.Id, usuario.Nome);
-                    #endregion LOG
-
-
-                    return RedirectToAction(nameof(Index));
-
-                }
-                var listAtivo = new List<SelectListItem>();
-                listAtivo.Add(new SelectListItem() { Value = "true", Text = "Ativo" });
-                listAtivo.Add(new SelectListItem() { Value = "false", Text = "Inativo" });
-                ViewBag.ListaAtivo = new SelectList(listAtivo, "Value", "Text", usuario.Ativo);
-                return View(usuario);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erro ao criar popup");
-
-                TempData["ERRO"] = $"Ocorreu um erro: {ex.Message}";
-
-                #region LOG
-                var userName = User.Identity?.Name ?? "Usuário desconhecido";
-                var userId = User.FindFirst("sub")?.Value ?? "0";
-
-                LogAuditoria.Action(userName, Convert.ToInt32(userId), "Erro ao adicionar", "usuario", usuario.Id, usuario.Nome);
-                #endregion LOG
-
-                return View(usuario);
-
-            }
-        }
-
-        private void PrepararListaAtivo(bool ativo)
-        {
-            var listAtivo = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "true", Text = "Ativo" },
-                new SelectListItem { Value = "false", Text = "Inativo" }
-            };
-            ViewBag.ListaAtivo = new SelectList(listAtivo, "Value", "Text", ativo);
-        }
-
-        [HttpGet]
-        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuario-editar")]
+        [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria-editar")]
         public async Task<IActionResult> Edit(string id)
         {
             var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
@@ -192,38 +88,42 @@ namespace RaquelMenopausa.Cms.Controllers
                     .Select(o => o.Valor)
                     .FirstOrDefault();
 
-                var id = form["user_id"];
+                var userId = form["user_id"];
                 var hash = form["hash"];
-
-                var nome = form["Nome"];
-                var chamada = form["Chamada"];
+                var name = form["Nome"];
+                var aliasName = form["Chamada"];
                 var email = form["Email"];
-                var EmailVerified = form["EmailVerified"];
+                var emailVerified = form["EmailVerified"].Count > 0; 
                 var status = form["status"];
-                var admin = form["admin"];
+                var admin = form["admin"].ToString().ToLower() == "true";
+                var changedImage = form["changedImage"] == "true";
 
-                //var acao = form["acao"];
-                //var status = acao == "rascunho" ? "DRAFT" : "PUBLISHED";
+                bool isSuspended = status == "Deleted";
 
-                bool changedImage = form["ChangedImage"] == "true";
+                await _cmsService.UpdateUsuariaAsync(
+                    userId,
+                    hash,
+                    name,
+                    aliasName,
+                    email,
+                    emailVerified,
+                    isSuspended,
+                    admin,
+                    arquivo,
+                    changedImage,
+                    token
+                );
 
-                //await _cmsService.UpdateArticleAsync(
-                //    id, hash, status,
-                //    changedImage, token
-                //);
-
-                TempData["SuccessMessage"] = status == "DRAFT"
-                    ? "Artigo salvo como rascunho!"
-                    : "Artigo atualizado com sucesso!";
-
+                TempData["SUCESSO"] = "Usuária atualizada com sucesso!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Erro ao atualizar artigo: {ex.Message}";
+                TempData["ERRO"] = $"Erro ao atualizar usuária: {ex.Message}";
                 return RedirectToAction("Index");
             }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> DownloadCsv(string search = null, string status = null, string periodo = null)

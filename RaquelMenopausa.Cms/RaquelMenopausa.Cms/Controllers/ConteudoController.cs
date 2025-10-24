@@ -14,6 +14,7 @@ using System.Linq.Dynamic.Core.Tokenizer;
 using X.PagedList;
 using X.PagedList.Extensions;
 using Yourcode.Core.Utilities;
+using static RaquelMenopausa.Cms.Helpers.CmsGeneralHelper;
 
 namespace RaquelMenopausa.Cms.Controllers
 {
@@ -55,7 +56,7 @@ namespace RaquelMenopausa.Cms.Controllers
             {
                 allTags.AddRange(tagsResponse.ArticleCategories.Select(x => new
                 {
-                    x.Label,
+                    Label = TagTranslator.Translate(x.Label),
                     x.Value
                 }));
             }
@@ -64,7 +65,7 @@ namespace RaquelMenopausa.Cms.Controllers
             {
                 allTags.AddRange(tagsResponse.SymptomCategories.Select(x => new
                 {
-                    x.Label,
+                    Label = TagTranslator.Translate(x.Label),
                     x.Value
                 }));
             }
@@ -73,7 +74,7 @@ namespace RaquelMenopausa.Cms.Controllers
             {
                 allTags.AddRange(tagsResponse.Solutions.Select(x => new
                 {
-                    x.Label,
+                    Label = TagTranslator.Translate(x.Label),
                     x.Value
                 }));
             }
@@ -101,6 +102,21 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
             var tags = await _cmsService.GetTagsAsync(token);
+
+            if (tags.ArticleCategories != null)
+            {
+                tags.ArticleCategories.ForEach(x => x.Label = TagTranslator.Translate(x.Label));
+            }
+
+            if (tags.SymptomCategories != null)
+            {
+                tags.SymptomCategories.ForEach(x => x.Label = TagTranslator.Translate(x.Label));
+            }
+
+            if (tags.Solutions != null)
+            {
+                tags.Solutions.ForEach(x => x.Label = TagTranslator.Translate(x.Label));
+            }
 
             return PartialView("Create", tags);
         }
@@ -152,6 +168,21 @@ namespace RaquelMenopausa.Cms.Controllers
 
             var artigo = await _cmsService.GetArticleAsync(token, id);
             var tags = await _cmsService.GetTagsAsync(token);
+
+            if (tags.ArticleCategories != null)
+            {
+                tags.ArticleCategories.ForEach(x => x.Label = TagTranslator.Translate(x.Label));
+            }
+
+            if (tags.SymptomCategories != null)
+            {
+                tags.SymptomCategories.ForEach(x => x.Label = TagTranslator.Translate(x.Label));
+            }
+
+            if (tags.Solutions != null)
+            {
+                tags.Solutions.ForEach(x => x.Label = TagTranslator.Translate(x.Label));
+            }
 
             foreach (var cat in tags.ArticleCategories)
             {

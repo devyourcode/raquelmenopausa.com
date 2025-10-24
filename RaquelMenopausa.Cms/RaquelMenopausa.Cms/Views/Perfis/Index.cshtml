@@ -61,7 +61,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box-number">
-                    <h1>Lista de Usuárias</h1>
+                    <h1>Lista de Usuários</h1>
                     <div class="box-body">
                         @if (Model != null && Model.Count() > 0)
                         {
@@ -86,7 +86,7 @@
                                                 <td>@item.DataInc.ToShortDateString()</td>
 
                                                 <td class="acoes">
-                                                    <a class="btn-icon btnEditUsuario" data-id="@item.Id">
+                                                    <a class="btn-icon btnEdit" data-id="@item.Id">
                                                         <img src="~/img/imgsite/tabler_edit.png" class="icon-nav" alt="Editar" />
                                                     </a>
                                                     <a class="btn-icon">
@@ -218,17 +218,17 @@
     $(document).ready(function () {
 
         $("#btnNovoUsuario").click(function () {
-            $.get("/Perfis/CreateUsuario", function (data) {
+            $.get("/Perfis/Create", function (data) {
                 $("#modalBody").html(data);
 
                 $("#usuarioModal").modal('show');
             });
         });
 
-                $(document).on("click", ".btnEditUsuario", function () {
+    $(document).on("click", ".btnEdit", function () {
         let usuarioId = $(this).data("id");
 
-        $.get("/Perfis/EditUsuario", { id: usuarioId }, function (data) {
+        $.get("/Perfis/Edit", { id: usuarioId }, function (data) {
             $("#modalBodyEdit").html(data);
             $("#usuarioeditModal").modal('show');
         });
@@ -241,7 +241,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/Perfis/CreateUsuario",
+                url: "/Perfis/Create",
                 data: $(this).serialize(),
                 success: function (response) {
                     if (response.success) {
@@ -259,7 +259,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/Perfis/EditUsuario",
+                url: "/Perfis/Edit",
                 data: $(this).serialize(),
                 success: function (response) {
                     if (response.success) {

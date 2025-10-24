@@ -520,6 +520,43 @@ namespace RaquelMenopausa.Cms.Helpers
             return result;
         }
 
+        public async Task UpdateUsuariaAsync(string userId, string hash, string name, string aliasName, string email, bool emailVerified, bool isSuspended, bool isAdmin, IFormFile profileImageUpload, bool changedProfileImage, string token)
+        {
+            using var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(userId ?? ""), "userId");
+            content.Add(new StringContent(hash ?? ""), "hash");
+            content.Add(new StringContent(name ?? ""), "name");
+            content.Add(new StringContent(aliasName ?? ""), "aliasName");
+            content.Add(new StringContent(email ?? ""), "email");
+            content.Add(new StringContent(emailVerified.ToString().ToLower()), "emailVerified");
+            content.Add(new StringContent(isSuspended.ToString().ToLower()), "isSuspended");
+            content.Add(new StringContent(isAdmin.ToString().ToLower()), "isAdmin");
+            content.Add(new StringContent(changedProfileImage.ToString().ToLower()), "changedProfileImage");
+
+            if (profileImageUpload != null)
+            {
+                var imageContent = new StreamContent(profileImageUpload.OpenReadStream());
+                imageContent.Headers.ContentType = new MediaTypeHeaderValue(profileImageUpload.ContentType);
+                content.Add(imageContent, "profileImageUpload", profileImageUpload.FileName);
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Put, "/api/cms-dashboards/users/update-user")
+            {
+                Content = content
+            };
+
+            var payloadPreview = await request.Content.ReadAsStringAsync();
+            Console.WriteLine(payloadPreview);
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+        }
+
+
     }
 }
 

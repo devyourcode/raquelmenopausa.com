@@ -1,86 +1,101 @@
-﻿
-@{
-    ViewBag.Title = "Editar Perfil de Acesso | " + ViewBag.TitlePage;
-    ViewBag.Description = ViewBag.DescriptionPage;
-    ViewBag.FacebookImage = ViewBag.DomainSite + "content/upload/config/" + ViewBag.ShareImg;
-    ViewBag.Url = ViewBag.DomainSite;
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-<link href="@Href("~/Content/admin/css/select2.min.css")" rel="stylesheet" />
+﻿@model RaquelMenopausa.Cms.Models.Usuario
 
 <style>
-    #btnCadastrar:hover {
+    .row .col-md-6 {
+        padding-left: 25px !important;
+        padding-right: 25px !important;
     }
+
 </style>
 
-<div class="content-wrapper">
-    <section class="content-header">
-        <h1>
-            Editar Perfil de Acesso
-        </h1>
-    </section>
+<div class="modal-body">
+@using (Html.BeginForm("Edit", "Perfis", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal", id = "formEditUsuario" }))
+{
+        @Html.HiddenFor(m => m.Id)
 
-    <section class="content">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="box box-primary">
-                    @using (Html.BeginForm("Edit", "Perfis", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
-                    {
-                        <div class="box-body">
-                            <div class="row">
-                                <div class="col-md-6 col-xs-12">
-                                    <label>Nome <span style="color: #ff0000;"><b>*</b></span></label>
-                                    <input type="text" name="txtNome" value="@ViewData["txtNome"]" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 col-xs-12">
-                                    <label>Modulos que terá Acesso</label>
-                                    @if (ViewData["listaModulo"] != null && ((List<SelectListItem>)ViewData["listaModulo"]).Count > 0)
-                                    {
-                                        <ul class="products-list product-list-in-box">
-                                            @foreach (var item in (List<SelectListItem>)ViewData["listaModulo"])
-                                            {
-                                                <li class="item" style="padding: 1px;">
-                                                    @if (item.Selected == true)
-                                                    {
-                                                        <input type="checkbox" id="txtModulo" name="txtModulo" value="@item.Value" checked> @item.Text
-                                                    }
-                                                    else
-                                                    {
-                                                        <input type="checkbox" id="txtModulo" name="txtModulo" value="@item.Value"> @item.Text
-                                                    }
-
-                                                </li>
-                                            }
-                                        </ul>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="box-footer">
-                            <button type="button" id="btnCancelar" name="btnCancelar" class="btn btn-flat btn-default" onclick="history.go(-1)">Cancelar</button>
-                            <button type="submit" id="btnCadastrar" class="btn btn-flat btn-primary">Salvar</button>
-                        </div>
-                    }
+    <div class="row g-3">
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="txtNome">Nome Completo</label>
+                <div class="input-wrapper">
+                    <input type="text" id="txtNome" name="txtNome" class="search-input" placeholder="Digite o seu nome" value="@ViewData["txtNome"]" />
                 </div>
             </div>
         </div>
-    </section>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="txtEmail">E-mail</label>
+                <div class="input-wrapper">
+                    <input type="email" id="txtEmail" name="txtEmail" class="search-input" placeholder="Digite o seu e-mail" value="@ViewData["txtEmail"]" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="txtCargo">Cargo</label>
+                <div class="input-wrapper">
+                    <input type="text" id="txtCargo" name="txtCargo" class="search-input" placeholder="Digite o seu cargo" value="@ViewData["txtCargo"]" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="txtSenha">Senha</label>
+                <div class="input-wrapper">
+                    <input type="password" id="txtSenha" name="txtSenha" class="search-input" placeholder="Digite a sua senha" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 col-xs-12">
+            <div class="form-group custom-input">
+                <label for="permissao">Configurar Permissões</label>
+
+                <div class="permissions-box">
+                    <table class="permissions-table">
+                        <thead>
+                            <tr>
+                                <th>Área</th>
+                                <th>Permissão</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewData["listaModulo"] != null && ((List<SelectListItem>)ViewData["listaModulo"]).Count > 0)
+                            {
+                                foreach (var item in (List<SelectListItem>)ViewData["listaModulo"])
+                                {
+                                    <tr>
+                                        <td>@item.Text</td>
+                                        <td>
+                                            <input type="checkbox"
+                                                   name="modulosSelecionados"
+                                                   value="@item.Value"
+                                                   id="modulo_@item.Value"
+                                                   @(item.Selected ? "checked" : "") />
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center">Nenhum módulo encontrado</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="buttons-container">
+        <button type="button" class="btn-cancelar" data-dismiss="modal">CANCELAR</button>
+        <button type="submit" class="btn-save">SALVAR</button>
+    </div>
+}
 </div>
 
-<script src="@Href("~/Content/admin/js/select2.full.min.js")"></script>
-<script src="@Href("~/Content/admin/js/jquery.inputmask.js")"></script>
-<script src="@Href("~/Content/admin/js/jquery.inputmask.date.extensions.js")"></script>
-<script src="@Href("~/Content/admin/js/jquery.inputmask.extensions.js")"></script>
-<script src="@Href("~/Content/admin/js/bootstrap-timepicker.min.js")"></script>
-<script>
-    $(function () {
-        //Initialize Select2 Elements
-        $(".select2").select2();
-
-        //Datemask dd/mm/aaaa
-        $("#datemask").inputmask("dd/mm/yyyy", { "placeholder": "dd/mm/aaaa" });
-        //Money Euro
-        $("[data-mask]").inputmask();
-    });
-</script>

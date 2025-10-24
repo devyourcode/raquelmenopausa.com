@@ -37,7 +37,7 @@ namespace RaquelMenopausa.Cms.Helpers
 
                     var captchaResponse = JsonSerializer.Deserialize<CaptchaResponse>(responseString, new JsonSerializerOptions
                     {
-                        PropertyNameCaseInsensitive = true // ignora maiúsculas/minúsculas
+                        PropertyNameCaseInsensitive = true
                     });
 
                     return captchaResponse != null && captchaResponse.success;
@@ -92,6 +92,48 @@ namespace RaquelMenopausa.Cms.Helpers
             return text;
         }
 
+        public static class TagTranslator
+        {
+            private static readonly Dictionary<string, string> _translations = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "myths", "Mitos" },
+            { "taboos", "Tabus" },
+            { "informative", "Informativo" },
+
+            { "smellAndTasteChanges", "Alterações de olfato e paladar" },
+            { "bodyWeightChanges", "Alterações no peso corporal" },
+            { "sleepChanges", "Alterações no sono" },
+            { "visualChanges", "Alterações visuais" },
+            { "sexualityChanges", "Alterações na sexualidade" },
+            { "cognitiveChanges", "Alterações cognitivas" },
+            { "emotionalChanges", "Alterações emocionais" },
+            { "respiratorySystemChanges", "Alterações no sistema respiratório" },
+            { "gastrointestinalSystemChanges", "Alterações no sistema gastrointestinal" },
+            { "cardiovascularSystemChanges", "Alterações no sistema cardiovascular" },
+            { "oralChanges", "Alterações orais" },
+            { "skinAndHairChanges", "Alterações na pele e cabelo" },
+            { "muscularAndSkeletalChanges", "Alterações musculares e esqueléticas" },
+            { "urinarySystemChanges", "Alterações no sistema urinário" },
+            { "reproductiveSystemChanges", "Alterações no sistema reprodutivo" },
+            { "hotFlashesAndNightSweats", "Ondas de calor e suores noturnos" },
+
+            { "hormoneTherapy", "Terapia hormonal" },
+            { "psychologicalTherapy", "Terapia psicológica" },
+            { "sleep", "Sono" },
+            { "nutrition", "Nutrição" },
+            { "physicalExercise", "Exercício físico" }
+        };
+
+            public static string Translate(string label)
+            {
+                if (string.IsNullOrWhiteSpace(label))
+                    return label;
+
+                return _translations.TryGetValue(label, out var traducao)
+                    ? traducao
+                    : label;
+            }
+        }
 
     }
 }
