@@ -27,8 +27,22 @@
         box-sizing: border-box;
     }
 
-    .modal-header .close {
-        margin-top: 24px;
+    @@media (max-width: 768px) {
+        .col-md-6, .col-md-4, .col-md-12 {
+            width: 100% !important;
+            float: none !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .input-wrapper img.input-icon {
+            right: 10px;
+        }
     }
 
 </style>
@@ -41,6 +55,7 @@
 
     <div class="container-form">
         <div class="row">
+            <div class="col-md-12">
             <div class="col-md-6 col-xs-12">
                 <div class="form-group custom-input">
                     <label for="Nome">Nome do usuário</label>
@@ -160,6 +175,7 @@
                 <div class="line"></div>
             </div>
 
+            
             <div class="col-md-6 col-xs-12">
                 <div class="form-group custom-input">
                     <label for="Nome">ID usuária</label>
@@ -173,7 +189,7 @@
                 <div class="form-group custom-input">
                     <label for="Chamada">Código de recuperação de senha</label>
                     <div class="input-wrapper">
-                        <input type="text" id="CodSenha" name="CodSenha" class="search-input" disabled value="@Model.Code" />
+                        <input type="text" id="CodSenha" name="CodSenha" class="search-input" readonly value="@Model.Code" />
                         <img src="~/img/imgsite/solar_copy-linear.png" alt="Ícone" class="input-icon" />
                     </div>
                 </div>
@@ -236,8 +252,9 @@
             </div>
             </div>
         </div>
+    </div>
     <div class="buttons-container">
-        <button type="button" class="btn-cancelar" onclick="window.location.href='@Url.Action("Index", "Usuaria")'">CANCELAR</button>
+        <button type="button" class="btn-cancelar" data-dismiss="modal">CANCELAR</button>
         <button type="submit" class="btn-save">SALVAR ALTERAÇÕES</button>
     </div>
 }

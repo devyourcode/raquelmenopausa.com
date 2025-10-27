@@ -16,6 +16,24 @@
         box-sizing: border-box;
     }
 
+    @@media (max-width: 768px) {
+        .col-md-6, .col-md-4, .col-md-12 {
+            width: 100% !important;
+            float: none !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .input-wrapper img.input-icon {
+            right: 10px;
+        }
+    }
+
 </style>
 
 @using (Html.BeginForm("Create", "Conteudo", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
@@ -185,7 +203,7 @@
     </div>
 
     <div class="buttons-container">
-        <button type="button" class="btn-cancelar" onclick="window.location.href='@Url.Action("Index", "Conteudo")'">
+            <button type="button" class="btn-cancelar" data-dismiss="modal">
             CANCELAR
         </button>
         <button type="submit" name="acao" value="rascunho" class="btn-rascunho">
@@ -226,117 +244,5 @@
 
 </script>
 
-@* <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label class="label-title">Tags</label>
 
-                <div class="tag-section">
-                    <p class="tag-title">Categorias</p>
-                    <div class="tag-options">
-                        <label class="tag-pill">
-                            <input type="checkbox" name="Categorias" value="Mitos"> Mitos
-                        </label>
-                        <label class="tag-pill">
-                            <input type="checkbox" name="Categorias" value="Tabus"> Tabus
-                        </label>
-                        <label class="tag-pill">
-                            <input type="checkbox" name="Categorias" value="Informativo"> Informativo
-                        </label>
-                    </div>
-                </div>
-
-                <div class="tag-section">
-                    <p class="tag-title">Sintomas</p>
-                    <div class="symptom-options">
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Fogachos e Suores Noturnos">
-                            Fogachos e Suores Noturnos
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Reprodutor">
-                            Alterações no Sistema Reprodutor
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Urinário">
-                            Alterações no Sistema Urinário
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Muscular e Ósseo">
-                            Alterações no Sistema Muscular e Ósseo
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações na Pele e no Cabelo">
-                            Alterações na Pele e no Cabelo
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações Bucais">
-                            Alterações Bucais
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                        <label class="symptom-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                    </div>
-                    <p class="tag-title">Soluções</p>
-                    <div class="symptom-options">
-                        <label class="soluction-item">
-                            <input type="checkbox" name="Sintomas" value="Fogachos e Suores Noturnos">
-                            Fogachos e Suores Noturnos
-                        </label>
-                        <label class="soluction-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Reprodutor">
-                            Alterações no Sistema Reprodutor
-                        </label>
-                        <label class="soluction-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Urinário">
-                            Alterações no Sistema Urinário
-                        </label>
-                        <label class="soluction-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Muscular e Ósseo">
-                            Alterações no Sistema Muscular e Ósseo
-                        </label>
-                        <label class="soluction-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações na Pele e no Cabelo">
-                            Alterações na Pele e no Cabelo
-                        </label>
-                        <label class="soluction-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações Bucais">
-                            Alterações Bucais
-                        </label>
-                        <label class="soluction-item">
-                            <input type="checkbox" name="Sintomas" value="Alterações no Sistema Cardiovascular">
-                            Alterações no Sistema Cardiovascular
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div> *@
 

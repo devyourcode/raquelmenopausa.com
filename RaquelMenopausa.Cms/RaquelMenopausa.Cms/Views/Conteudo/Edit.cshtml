@@ -27,6 +27,24 @@
         box-sizing: border-box;
     }
 
+    @@media (max-width: 768px) {
+        .col-md-6, .col-md-4, .col-md-12 {
+            width: 100% !important;
+            float: none !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .input-wrapper img.input-icon {
+            right: 10px;
+        }
+    }
+
 </style>
 
 @using (Html.BeginForm("Edit", "Conteudo", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal" }))
@@ -238,7 +256,7 @@
     </div>
 
     <div class="buttons-container">
-        <button type="button" class="btn-cancelar">CANCELAR</button>
+        <button type="button" class="btn-cancelar" data-dismiss="modal">CANCELAR</button>
         <button type="submit" name="acao" value="rascunho" class="btn-rascunho">
             SALVAR COMO RASCUNHO
         </button>

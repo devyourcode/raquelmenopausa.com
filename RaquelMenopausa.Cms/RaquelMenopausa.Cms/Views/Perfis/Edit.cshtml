@@ -1,5 +1,17 @@
 ﻿@model RaquelMenopausa.Cms.Models.Usuario
 
+@{
+    string fileName = null;
+    if (!string.IsNullOrEmpty(Model.Imagem))
+    {
+        fileName = System.IO.Path.GetFileName(Model.Imagem);
+        if (fileName.Length > 20)
+        {
+            fileName = fileName.Substring(0, 17) + "...";
+        }
+    }
+}
+
 <style>
     .row .col-md-6 {
         padding-left: 25px !important;
@@ -9,93 +21,128 @@
 </style>
 
 <div class="modal-body">
-@using (Html.BeginForm("Edit", "Perfis", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal", id = "formEditUsuario" }))
-{
+    @using (Html.BeginForm("Edit", "Perfis", FormMethod.Post, new { @enctype = "multipart/form-data", @class = "form-horizontal", id = "formEditUsuario" }))
+    {
         @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.Imagem)
+        @Html.HiddenFor(model => model.DataInc)
+        @Html.HiddenFor(model => model.Situacao)
 
-    <div class="row g-3">
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="txtNome">Nome Completo</label>
-                <div class="input-wrapper">
-                    <input type="text" id="txtNome" name="txtNome" class="search-input" placeholder="Digite o seu nome" value="@ViewData["txtNome"]" />
+        <div class="row g-3">
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group custom-input">
+                    <label for="txtNome">Nome Completo</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="txtNome" name="txtNome" class="search-input" placeholder="Digite o seu nome" value="@ViewData["txtNome"]" />
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="txtEmail">E-mail</label>
-                <div class="input-wrapper">
-                    <input type="email" id="txtEmail" name="txtEmail" class="search-input" placeholder="Digite o seu e-mail" value="@ViewData["txtEmail"]" />
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group custom-input">
+                    <label for="txtEmail">E-mail</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="txtEmail" name="txtEmail" class="search-input" placeholder="Digite o seu e-mail" value="@ViewData["txtEmail"]" />
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="txtCargo">Cargo</label>
-                <div class="input-wrapper">
-                    <input type="text" id="txtCargo" name="txtCargo" class="search-input" placeholder="Digite o seu cargo" value="@ViewData["txtCargo"]" />
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group custom-input">
+                    <label for="txtCargo">Cargo</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="txtCargo" name="txtCargo" class="search-input" placeholder="Digite o seu cargo" value="@ViewData["txtCargo"]" />
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="txtSenha">Senha</label>
-                <div class="input-wrapper">
-                    <input type="password" id="txtSenha" name="txtSenha" class="search-input" placeholder="Digite a sua senha" />
+            <div class="col-md-6 col-xs-12">
+                <div class="form-group custom-input">
+                    <label for="txtSenha">Senha</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="txtSenha" name="txtSenha" class="search-input" placeholder="Digite a sua senha" />
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-12 col-xs-12">
-            <div class="form-group custom-input">
-                <label for="permissao">Configurar Permissões</label>
+            <div class="col-md-6">
+                <label>Foto Usuário</label>
+                <div class="custom-file-upload" style="margin-bottom:15px">
+                    
+                    <input type="file" id="arquivo" name="arquivo" accept="image/*" style="display:none;" />
 
-                <div class="permissions-box">
-                    <table class="permissions-table">
-                        <thead>
-                            <tr>
-                                <th>Área</th>
-                                <th>Permissão</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (ViewData["listaModulo"] != null && ((List<SelectListItem>)ViewData["listaModulo"]).Count > 0)
-                            {
-                                foreach (var item in (List<SelectListItem>)ViewData["listaModulo"])
+                    <label for="arquivo" class="upload-label" style="cursor:pointer;">
+                        <img src="~/img/imgsite/mdi_attach-file.png" style="margin-top:4px; height: 20px;" alt="Mais" />
+                        <span class="text-bold">Adicionar imagem</span>
+                    </label>
+                    <span class="divider">|</span>
+
+                    @if (string.IsNullOrEmpty(Model.Imagem))
+                    {
+                        <span id="file-name-imagem" class="file-name">Nenhum arquivo adicionado</span>
+                    }
+                    else
+                    {
+                        <a id="file-name-imagem"
+                           class="file-name"
+                           href="~/upload/perfis/@Model.Imagem"
+                           target="_blank"
+                           style="color: #007bff; text-decoration: underline; cursor: pointer;">
+                            @fileName
+                        </a>
+                    }
+                </div>
+            </div>
+
+
+            <div class="col-md-12 col-xs-12">
+                <div class="form-group custom-input">
+                    <label for="permissao">Configurar Permissões</label>
+
+                    <div class="permissions-box">
+                        <table class="permissions-table">
+                            <thead>
+                                <tr>
+                                    <th>Área</th>
+                                    <th>Permissão</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewData["listaModulo"] != null && ((List<SelectListItem>)ViewData["listaModulo"]).Count > 0)
+                                {
+                                    foreach (var item in (List<SelectListItem>)ViewData["listaModulo"])
+                                    {
+                                        <tr>
+                                            <td>@item.Text</td>
+                                            <td>
+                                                <input type="checkbox"
+                                                       name="modulosSelecionados"
+                                                       value="@item.Value"
+                                                       id="modulo_@item.Value"
+                                                       @(item.Selected ? "checked" : "") />
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
                                 {
                                     <tr>
-                                        <td>@item.Text</td>
-                                        <td>
-                                            <input type="checkbox"
-                                                   name="modulosSelecionados"
-                                                   value="@item.Value"
-                                                   id="modulo_@item.Value"
-                                                   @(item.Selected ? "checked" : "") />
-                                        </td>
+                                        <td colspan="2" class="text-center">Nenhum módulo encontrado</td>
                                     </tr>
                                 }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="2" class="text-center">Nenhum módulo encontrado</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="buttons-container">
-        <button type="button" class="btn-cancelar" data-dismiss="modal">CANCELAR</button>
-        <button type="submit" class="btn-save">SALVAR</button>
-    </div>
-}
+        <div class="buttons-container">
+            <button type="button" class="btn-cancelar" data-dismiss="modal">CANCELAR</button>
+            <button type="submit" class="btn-save">SALVAR</button>
+        </div>
+    }
 </div>
+
+
 

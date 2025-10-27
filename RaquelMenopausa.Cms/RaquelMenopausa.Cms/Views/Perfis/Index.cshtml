@@ -183,9 +183,6 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
                 <h2 id="usuarioModalLabel"><b>Adicionar Novo Usuário</b></h2>
             </div>
 
@@ -200,9 +197,6 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
                 <h2 id="usuarioEditModalLabel"><b>Editar Usuário</b></h2>
             </div>
 
@@ -255,23 +249,31 @@
             });
         });
 
-        $(document).on("submit", "#formEditUsuario", function (e) {
+            $(document).on("submit", "#formEditUsuario", function (e) {
+        e.preventDefault();
 
-            $.ajax({
-                type: "POST",
-                url: "/Perfis/Edit",
-                data: $(this).serialize(),
-                success: function (response) {
-                    if (response.success) {
-                        alert(response.message);
+        var form = $(this)[0];
+        var formData = new FormData(form);
 
-                        $("#usuarioeditModal").modal('hide');
-                    } else {
-                        $("#modalBodyEdit").html(response);
-                    }
-                }
-            });
+        $.ajax({
+            type: "POST",
+            url: "/Perfis/Edit",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+            // Fecha modal
+            $("#usuarioeditModal").modal('hide');
+            location.reload();
+            alert("Alterações salvas com sucesso!");
+        },
+        error: function (xhr) {
+            console.error("Erro ao editar:", xhr);
+            alert("Erro ao atualizar o usuário.");
+        }
         });
+    });
+
     });
 
         document.getElementById('campoPesquisa').addEventListener('keypress', function (e) {

@@ -92,7 +92,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormCollection form)
+        public async Task<IActionResult> Create(IFormCollection form, IFormFile arquivo)
         {
             Usuario usuario = new Usuario();
 
@@ -111,6 +111,24 @@ namespace RaquelMenopausa.Cms.Controllers
                     usuario.Ativo = true;
                     usuario.DataInc = DateTime.Now;
                     usuario.Situacao = true;
+
+                    if (arquivo != null && arquivo.Length > 0)
+                    {
+                        string diretorio = Path.Combine(_env.WebRootPath, "upload", "perfis");
+                        if (!Directory.Exists(diretorio))
+                            Directory.CreateDirectory(diretorio);
+
+                        string filename = Guid.NewGuid() + ".webp";
+                        string caminho = Path.Combine(diretorio, filename);
+
+                        using (var stream = new FileStream(caminho, FileMode.Create))
+                        {
+                            await arquivo.CopyToAsync(stream);
+                        }
+
+                        usuario.Imagem = filename;
+                    }
+
                     _db.Usuarios.Add(usuario);
                     await _db.SaveChangesAsync();
 
@@ -232,7 +250,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormCollection form)
+        public async Task<IActionResult> Edit(int id, IFormCollection form, IFormFile arquivo)
         {
             try
             {
@@ -256,11 +274,28 @@ namespace RaquelMenopausa.Cms.Controllers
                     usuario.Ativo = Convert.ToBoolean(Convert.ToInt32(form["txtAtivo"]));
                 }
 
+                if (arquivo != null && arquivo.Length > 0)
+                {
+                    string diretorio = Path.Combine(_env.WebRootPath, "upload", "perfis");
+                    if (!Directory.Exists(diretorio))
+                        Directory.CreateDirectory(diretorio);
+
+                    string filename = Guid.NewGuid() + ".webp";
+                    string caminho = Path.Combine(diretorio, filename);
+
+                    using (var stream = new FileStream(caminho, FileMode.Create))
+                    {
+                        await arquivo.CopyToAsync(stream);
+                    }
+
+                    usuario.Imagem = filename;
+                }
+
                 await _db.SaveChangesAsync();
 
                 var modulosSelecionados = form["modulosSelecionados"]
                     .Select(int.Parse)
-                    .Distinct() // remove qualquer duplicata vinda do front-end
+                    .Distinct() 
                     .ToList();
 
                 var permissoesAtuais = await _db.UsuarioModuloPermissoes

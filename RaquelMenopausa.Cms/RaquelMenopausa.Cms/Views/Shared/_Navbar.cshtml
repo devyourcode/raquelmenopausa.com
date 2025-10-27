@@ -2,6 +2,13 @@
 
 @{
     var modulos = ViewBag.ModulosPermitidos as List<RaquelMenopausa.Cms.Models.Dto.PermissaoModuloDto> ?? new List<RaquelMenopausa.Cms.Models.Dto.PermissaoModuloDto>();
+
+    var userName = User.Identity?.Name ?? "Usuário";
+    var userCargo = User.FindFirst("Cargo")?.Value ?? "Sem cargo";
+    var userImagem = User.FindFirst("Imagem")?.Value;
+    var imagePath = string.IsNullOrEmpty(userImagem)
+        ? Url.Content("~/img/user-avatar.png")
+        : Url.Content($"~/upload/perfis/{userImagem}");
 }
 
 <script>
@@ -26,10 +33,10 @@
 
     <section class="sidebar">
         <img src="~/img/imgsite/logo.png" class="img-logo" />
-        <img src="~/img/avatar5.png" class="img-navbar" />
 
-        <p class="title-name">Teste</p>
-        <p class="title-cargo">Cargo Teste</p>
+        <img src="@imagePath" class="img-navbar" />
+        <p class="title-name">@userName</p>
+        <p class="title-cargo">@userCargo</p>
         </section>
 
         <div class="sidebar-menu-wrapper">

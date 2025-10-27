@@ -125,6 +125,8 @@ namespace RaquelMenopausa.Cms.Controllers
                             new Claim(ClaimTypes.NameIdentifier, query.Id.ToString()),
                             new Claim(ClaimTypes.Name, query.Nome ?? ""),
                             new Claim(ClaimTypes.Email, query.Email),
+                            new Claim("Cargo", query.Cargo ?? ""),      
+                            new Claim("Imagem", query.Imagem ?? ""),
                             new Claim("UserIp", ip)
                         };
 

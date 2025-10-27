@@ -170,7 +170,7 @@ html {
     display: flex;
     flex-direction: column;
     width: 125%;
-    margin-left:15px;
+    margin-left: 15px;
 }
 
 .box-pesquisa {
@@ -229,7 +229,8 @@ html {
 
     .box-todo {
         flex: 1 1 100%;
-        width:100%
+        width: 100%;
+        margin-left: 0px;
     }
 
     .search-input {
@@ -238,6 +239,7 @@ html {
 
     .btn-search {
         width: 100%;
+        margin-left: 0px !important;
     }
 
     .box-pesquisa {
@@ -341,24 +343,24 @@ html {
 
 
 
-    .dropdown-menu li a {
-        display: block;
-        padding: 8px 16px;
-        text-decoration: none;
-        color: #333;
-        font-size: 14px;
-        cursor:pointer;
+.dropdown-menu li a {
+    display: block;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .dropdown-menu li a:hover {
+        background: #f5f5f5;
     }
 
-        .dropdown-menu li a:hover {
-            background: #f5f5f5;
-        }
-
-    .dropdown-menu .divider {
-        height: 1px;
-        background: #eee;
-        margin: 6px 0;
-    }
+.dropdown-menu .divider {
+    height: 1px;
+    background: #eee;
+    margin: 6px 0;
+}
 
 .text-danger {
     color: #c62828 !important;
@@ -661,7 +663,7 @@ input[type="file"] {
     border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
-    border:none;
+    border: none;
 }
 
 .btn-viewtag {
@@ -837,7 +839,12 @@ input[type="file"] {
         margin-right: 40px !important;
         margin-left: 40px !important;
     }
-}
+
+    .tag-select {
+        margin-left:0px !important;
+    }
+
+    }
 
 .sidebar {
     padding: 15px;
@@ -948,39 +955,39 @@ input[type="file"] {
     outline: none;
 }
 
-.color-option input {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 15px;
-    height: 15px;
-    border: 2px solid #fff;
-    border-radius: 4px;
-    background: transparent;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s ease;
-    z-index: 2;
-    outline: none;
-}
+    .color-option input {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 15px;
+        height: 15px;
+        border: 2px solid #fff;
+        border-radius: 4px;
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+        z-index: 2;
+        outline: none;
+    }
 
-.color-option input:checked {
-    background: #fff;
-    border-color: #fff;
-    outline: none;
-}
+        .color-option input:checked {
+            background: #fff;
+            border-color: #fff;
+            outline: none;
+        }
 
-.color-option input:checked::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(45deg);
-    width: 6px;
-    height: 12px;
-    border: solid #000;
-    border-width: 0 2px 2px 0;
-    outline: none;
-}
+            .color-option input:checked::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(45deg);
+                width: 6px;
+                height: 12px;
+                border: solid #000;
+                border-width: 0 2px 2px 0;
+                outline: none;
+            }
 
 .tag-section {
     margin-top: 16px;
@@ -1079,7 +1086,7 @@ input[type="file"] {
         transition: all 0.2s ease;
         border: 2px solid #000;
         outline: none;
-        margin-bottom:-3px;
+        margin-bottom: -3px;
     }
 
         .symptom-item input[type="checkbox"]:checked {
@@ -1111,7 +1118,7 @@ input[type="file"] {
     transition: all 0.2s ease;
     border: 2px solid #000;
     outline: none;
-    margin-bottom:-3px;
+    margin-bottom: -3px;
 }
 
     .tag-pill input[type="checkbox"]:checked {
@@ -1143,7 +1150,7 @@ input[type="file"] {
     transition: all 0.2s ease;
     border: 2px solid #000;
     outline: none;
-    margin-bottom:-3px;
+    margin-bottom: -3px;
 }
 
     .soluction-item input[type="checkbox"]:checked {
@@ -1193,4 +1200,13 @@ input[type="file"] {
     margin-top: 22px;
 }
 
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.tag-select{
+    margin-left:18px;
+}
 

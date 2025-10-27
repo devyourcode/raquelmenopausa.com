@@ -55,6 +55,10 @@ namespace RaquelMenopausa.Cms.Models
         [Column("DATAALT")]
         public DateTime? DataAlt { get; set; }
 
+        [Column("IMAGEM")]
+        [MaxLength(150)]
+        public string? Imagem { get; set; }
+
         // Relacionamentos
 
         [ForeignKey("PermissaoId")]

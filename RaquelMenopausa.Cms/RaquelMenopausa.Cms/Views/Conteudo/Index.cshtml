@@ -45,7 +45,7 @@
                 </h1>
             </div>
             <div class="col-md-6 d-flex justify-content-end align-items-center box-container">
-                <a href="@downloadUrl" class="box-filter">
+                <a href="@downloadUrl" class="box-filter" style="margin-bottom:10px">
                     <img src="~/img/imgsite/download.png" class="icon-download" />
                 </a>
             </div>
@@ -106,7 +106,7 @@
                         <div class="col-md-2">
                             <div class="box-todo">
                                 <p><b>Tag</b></p>
-                                <select name="tag">
+                                <select name="tag" class="tag-select">
                                     @foreach (var option in (IEnumerable<dynamic>)ViewBag.Tags)
                                     {
                                         <option value="@option.Value">@option.Label</option>
@@ -116,7 +116,7 @@
 
                         </div>
                         <div class="col-md-1">
-                            <button type="button" id="btnSearch" class="btn-search">
+                            <button type="button" id="btnSearch" class="btn-search" style="margin-left:50px;">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
@@ -331,9 +331,6 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
                 <h2 id="conteudoModalLabel"><b>Criar Conteúdo</b></h2>
             </div>
 
@@ -348,9 +345,6 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
                 <h2 id="conteudoModalEditLabel"><b>Editar Conteúdo</b></h2>
             </div>
 
