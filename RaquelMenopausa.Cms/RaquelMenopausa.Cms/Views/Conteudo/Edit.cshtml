@@ -283,6 +283,42 @@
     document.getElementById("arquivoMidia").addEventListener("change", function () {
         document.getElementById("changedAudioVideo").value = "true";
     });
+
+    document.getElementById("arquivoImagem").addEventListener("change", function () {
+        const fileNameSpan = document.getElementById("file-name-imagem");
+        const file = this.files[0];
+
+        if (file) {
+            let name = file.name;
+            if (name.length > 20) {
+                name = name.substring(0, 17) + "...";
+            }
+            fileNameSpan.textContent = name;
+            fileNameSpan.removeAttribute("href");
+            fileNameSpan.style.color = "#333";
+            fileNameSpan.style.textDecoration = "none";
+        } else {
+            fileNameSpan.textContent = "Nenhum arquivo adicionado";
+        }
+    });
+
+    document.getElementById("arquivoMidia").addEventListener("change", function () {
+        const fileNameSpan = document.getElementById("file-name-midia");
+        const file = this.files[0];
+
+        if (file) {
+            let name = file.name;
+            if (name.length > 20) {
+                name = name.substring(0, 17) + "...";
+            }
+            fileNameSpan.textContent = name;
+            fileNameSpan.removeAttribute("href");
+            fileNameSpan.style.color = "#333";
+            fileNameSpan.style.textDecoration = "none";
+        } else {
+            fileNameSpan.textContent = "Nenhum arquivo adicionado";
+        }
+    });
 </script>
 
 

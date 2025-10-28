@@ -79,7 +79,7 @@ namespace RaquelMenopausa.Cms.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(IFormCollection form, IFormFile arquivo)
+        public async Task<IActionResult> Edit(IFormCollection form, IFormFile profileImageUpload)
         {
             try
             {
@@ -90,26 +90,28 @@ namespace RaquelMenopausa.Cms.Controllers
 
                 var userId = form["user_id"];
                 var hash = form["hash"];
-                var name = form["Nome"];
+                var user = form["Nome"];
                 var aliasName = form["Chamada"];
                 var email = form["Email"];
                 var emailVerified = form["EmailVerified"].Count > 0; 
                 var status = form["status"];
                 var admin = form["admin"].ToString().ToLower() == "true";
-                var changedImage = form["changedImage"] == "true";
+                var changedImage = form["changedProfileImage"] == "true" ||
+                           (profileImageUpload != null && profileImageUpload.Length > 0);
+
 
                 bool isSuspended = status == "Deleted";
 
                 await _cmsService.UpdateUsuariaAsync(
                     userId,
                     hash,
-                    name,
+                    user,
                     aliasName,
                     email,
                     emailVerified,
                     isSuspended,
                     admin,
-                    arquivo,
+                    profileImageUpload,
                     changedImage,
                     token
                 );

@@ -546,17 +546,22 @@ namespace RaquelMenopausa.Cms.Helpers
                 Content = content
             };
 
-            var payloadPreview = await request.Content.ReadAsStringAsync();
-            Console.WriteLine(payloadPreview);
-
             if (!string.IsNullOrEmpty(token))
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+            var payloadPreview = await request.Content.ReadAsStringAsync();
+            Console.WriteLine(payloadPreview);
+
             var response = await _client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Erro: {response.StatusCode} - {errorBody}");
+            }
+
             response.EnsureSuccessStatusCode();
         }
-
-
     }
 }
 

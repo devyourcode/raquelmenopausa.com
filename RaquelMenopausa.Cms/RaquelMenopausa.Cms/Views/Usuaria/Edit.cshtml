@@ -1,15 +1,4 @@
 ﻿@model RaquelMenopausa.Cms.Models.Dto.UsuariaDto
-@{
-    string fileName = null;
-    if (!string.IsNullOrEmpty(Model.PhotoUrl))
-    {
-        fileName = System.IO.Path.GetFileName(Model.PhotoUrl);
-        if (fileName.Length > 20)
-        {
-            fileName = fileName.Substring(0, 17) + "...";
-        }
-    }
-}
 
 <style>
     .row {
@@ -60,7 +49,7 @@
                 <div class="form-group custom-input">
                     <label for="Nome">Nome do usuário</label>
                     <div class="input-wrapper">
-                        <input type="text" id="Nome" name="Nome" class="search-input" placeholder="Digite o seu nome" value="@Model.Profile.Name" />
+                        <input type="text" id="Nome" name="Nome" class="search-input" placeholder="Digite o seu nome" value="@Model.User" />
                         <img src="~/img/imgsite/pincel.png" alt="Ícone" class="input-icon" />
                     </div>
                 </div>
@@ -70,7 +59,7 @@
                 <div class="form-group custom-input">
                     <label for="Chamada">Como quer ser chamado</label>
                     <div class="input-wrapper">
-                        <input type="text" id="Chamada" name="Chamada" class="search-input" placeholder="Digite como quer ser chamada" value="@Model.User" />
+                        <input type="text" id="Chamada" name="Chamada" class="search-input" placeholder="Digite como quer ser chamada" value="@Model.Profile.Name" />
                         <img src="~/img/imgsite/pincel.png" alt="Ícone" class="input-icon" />
                     </div>
                 </div>
@@ -145,31 +134,40 @@
                 </div>
             </div>
 
-            <div class="col-md-12 col-xs-12">
-                <label class="label-title">Foto de Perfil</label>
-                <div class="custom-file-upload">
-                    <label for="arquivo" class="upload-label">
-                        <img src="~/img/imgsite/mdi_attach-file.png" style="margin-top:4px" class="icon-nav" alt="Mais" />
-                        <span class="text-bold">Adicionar imagem</span>
-                    </label>
-                    <span class="divider">|</span>
-                    @if (string.IsNullOrEmpty(Model.PhotoUrl))
-                    {
-                        <span id="file-name-imagem" class="file-name">Nenhum arquivo adicionado</span>
-                    }
-                    else
-                    {
-                        <a id="file-name-imagem"
-                           class="file-name"
-                           href="@Model.PhotoUrl"
-                           target="_blank"
-                           style="color: #007bff; text-decoration: underline; cursor: pointer;">
-                            @fileName
-                        </a>
-                    }
-                    <input type="file" id="arquivo" name="arquivo" accept="image/*" />
+                <div class="col-md-12 col-xs-12">
+                    <label class="label-title">Foto de Perfil</label>
+                    <div class="custom-file-upload">
+                        <label for="profileImageUpload" class="upload-label">
+                            <img src="~/img/imgsite/mdi_attach-file.png" style="margin-top:4px" class="icon-nav" alt="Mais" />
+                            <span class="text-bold">Adicionar imagem</span>
+                        </label>
+                        <span class="divider">|</span>
+
+                        @if (string.IsNullOrEmpty(Model.Profile.ProfileImage))
+                        {
+                            <span id="file-name-imagem" class="file-name">Nenhum arquivo adicionado</span>
+                        }
+                        else
+                        {
+                            var fileNameDisplay = System.IO.Path.GetFileName(Model.Profile.ProfileImage);
+                            if (fileNameDisplay.Length > 20)
+                            {
+                                fileNameDisplay = fileNameDisplay.Substring(0, 17) + "...";
+                            }
+
+                            <a id="file-name-imagem"
+                               class="file-name"
+                               href="@Model.Profile.ProfileImage"
+                               target="_blank"
+                               style="color: #007bff; text-decoration: underline; cursor: pointer;">
+                                @fileNameDisplay
+                            </a>
+                        }
+
+                        <input type="file" id="profileImageUpload" name="profileImageUpload" accept="image/*" />
+
+                    </div>
                 </div>
-            </div>
 
             <div class="col-md-12">
                 <div class="line"></div>
@@ -260,3 +258,26 @@
 }
 
 
+<script>
+    document.getElementById("profileImageUpload").addEventListener("change", function () {
+        const fileNameSpan = document.getElementById("file-name-imagem");
+        const file = this.files[0];
+
+        if (file) {
+            let name = file.name;
+            if (name.length > 20) {
+                name = name.substring(0, 17) + "...";
+            }
+            fileNameSpan.textContent = name;
+            fileNameSpan.removeAttribute("href");
+            fileNameSpan.style.color = "#333";
+            fileNameSpan.style.textDecoration = "none";
+        } else {
+            fileNameSpan.textContent = "Nenhum arquivo adicionado";
+        }
+    });
+
+    document.getElementById("profileImageUpload").addEventListener("change", function () {
+        document.getElementById("changedImage").value = "true";
+    });
+</script>
