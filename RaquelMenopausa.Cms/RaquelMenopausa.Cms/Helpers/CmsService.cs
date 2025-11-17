@@ -1,20 +1,40 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using RaquelMenopausa.Cms.Controllers;
+using RaquelMenopausa.Cms.Models;
 using RaquelMenopausa.Cms.Models.Dto;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Dynamic.Core;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
+using static System.Net.WebRequestMethods;
 
 namespace RaquelMenopausa.Cms.Helpers
 {
     public class CmsService
     {
         private readonly HttpClient _client;
+        private readonly ILogger<CmsService> _logger;
+        private readonly IWebHostEnvironment _env;
+        private readonly Context _db;
 
-        public CmsService(IHttpClientFactory factory)
+
+        public CmsService(IHttpClientFactory factory, ILogger<CmsService> logger, Context db, IWebHostEnvironment env)
         {
             _client = factory.CreateClient("CMS");
+            _db = db;
+            _env = env;
+            _logger = logger;
+        }
+
+        
+
+        public CmsService(ILogger<CmsService> logger, Context db, IWebHostEnvironment env)
+        {
+            _db = db;
+            _env = env;
+            _logger = logger;
         }
 
         public async Task<List<ArticleStatusOptionDto>> GetArticleStatusOptionsAsync(string token)
@@ -561,6 +581,41 @@ namespace RaquelMenopausa.Cms.Helpers
             }
 
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<string> GetValidTokenAsync()
+        {
+            var registro = _db.Configs
+                .FirstOrDefault(c => c.Chave == "token" && c.Situacao);
+
+            var token = await RefreshTokenAsync();
+
+            if (registro != null)
+            {
+                registro.Valor = token;
+                _db.SaveChanges();
+            }
+
+            return token;
+        }
+
+        private async Task<string> RefreshTokenAsync()
+        {
+            var loginRequest = new
+            {
+                email = "user3@email.com",
+                password = "Senha*!123"
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/auth/signin", loginRequest);
+            response.EnsureSuccessStatusCode();
+
+            using var jsonDoc = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+            var root = jsonDoc.RootElement;
+
+            var accessToken = root.GetProperty("access_token").GetString();
+
+            return accessToken;
         }
     }
 }

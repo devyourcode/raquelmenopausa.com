@@ -51,7 +51,7 @@ namespace RaquelMenopausa.Cms.Controllers
                 if (DateTime.TryParse(parts[1], out var fim)) finalDate = fim;
             }
 
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
 
             var result = await _cmsService.GetUsuariasAsync(skip, take, search, status, token: token, initialDate: initialDate, finalDate: finalDate);
 
@@ -71,7 +71,7 @@ namespace RaquelMenopausa.Cms.Controllers
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria-editar")]
         public async Task<IActionResult> Edit(string id)
         {
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
 
             var usuaria = await _cmsService.GetUsuariaAsync(token, id);
 
@@ -83,10 +83,7 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             try
             {
-                var token = _context.Configs
-                    .Where(o => o.Chave == "token" && o.Situacao)
-                    .Select(o => o.Valor)
-                    .FirstOrDefault();
+                var token = await _cmsService.GetValidTokenAsync();
 
                 var userId = form["user_id"];
                 var hash = form["hash"];
@@ -142,10 +139,7 @@ namespace RaquelMenopausa.Cms.Controllers
                     if (DateTime.TryParse(parts[1], out var fim)) finalDate = fim;
                 }
 
-                var token = _context.Configs
-                    .Where(o => o.Chave == "token" && o.Situacao)
-                    .Select(o => o.Valor)
-                    .FirstOrDefault();
+                var token = await _cmsService.GetValidTokenAsync();
 
                 var csvBytes = await _cmsService.GetUsersCsvAsync(token, search, status,
                     initialDate: initialDate, finalDate: finalDate);
@@ -162,7 +156,7 @@ namespace RaquelMenopausa.Cms.Controllers
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria-suspender-conta")]
         public async Task<IActionResult> Suspend(string id)
         {
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
 
             var usuaria = await _cmsService.SuspendAccountAsync(token, id);
 
@@ -175,7 +169,7 @@ namespace RaquelMenopausa.Cms.Controllers
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria-ativar-conta")]
         public async Task<IActionResult> Activate(string id)
         {
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
 
             var usuaria = await _cmsService.ActivateAccountAsync(token, id);
 
@@ -189,7 +183,7 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             try
             {
-                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                var token = await _cmsService.GetValidTokenAsync();
 
                 var id = form["UserId"];
                 var subject = form["subject"];
@@ -214,7 +208,7 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             try
             {
-                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                var token = await _cmsService.GetValidTokenAsync();
 
                 var id = form["UserId"];
                 var newPassword = form["newPassword"];
@@ -238,7 +232,7 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             try
             {
-                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                var token = await _cmsService.GetValidTokenAsync();
 
                 var id = form["UserId"];
                 var observations = form["observations"];

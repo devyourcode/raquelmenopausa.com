@@ -37,13 +37,13 @@ namespace RaquelMenopausa.Cms.Controllers
 
         public async Task<IActionResult> Index(int? page, string search, string status, string tag)
         {
-            int pageSize = 10;
+            int pageSize = 20;
             int pageIndex = page ?? 1;
 
             int skip = (pageIndex - 1) * pageSize;
             int take = pageSize;
 
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
 
             var statusOptions = await _cmsService.GetArticleStatusOptionsAsync(token);
 
@@ -100,7 +100,7 @@ namespace RaquelMenopausa.Cms.Controllers
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-criar")]
         public async Task<IActionResult> Create()
         {
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
             var tags = await _cmsService.GetTagsAsync(token);
 
             if (tags.ArticleCategories != null)
@@ -126,7 +126,7 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             try
             {
-                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                var token = await _cmsService.GetValidTokenAsync();
 
                 var titulo = form["Titulo"];
                 var assunto = form["Assunto"];
@@ -164,7 +164,7 @@ namespace RaquelMenopausa.Cms.Controllers
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-editar")]
         public async Task<IActionResult> Edit(string id)
         {
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
 
             var artigo = await _cmsService.GetArticleAsync(token, id);
             var tags = await _cmsService.GetTagsAsync(token);
@@ -211,10 +211,7 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             try
             {
-                var token = _context.Configs
-                    .Where(o => o.Chave == "token" && o.Situacao)
-                    .Select(o => o.Valor)
-                    .FirstOrDefault();
+                var token = await _cmsService.GetValidTokenAsync();
 
                 var id = form["article_id"];
                 var hash = form["hash"];
@@ -260,7 +257,7 @@ namespace RaquelMenopausa.Cms.Controllers
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-deletar")]
         public async Task<IActionResult> Delete(string id)
         {
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
 
             var conteudoedit = await _cmsService.DeleteAsync(token, id);
 
@@ -271,7 +268,7 @@ namespace RaquelMenopausa.Cms.Controllers
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-publicar")]
         public async Task<IActionResult> Publish(string id)
         {
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
 
             var conteudoedit = await _cmsService.PublishAsync(token, id);
 
@@ -283,7 +280,7 @@ namespace RaquelMenopausa.Cms.Controllers
         {
             try
             {
-                var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                var token = await _cmsService.GetValidTokenAsync();
 
                 var csvBytes = await _cmsService.GetArticlesCsvAsync(token, search, status, tag);
 
@@ -298,7 +295,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
         public async Task<IActionResult> GetArticleStatus()
         {
-            var token = _context.Configs.Where(o => o.Chave == "token" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+            var token = await _cmsService.GetValidTokenAsync();
             var result = await _cmsService.GetArticleStatusOptionsAsync(token);
             return Ok(result);
         }

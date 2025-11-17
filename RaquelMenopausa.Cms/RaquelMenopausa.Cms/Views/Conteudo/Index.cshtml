@@ -1,5 +1,6 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
+@using static RaquelMenopausa.Cms.Helpers.CmsGeneralHelper
 @model IPagedList<RaquelMenopausa.Cms.Models.Dto.ConteudoDto>
 
 @{
@@ -230,7 +231,7 @@
                                                                                 <div class="tag-list">
                                                                                     @foreach (var tg in articleCategories)
                                                                                     {
-                                                                                        <span class="permissao"><b>@tg</b></span>
+                                                                                        <span class="permissao"><b>@TagTranslator.Translate(tg)</b></span>
                                                                                     }
                                                                                 </div>
                                                                             </div>
@@ -243,7 +244,7 @@
                                                                                 <div class="tag-list">
                                                                                     @foreach (var tg in symptomCategories)
                                                                                     {
-                                                                                        <span class="permissao"><b>@tg</b></span>
+                                                                                        <span class="permissao"><b>@TagTranslator.Translate(tg)</b></span>
                                                                                     }
                                                                                 </div>
                                                                             </div>
@@ -256,7 +257,7 @@
                                                                                 <div class="tag-list">
                                                                                     @foreach (var tg in solutions)
                                                                                     {
-                                                                                        <span class="permissao"><b>@tg</b></span>
+                                                                                        <span class="permissao"><b>@TagTranslator.Translate(tg)</b></span>
                                                                                     }
                                                                                 </div>
                                                                             </div>
