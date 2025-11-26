@@ -6,6 +6,7 @@ using NuGet.Common;
 using RaquelMenopausa.Cms.Helpers;
 using RaquelMenopausa.Cms.Models;
 using RaquelMenopausa.Cms.Models.Dto;
+using System.Globalization;
 using X.PagedList;
 using X.PagedList.Extensions;
 using Yourcode.Core.Utilities;
@@ -33,7 +34,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
         [HttpGet]
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-usuaria-listar")]
-        public async Task<IActionResult> Index(int? page, string search, string status, string periodo)
+        public async Task<IActionResult> Index(int? page, string search, string status)
         {
             int pageSize = 30;
             int pageIndex = page ?? 1;
@@ -41,15 +42,34 @@ namespace RaquelMenopausa.Cms.Controllers
             int skip = (pageIndex - 1) * pageSize;
             int take = pageSize;
 
-            DateTime initialDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            DateTime finalDate = initialDate.AddMonths(1).AddDays(-1);
+            DateTime? initialDate = null;
+            DateTime? finalDate = null;
 
-            if (!string.IsNullOrEmpty(periodo) && periodo.Contains("|"))
+            if (DateTime.TryParse(Request.Query["initialDate"], null, DateTimeStyles.RoundtripKind, out var ini))
+                initialDate = ini;
+
+            if (DateTime.TryParse(Request.Query["finalDate"], null, DateTimeStyles.RoundtripKind, out var fim))
+                finalDate = fim;
+
+            if (!initialDate.HasValue && !finalDate.HasValue)
             {
-                var parts = periodo.Split('|');
-                if (DateTime.TryParse(parts[0], out var ini)) initialDate = ini;
-                if (DateTime.TryParse(parts[1], out var fim)) finalDate = fim;
+                initialDate = DateTime.MinValue;
+                finalDate = DateTime.MaxValue;
             }
+            else
+            {
+                if (initialDate.HasValue)
+                    initialDate = initialDate.Value.Date;
+
+                if (finalDate.HasValue)
+                {
+                    if (finalDate.Value.Date < DateTime.MaxValue.Date)
+                        finalDate = finalDate.Value.Date.AddDays(1).AddSeconds(-1);
+                    else
+                        finalDate = DateTime.MaxValue;
+                }
+            }
+
 
             var token = await _cmsService.GetValidTokenAsync();
 
@@ -63,6 +83,12 @@ namespace RaquelMenopausa.Cms.Controllers
 
 
             ViewBag.PageCount = pagedList.PageCount;
+
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+            ViewBag.InitialDate = initialDate?.ToString("yyyy-MM-dd");
+            ViewBag.FinalDate = finalDate?.ToString("yyyy-MM-dd");
+
 
             return View(pagedList);
         }

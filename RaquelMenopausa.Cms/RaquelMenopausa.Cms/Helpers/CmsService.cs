@@ -151,6 +151,7 @@ namespace RaquelMenopausa.Cms.Helpers
                     query.Add($"solutions={tag.Substring(3)}");
             }
 
+
             var qs = query.Count > 0 ? "?" + string.Join("&", query) : "";
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/cms-dashboard/contents/get-articles-paged/{skip}/{take}{qs}");
 
@@ -172,6 +173,11 @@ namespace RaquelMenopausa.Cms.Helpers
 
                 paged.Items = JsonSerializer.Deserialize<List<ConteudoDto>>(items,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                paged.Items = paged.Items
+                .OrderBy(x => x.DateCreated)
+                .ToList();
+
                 paged.TotalCount = total;
             }
 
@@ -190,6 +196,7 @@ namespace RaquelMenopausa.Cms.Helpers
             content.Add(new StringContent(color ?? ""), "color");
             content.Add(new StringContent(status ?? ""), "status");
             content.Add(new StringContent(subject ?? ""), "subject");
+            //content.Add(new StringContent(share_link ?? ""), "share_link");
 
             if (articleCategories?.Any() == true)
                 content.Add(new StringContent(string.Join(", ", articleCategories)), "articleCategories");
@@ -334,13 +341,29 @@ namespace RaquelMenopausa.Cms.Helpers
             var query = new List<string>();
 
             if (initialDate.HasValue)
-                query.Add($"initialDate={initialDate.Value:yyyy-MM-dd}");
+            {
+                var ini = initialDate.Value.Date; 
+                query.Add($"initialDate={ini:yyyy-MM-ddTHH:mm:ssZ}");
+            }
 
             if (finalDate.HasValue)
-                query.Add($"finalDate={finalDate.Value:yyyy-MM-dd}");
+            {
+                DateTime fim;
 
-            if (!string.IsNullOrEmpty(search))
-                query.Add($"search={Uri.EscapeDataString(search)}");
+                if (finalDate.Value.Date < DateTime.MaxValue.Date)
+                {
+                    fim = finalDate.Value.Date.AddDays(1).AddSeconds(-1);
+                }
+                else
+                {
+                    fim = DateTime.MaxValue;
+                }
+
+                query.Add($"finalDate={fim:yyyy-MM-ddTHH:mm:ssZ}");
+            }
+
+
+            query.Add($"search={(search ?? "").Trim()}");
 
             if (!string.IsNullOrEmpty(status) && status != "Todos")
                 query.Add($"status={status}");
@@ -388,10 +411,23 @@ namespace RaquelMenopausa.Cms.Helpers
                 query.Add($"status={status}");
 
             if (initialDate.HasValue)
-                query.Add($"initialDate={initialDate.Value:yyyy-MM-dd}");
+            {
+                var ini = initialDate.Value.Date;
+                query.Add($"initialDate={ini:yyyy-MM-ddTHH:mm:ssZ}");
+            }
 
             if (finalDate.HasValue)
-                query.Add($"finalDate={finalDate.Value:yyyy-MM-dd}");
+            {
+                DateTime fim;
+
+                if (finalDate.Value.Date < DateTime.MaxValue.Date)
+                    fim = finalDate.Value.Date.AddDays(1).AddSeconds(-1);
+                else
+                    fim = DateTime.MaxValue;
+
+                query.Add($"finalDate={fim:yyyy-MM-ddTHH:mm:ssZ}");
+            }
+
 
             var qs = query.Count > 0 ? "?" + string.Join("&", query) : "";
 

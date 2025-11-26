@@ -43,29 +43,15 @@
                     <img src="~/img/imgsite/download.png" class="icon-download" />
                 </a>
                 <div class="box-date">
-                    <select name="periodo" id="periodo">
-                        @for (int year = DateTime.Now.Year; year >= 2000; year--)
-                        {
-                            for (int month = 1; month <= 12; month++)
-                            {
-                                var startDate = new DateTime(year, month, 1);
-                                var endDate = startDate.AddMonths(1).AddDays(-1);
-                                var value = $"{startDate:yyyy-MM-dd}|{endDate:yyyy-MM-dd}";
-
-                                <option value="@value">
-                                    @($"{startDate:dd/MM/yyyy} - {endDate:dd/MM/yyyy}")
-                                </option>
-                            }
-                        }
-                    </select>
+                    <input type="text" id="periodo" name="periodo" class="picker-clean" placeholder="Selecione o período" />
+                    <input type="hidden" id="initialDate" name="initialDate" />
+                    <input type="hidden" id="finalDate" name="finalDate" />
                 </div>
-
-
             </div>
         </div>
 
         <h1 style="margin-top: 30px; margin-bottom: 10px;">
-            Usuários
+            Usuárias
         </h1>
     </section>
 
@@ -74,13 +60,13 @@
             <div class="col-md-12">
                 <div class="col-md-3">
                     <div class="box-number">
-                        <p>Total de Usuários</p>
+                        <p>Total de Usuárias</p>
                         <h2><b>@ViewBag.Indicators.UsersCount</b></h2>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="box-number">
-                        <p>Usuários Ativos</p>
+                        <p>Usuárias Ativas</p>
                         <h2><b>@ViewBag.Indicators.ActiveUsersCount</b></h2>
                     </div>
                 </div>
@@ -105,7 +91,7 @@
                         <div class="col-md-8">
                             <div class="box-pesquisa">
                                 <p><b>Pesquisar</b></p>
-                                <input type="text" style="background:#FBFBFB" placeholder="pesquisar por nome ou e-mail" class="search-input" />
+                                <input type="text" name="search" style="background:#FBFBFB" placeholder="pesquisar por nome ou e-mail" class="search-input" />
                             </div>
                         </div>
 
@@ -113,7 +99,6 @@
                             <div class="box-todo">
                                 <p><b>Status</b></p>
                                 <select name="status">
-                                    <option value="Todos">Todos</option>
                                     <option value="ACTIVE">Ativos</option>
                                     <option value="SUSPENDED">Suspensos</option>
                                 </select>
@@ -314,9 +299,16 @@
                         {
                             <div class="col-md-12 text-center">
                                 <div id="Paging">
-                                    @Html.PagedListPager(Model, page => Url.Action("Index", "usuaria", new { page }))
-                                </div>
+                                    @Html.PagedListPager(Model, page => Url.Action("Index", "Usuaria", new {
+                                    page,
+                                                                search = ViewBag.Search,
+                                                                status = ViewBag.Status,
+                                                                initialDate = ViewBag.InitialDate,
+                                                                finalDate = ViewBag.FinalDate
+                                                                }))
                             </div>
+
+                        </div>
                         }
                     </div>
 
@@ -331,7 +323,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                
+
                 <h2 id="usuariaModalLabel"><b>Editar Usuária</b></h2>
             </div>
 
@@ -340,6 +332,15 @@
         </div>
     </div>
 </div>
+
+<div id="filtros"
+     data-search="@ViewBag.Search"
+     data-status="@ViewBag.Status"
+     data-initial="@ViewBag.InitialDate"
+     data-final="@ViewBag.FinalDate">
+</div>
+
+
 
 <script>
     $.ajaxSetup({ cache: false });
@@ -368,7 +369,7 @@
             });
          });
 
-        
+
     });
 
         $('.dropdown').on('show.bs.dropdown', function () {
@@ -391,20 +392,58 @@
             document.getElementById("btnSearch").addEventListener("click", function () {
         const search = document.querySelector(".search-input").value;
         const status = document.querySelector("select[name='status']").value;
-        const periodoValue = document.querySelector("select[name='periodo']").value;
+
+        const initialDate = document.getElementById("initialDate").value;
+        const finalDate = document.getElementById("finalDate").value;
 
         const params = new URLSearchParams();
 
         if (search) params.append("search", search);
         if (status) params.append("status", status);
-        if (periodoValue) params.append("periodo", periodoValue);
 
+        // Só envia datas se o usuário realmente escolheu no picker
+        if (initialDate && finalDate) {
+            params.append("initialDate", initialDate);
+            params.append("finalDate", finalDate);
+        }
+
+        // Atualiza link de download (se existir)
         const downloadLink = document.querySelector(".box-filter a");
         if (downloadLink) {
             downloadLink.href = `/Usuaria/DownloadCsv?${params.toString()}`;
         }
 
+        // Redireciona para a pesquisa
         window.location.href = `/Usuaria/Index?${params.toString()}`;
     });
+
+
+        $(function () {
+        $('#periodo').daterangepicker({
+            autoUpdateInput: true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                separator: ' - ',
+                applyLabel: "Aplicar",
+                cancelLabel: "Cancelar",
+                daysOfWeek: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
+                monthNames: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+            },
+            ranges: {
+                'Hoje': [moment(), moment()],
+                'Ontem': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Últimos 7 dias': [moment().subtract(6, 'days'), moment()],
+                'Últimos 28 dias': [moment().subtract(27, 'days'), moment()],
+                'Este mês': [moment().startOf('month'), moment().endOf('month')],
+                'Mês passado': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        });
+
+        $('#periodo').on('apply.daterangepicker', function(ev, picker) {
+            $('#initialDate').val(picker.startDate.format('YYYY-MM-DD'));
+            $('#finalDate').val(picker.endDate.format('YYYY-MM-DD'));
+        });
+    });
+
 
 </script>

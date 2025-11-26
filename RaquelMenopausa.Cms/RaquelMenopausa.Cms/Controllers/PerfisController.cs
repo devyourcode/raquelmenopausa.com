@@ -15,13 +15,15 @@ namespace RaquelMenopausa.Cms.Controllers
         private readonly ILogger<PerfisController> _logger;
         private readonly IWebHostEnvironment _env;
         private readonly Context _db;
+        private readonly IConfiguration _configuration;
 
-        public PerfisController(ILogger<PerfisController> logger, Context db, IWebHostEnvironment env)
+        public PerfisController(ILogger<PerfisController> logger, Context db, IWebHostEnvironment env, IConfiguration configuration)
             : base(logger, db)
         {
             _db = db;
             _env = env;
             _logger = logger;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -112,6 +114,24 @@ namespace RaquelMenopausa.Cms.Controllers
                     usuario.DataInc = DateTime.Now;
                     usuario.Situacao = true;
 
+                    var nome_site = _db.Configs.Where(o => o.Chave == "nome-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+                    var admin_site = _db.Configs.Where(o => o.Chave == "admin-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
+
+                    var emailService = new EmailService(_configuration);
+
+                    var mensagemHTML = "";
+                    mensagemHTML = "Seu usuário foi cadastrado no administrador do site " + nome_site + ".<br />Segue abaixo os dados para acesso:" +
+                       "<br><br>Link: <a target='_blank' href='" + admin_site + "'>" + admin_site + "</a>" +
+                       "<br>Login: " + usuario.Email +
+                       "<br>Senha: " + senha_sem_criptografia +
+                       "<br><br>Atenciosamente,<br><b>Suporte Técnico - " + nome_site + "</b>";
+
+                    bool enviado = await emailService.EnviarEmailAsync(
+                        destinatario: usuario.Email,
+                        assunto: "Cadastro de Usuário",
+                        mensagemHtml: mensagemHTML
+                    );
+
                     if (arquivo != null && arquivo.Length > 0)
                     {
                         string diretorio = Path.Combine(_env.WebRootPath, "upload", "perfis");
@@ -149,27 +169,15 @@ namespace RaquelMenopausa.Cms.Controllers
                         await _db.SaveChangesAsync();
                     }
 
-
-                    var nome_site = _db.Configs.Where(o => o.Chave == "nome-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
-                    var admin_site = _db.Configs.Where(o => o.Chave == "admin-site" && o.Situacao).Select(o => o.Valor).FirstOrDefault();
-
-                    var mensagemHTML = "";
-                    mensagemHTML = "Seu usuário foi cadastrado no administrador do site " + nome_site + ".<br />Segue abaixo os dados para acesso:" +
-                       "<br><br>Link: <a target='_blank' href='" + admin_site + "'>" + admin_site + "</a>" +
-                       "<br>Login: " + usuario.Email +
-                       "<br>Senha: " + senha_sem_criptografia +
-                       "<br><br>Atenciosamente,<br><b>Suporte Técnico - " + nome_site + "</b>";
-
-
-                    bool enviado = await CmsNotificationHelper.SendEmail(
-                        clienteId: 1149,
-                        projetoId: 354,
-                        nome: nome_site,
-                        remetente: "noreply@raquelmenopausa.com.br",
-                        destinatario: usuario.Email,
-                        assunto: "Cadastro de Usuário",
-                        mensagem: mensagemHTML
-                    );
+                    //bool enviado = await CmsNotificationHelper.SendEmail(
+                    //    clienteId: 1149,
+                    //    projetoId: 354,
+                    //    nome: nome_site,
+                    //    remetente: "noreply@raquelmenopausa.com.br",
+                    //    destinatario: usuario.Email,
+                    //    assunto: "Cadastro de Usuário",
+                    //    mensagem: mensagemHTML
+                    //);
 
 
                     TempData["SUCESSO"] = "Usuário criado com sucesso!";

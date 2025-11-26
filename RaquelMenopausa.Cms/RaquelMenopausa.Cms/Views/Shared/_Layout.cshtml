@@ -71,29 +71,29 @@
             }
 
         /*.pagination {
-            margin-left: auto;
-            margin-right: auto;
-            display: inherit;
-            text-align: center;
-            margin-top: 20px;
-        }
+                            margin-left: auto;
+                            margin-right: auto;
+                            display: inherit;
+                            text-align: center;
+                            margin-top: 20px;
+                        }
 
-            .pagination li {
-                display: inline !important;
-            }
+                            .pagination li {
+                                display: inline !important;
+                            }
 
-                .pagination li a {
-                    color: #000 !important;
-                    padding: 5px;
-                }
+                                .pagination li a {
+                                    color: #000 !important;
+                                    padding: 5px;
+                                }
 
-                    .pagination li a:hover {
-                        color: #96280f !important;
-                    }
+                                    .pagination li a:hover {
+                                        color: #96280f !important;
+                                    }
 
-                .pagination li.active a {
-                    color: #96280f !important;
-                }*/
+                                .pagination li.active a {
+                                    color: #96280f !important;
+                                }*/
 
     </style>
 
@@ -207,53 +207,65 @@
 
         .skin-blue .main-header .logo:hover {
             background-color: #fff;
-            opacity:0.9;
+            opacity: 0.9;
         }
 
         .skin-blue .main-header .navbar .sidebar-toggle:hover {
             background-color: #fff;
-            opacity:0.9;
+            opacity: 0.9;
         }
-    .btn-primary {
-        background-color: @ViewBag.CorAdmin;
-        border:none !important;
-    }
 
-    footer strong a {
-        color: @ViewBag.CorAdmin !important;
-    }
+        .btn-primary {
+            background-color: @ViewBag.CorAdmin;
+            border: none !important;
+        }
 
-    footer strong a:hover {
-        color: @ViewBag.CorAdmin !important;
-        opacity:0.9;
-    }
+        footer strong a {
+            color: @ViewBag.CorAdmin !important;
+        }
+
+            footer strong a:hover {
+                color: @ViewBag.CorAdmin !important;
+                opacity: 0.9;
+            }
+
         #btnSalvar:hover {
-                    background-color: @ViewBag.CorAdmin;
-                    opacity:0.8;
+            background-color: @ViewBag.CorAdmin;
+            opacity: 0.8;
         }
+
         .skin-blue .sidebar-menu > li:hover > a, .skin-blue .sidebar-menu > li.active > a {
             border-left-color: @ViewBag.CorAdmin;
         }
 
         #btnCadastrar:hover {
-                    background-color: @ViewBag.CorAdmin;
-                    opacity:0.8;
+            background-color: @ViewBag.CorAdmin;
+            opacity: 0.8;
         }
 
-    .box.box-primary {
-        border-top-color: @ViewBag.CorAdmin;
-    }
+        .box.box-primary {
+            border-top-color: @ViewBag.CorAdmin;
+        }
 
         .box {
             border-top: 3px solid @ViewBag.CorAdmin;
         }
 
-        @@media (max-width:575px)
-        {
-            .skin-blue .main-header .navbar .dropdown-menu li a:hover{
-                                    background-color: @ViewBag.CorAdmin;
-color:#fff !important;
+        @@media (max-width:575px) {
+            .skin-blue .main-header .navbar .dropdown-menu li a:hover {
+                background-color: @ViewBag.CorAdmin;
+                color: #fff !important;
             }
+        }
+
+        
+        @@media (min-width: 1024px) and (min-height: 768px) {
+            .sidebar-toggle
+
+        {
+            display: none;
+        }
+
         }
 
     </style>

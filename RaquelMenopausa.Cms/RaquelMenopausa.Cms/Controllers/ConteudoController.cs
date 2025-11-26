@@ -84,7 +84,7 @@ namespace RaquelMenopausa.Cms.Controllers
 
             var result = await _cmsService.GetArtigosAsync(skip, take, search, status, tag, token: token);
 
-            ViewBag.Indicators = await _cmsService.GetIndicators(token);
+            ViewBag.Indicators = await _cmsService.GetIndicators(token, search, status, tag);
 
             var pagedList = new StaticPagedList<ConteudoDto>(
                 result.Items, pageIndex, pageSize, result.TotalCount
@@ -147,15 +147,15 @@ namespace RaquelMenopausa.Cms.Controllers
                     categorias, sintomas, solucoes, arquivoImagem, arquivoMidia, token
                 );
 
-                TempData["SuccessMessage"] = status == "draft"
-                    ? "Artigo salvo como rascunho!"
+                TempData["SUCESSO"] = status == "draft"
+                    ? "conteúdo salvo como rascunho!"
                     : "Publicação criada com sucesso!";
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Erro ao criar artigo: {ex.Message}";
+                TempData["ERRO"] = $"Erro ao criar conteúdo: {ex.Message}";
                 return RedirectToAction("Index");
             }
         }
@@ -240,15 +240,15 @@ namespace RaquelMenopausa.Cms.Controllers
                     changedImage, changedAudioVideo, token
                 );
 
-                TempData["SuccessMessage"] = status == "DRAFT"
-                    ? "Artigo salvo como rascunho!"
-                    : "Artigo atualizado com sucesso!";
+                TempData["SUCESSO"] = status == "DRAFT"
+                    ? "conteúdo salvo como rascunho!"
+                    : "conteúdo atualizado com sucesso!";
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Erro ao atualizar artigo: {ex.Message}";
+                TempData["ERRO"] = $"Erro ao atualizar conteúdo: {ex.Message}";
                 return RedirectToAction("Index");
             }
         }
@@ -257,11 +257,21 @@ namespace RaquelMenopausa.Cms.Controllers
         [AuthorizeUser(LoginPage = "~/home", Module = "modulo-conteudo-deletar")]
         public async Task<IActionResult> Delete(string id)
         {
-            var token = await _cmsService.GetValidTokenAsync();
+            try
+            {
+                var token = await _cmsService.GetValidTokenAsync();
 
             var conteudoedit = await _cmsService.DeleteAsync(token, id);
 
-            return RedirectToAction("Index");
+                TempData["SUCESSO"] = "Conteúdo deletado com sucesso!";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ERRO"] = $"Erro ao deletar conteúdo: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpGet]

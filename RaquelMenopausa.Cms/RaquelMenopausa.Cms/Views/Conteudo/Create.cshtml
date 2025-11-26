@@ -44,7 +44,7 @@
             <div class="form-group custom-input">
                 <label for="Assunto">Assunto</label>
                 <div class="input-wrapper">
-                    <input type="text" id="Assunto" name="Assunto" class="search-input" placeholder="insira o assunto do conteúdo" />
+                    <input type="text" id="Assunto" required name="Assunto" class="search-input" placeholder="insira o assunto do conteúdo" />
                 </div>
             </div>
         </div>
@@ -58,7 +58,7 @@
                 </label>
                 <span class="divider">|</span>
                 <span id="file-name-imagem" class="file-name">Nenhum arquivo adicionado</span>
-                <input type="file" id="arquivoImagem" name="arquivoImagem" accept="image/*" />
+                <input type="file" id="arquivoImagem" required name="arquivoImagem" accept="image/*" />
             </div>
         </div>
 
@@ -66,7 +66,7 @@
             <div class="form-group custom-input">
                 <label for="Titulo">Título</label>
                 <div class="input-wrapper">
-                    <input type="text" id="Titulo" name="Titulo" class="search-input" placeholder="insira o título do conteúdo" />
+                    <input type="text" id="Titulo" required name="Titulo" class="search-input" placeholder="insira o título do conteúdo" />
                 </div>
             </div>
         </div>
@@ -79,7 +79,7 @@
                 </label>
                 <span class="divider">|</span>
                 <span id="file-name-midia" class="file-name">Nenhum arquivo adicionado</span>
-                <input type="file" id="arquivoMidia" name="arquivoMidia" accept="audio/*,video/*" />
+                <input type="file" id="arquivoMidia" name="arquivoMidia" required accept="audio/*,video/*" />
             </div>
         </div>
 
@@ -89,7 +89,7 @@
                 <div class="input-wrapper textarea-wrapper">
                     <textarea id="Introducao" name="Introducao" class="search-input textarea-introducao"
                           placeholder="insira a introdução do conteúdo"
-                          maxlength="400"></textarea>
+                          maxlength="400" required></textarea>
                     <span id="charCount" class="char-counter">0/400</span>
                 </div>
             </div>
@@ -149,7 +149,7 @@
             <div class="form-group custom-input">
                 <label for="Texto">Texto Principal</label>
                 <div class="input-wrapper textarea-wrapper">
-                    <textarea id="Texto" name="Texto" class="search-input textarea-introducao"
+                    <textarea id="Texto" name="Texto" class="search-input textarea-introducao" required
                           placeholder="insira o texto do conteúdo" style="height:300px"></textarea>
                 </div>
             </div>
@@ -196,7 +196,14 @@
             </div>
         </div>
 
-
+            @* <div class="col-md-6 col-xs-12">
+                <div class="form-group custom-input">
+                    <label for="Link">Link de Compartilhamento</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="Link" name="Link" class="search-input" placeholder="insira o link de compartilhamento" />
+                    </div>
+                </div>
+            </div> *@
         
 
 
