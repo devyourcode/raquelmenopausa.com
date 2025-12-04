@@ -60,8 +60,8 @@ namespace RaquelMenopausa.Cms.Helpers
             if (!string.IsNullOrEmpty(search))
                 query.Add($"search={Uri.EscapeDataString(search)}");
 
-            if (!string.IsNullOrEmpty(status))
-                query.Add($"status={status}");
+            status ??= "ALL";
+            query.Add($"status={status}");
 
             if (!string.IsNullOrEmpty(tag))
             {
@@ -138,8 +138,8 @@ namespace RaquelMenopausa.Cms.Helpers
             if (!string.IsNullOrEmpty(search))
                 query.Add($"search={Uri.EscapeDataString(search)}");
 
-            if (!string.IsNullOrEmpty(status))
-                query.Add($"status={status}");
+            status ??= "ALL";
+            query.Add($"status={status}");
 
             if (!string.IsNullOrEmpty(tag))
             {
@@ -174,10 +174,6 @@ namespace RaquelMenopausa.Cms.Helpers
                 paged.Items = JsonSerializer.Deserialize<List<ConteudoDto>>(items,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                paged.Items = paged.Items
-                .OrderBy(x => x.DateCreated)
-                .ToList();
-
                 paged.TotalCount = total;
             }
 
@@ -196,16 +192,37 @@ namespace RaquelMenopausa.Cms.Helpers
             content.Add(new StringContent(color ?? ""), "color");
             content.Add(new StringContent(status ?? ""), "status");
             content.Add(new StringContent(subject ?? ""), "subject");
-            //content.Add(new StringContent(share_link ?? ""), "share_link");
 
             if (articleCategories?.Any() == true)
-                content.Add(new StringContent(string.Join(", ", articleCategories)), "articleCategories");
+            {
+                foreach (var id in articleCategories)
+                    content.Add(new StringContent(id.ToString()), "articleCategories");
+            }
+            else
+            {
+                content.Add(new StringContent(string.Empty), "articleCategories");
+            }
 
             if (symptomCategories?.Any() == true)
-                content.Add(new StringContent(string.Join(", ", symptomCategories)), "symptomCategories");
+            {
+                foreach (var id in symptomCategories)
+                    content.Add(new StringContent(id.ToString()), "symptomCategories");
+            }
+            else
+            {
+                content.Add(new StringContent(string.Empty), "symptomCategories");
+            }
 
             if (solutions?.Any() == true)
-                content.Add(new StringContent(string.Join(", ", solutions)), "solutions");
+            {
+                foreach (var id in solutions)
+                    content.Add(new StringContent(id.ToString()), "solutions");
+            }
+            else
+            {
+                content.Add(new StringContent(string.Empty), "solutions");
+            }
+
 
             if (imageUpload != null)
             {
@@ -230,6 +247,11 @@ namespace RaquelMenopausa.Cms.Helpers
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _client.SendAsync(request);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseString);
+
+
             response.EnsureSuccessStatusCode();
         }
 
@@ -319,10 +341,8 @@ namespace RaquelMenopausa.Cms.Helpers
             if (!string.IsNullOrEmpty(status))
                 query.Add($"status={Uri.EscapeDataString(status)}");
             else
-            {
-                query.Add("status=DRAFT");
-                query.Add("status=PUBLISHED");
-            }
+                query.Add("status=ALL");
+
 
             if (!string.IsNullOrEmpty(tag))
                 query.Add($"articleCategories={Uri.EscapeDataString(tag)}");
@@ -365,8 +385,8 @@ namespace RaquelMenopausa.Cms.Helpers
 
             query.Add($"search={(search ?? "").Trim()}");
 
-            if (!string.IsNullOrEmpty(status) && status != "Todos")
-                query.Add($"status={status}");
+            status ??= "ALL";
+            query.Add($"status={status}");
 
 
 
@@ -407,8 +427,8 @@ namespace RaquelMenopausa.Cms.Helpers
             if (!string.IsNullOrEmpty(search))
                 query.Add($"search={Uri.EscapeDataString(search)}");
 
-            if (!string.IsNullOrEmpty(status))
-                query.Add($"status={status}");
+            status ??= "ALL";
+            query.Add($"status={status}");
 
             if (initialDate.HasValue)
             {
@@ -418,15 +438,10 @@ namespace RaquelMenopausa.Cms.Helpers
 
             if (finalDate.HasValue)
             {
-                DateTime fim;
-
-                if (finalDate.Value.Date < DateTime.MaxValue.Date)
-                    fim = finalDate.Value.Date.AddDays(1).AddSeconds(-1);
-                else
-                    fim = DateTime.MaxValue;
-
+                var fim = finalDate.Value.Date;
                 query.Add($"finalDate={fim:yyyy-MM-ddTHH:mm:ssZ}");
             }
+
 
 
             var qs = query.Count > 0 ? "?" + string.Join("&", query) : "";
@@ -451,10 +466,8 @@ namespace RaquelMenopausa.Cms.Helpers
             if (!string.IsNullOrEmpty(status))
                 query.Add($"status={Uri.EscapeDataString(status)}");
             else
-            {
-                query.Add("status=ACTIVE");
-                query.Add("status=SUSPENDED");
-            }
+                query.Add("status=ALL");
+
 
             if (initialDate.HasValue)
                 query.Add($"initialDate={initialDate.Value:yyyy-MM-dd}");

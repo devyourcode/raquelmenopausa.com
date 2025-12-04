@@ -96,7 +96,6 @@
                             <div class="box-todo">
                                 <p><b>Status</b></p>
                                 <select name="status">
-                                    <option value="">Nenhuma selecionada</option>
                                     @foreach (var option in (List<RaquelMenopausa.Cms.Models.Dto.ArticleStatusOptionDto>)ViewBag.StatusOptions)
                                     {
                                         <option value="@option.Value">@option.Label</option>

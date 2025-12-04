@@ -138,9 +138,18 @@ namespace RaquelMenopausa.Cms.Controllers
                 var acao = form["acao"];
                 var status = acao == "rascunho" ? "DRAFT" : "PUBLISHED";
 
-                var categorias = form["Categorias"].Select(int.Parse).ToList();
-                var sintomas = form["Sintomas"].Select(int.Parse).ToList();
-                var solucoes = form["Solucoes"].Select(int.Parse).ToList();
+                var categorias = form["Categorias"].Any()
+                    ? form["Categorias"].Select(int.Parse).ToList()
+                    : new List<int>();
+
+                var sintomas = form["Sintomas"].Any()
+                    ? form["Sintomas"].Select(int.Parse).ToList()
+                    : new List<int>();
+
+                var solucoes = form["Solucoes"].Any()
+                    ? form["Solucoes"].Select(int.Parse).ToList()
+                    : new List<int>();
+
 
                 await _cmsService.CreateArtigoAsync(
                     titulo, introducao, texto, referencias, cor, status, assunto,
@@ -216,12 +225,12 @@ namespace RaquelMenopausa.Cms.Controllers
                 var id = form["article_id"];
                 var hash = form["hash"];
 
-                var titulo = form["Titulo"];               
-                var assunto = form["Subject"];            
-                var introducao = form["Introducao"];      
-                var texto = form["Text"];                 
-                var cor = form["Cor"];                  
-                var referencias = form["References"];    
+                var titulo = form["Titulo"];
+                var assunto = form["Subject"];
+                var introducao = form["Introducao"];
+                var texto = form["Text"];
+                var cor = form["Cor"];
+                var referencias = form["References"];
 
                 var acao = form["acao"];
                 var status = acao == "rascunho" ? "DRAFT" : "PUBLISHED";
@@ -261,7 +270,7 @@ namespace RaquelMenopausa.Cms.Controllers
             {
                 var token = await _cmsService.GetValidTokenAsync();
 
-            var conteudoedit = await _cmsService.DeleteAsync(token, id);
+                var conteudoedit = await _cmsService.DeleteAsync(token, id);
 
                 TempData["SUCESSO"] = "Conteúdo deletado com sucesso!";
 
